@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reusable Church Management System</title>
-  <meta name="description" content="Reusable single church management system template for members, events, donations, prayers, attendance, reports, and church administration." />
+  <title>Land of Dunamise Chapel Church Management System</title>
+  <meta name="description" content="Land of Dunamise Chapel church management system for members, events, donations, prayers, attendance, reports, and church administration." />
   <link id="dynamicFavicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e3a5f'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='32' fill='%23c9a84c'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -653,12 +653,13 @@
     "use strict";
 
     const CHURCH_CONFIG = {
-      churchName: "Land of Dunamise Church",
+      churchName: "Land of Dunamise Chapel",
       systemName: "Church Management System",
       tagline: "Grace, service, and fellowship",
       address: "No. 21 Grace Avenue, Accra",
       phone: "+233 24 000 0000",
       email: "info@landofdunamise.org",
+      setupCompleted: true,
       currency: "GHS",
       locale: "en-GH",
       logoDataUrl: "",
@@ -919,6 +920,46 @@
       return Boolean(state.supabaseClient);
     }
 
+    function isConfiguredDeployment() {
+      const name = String(CHURCH_CONFIG.churchName || "").trim().toLowerCase();
+      return Boolean(name && name !== "reusable church");
+    }
+
+    function markSetupComplete() {
+      localStorage.setItem(STORAGE_KEYS.setupComplete, "true");
+      state.settings.setupCompleted = true;
+      save(STORAGE_KEYS.settings, state.settings);
+    }
+
+    function setupIsComplete() {
+      return localStorage.getItem(STORAGE_KEYS.setupComplete) === "true" || state.settings.setupCompleted === true || isConfiguredDeployment();
+    }
+
+    function applyCloudChurchSettings(row) {
+      if (!row) return false;
+      state.settings = {
+        ...state.settings,
+        churchName: row.church_name || state.settings.churchName,
+        systemName: row.system_name || state.settings.systemName,
+        tagline: row.tagline ?? state.settings.tagline,
+        address: row.address || state.settings.address,
+        phone: row.phone || state.settings.phone,
+        email: row.email || state.settings.email,
+        currency: row.currency_code || state.settings.currency,
+        locale: row.locale_code || state.settings.locale,
+        logoDataUrl: row.logo_url || state.settings.logoDataUrl || "",
+        backgroundImageDataUrl: row.system_background_url || state.settings.backgroundImageDataUrl || "",
+        primaryColor: row.primary_color || state.settings.primaryColor,
+        accentColor: row.accent_color || state.settings.accentColor,
+        headerThemeColor: row.header_theme_color || state.settings.headerThemeColor,
+        footerThemeColor: row.footer_theme_color || state.settings.footerThemeColor,
+        verseOfDay: row.verse_of_day || state.settings.verseOfDay,
+        setupCompleted: row.setup_completed !== false
+      };
+      if (state.settings.setupCompleted) localStorage.setItem(STORAGE_KEYS.setupComplete, "true");
+      return true;
+    }
+
     function nullIfEmpty(value) {
       const text = String(value ?? "").trim();
       return text ? text : null;
@@ -975,9 +1016,39 @@
     async function syncSettingsToSupabase() {
       refreshDailyVerseOfTheDay({ persist: true });
       const s = state.settings;
-      const payload = { church_name: s.churchName, system_name: s.systemName, tagline: s.tagline, address: s.address, phone: s.phone, email: s.email, currency_code: s.currency, locale_code: s.locale, logo_url: nullIfEmpty(s.logoDataUrl), system_background_url: nullIfEmpty(s.backgroundImageDataUrl), primary_color: s.primaryColor, accent_color: s.accentColor, header_theme_color: s.headerThemeColor, footer_theme_color: s.footerThemeColor, verse_of_day: s.verseOfDay, setup_completed: true };
-      const { error } = await state.supabaseClient.from("churches").update(payload).eq("singleton_key", true);
-      if (error) throw error;
+      const payload = {
+        singleton_key: true,
+        church_name: s.churchName,
+        system_name: s.systemName,
+        tagline: s.tagline,
+        address: s.address,
+        phone: s.phone,
+        email: s.email,
+        currency_code: s.currency,
+        locale_code: s.locale,
+        logo_url: nullIfEmpty(s.logoDataUrl),
+        system_background_url: nullIfEmpty(s.backgroundImageDataUrl),
+        primary_color: s.primaryColor,
+        accent_color: s.accentColor,
+        header_theme_color: s.headerThemeColor,
+        footer_theme_color: s.footerThemeColor,
+        verse_of_day: s.verseOfDay,
+        setup_completed: true
+      };
+
+      const lookup = await state.supabaseClient.from("churches").select("id").eq("singleton_key", true).maybeSingle();
+      if (lookup.error) throw lookup.error;
+
+      if (lookup.data?.id) {
+        const { error } = await state.supabaseClient.from("churches").update(payload).eq("id", lookup.data.id);
+        if (error) throw error;
+      } else {
+        const { error } = await state.supabaseClient.from("churches").insert(payload);
+        if (error) throw error;
+      }
+
+      state.settings.setupCompleted = true;
+      localStorage.setItem(STORAGE_KEYS.setupComplete, "true");
     }
 
     async function syncCollectionToSupabase(collectionName) {
@@ -1004,28 +1075,66 @@
       }
     }
 
-    async function pullFromSupabase() {
-      if (!hasCloudConnection()) { showToast("Supabase is not configured."); return; }
-      if (!confirm("Pull cloud data into this browser? This will replace the current local records.")) return;
+    async function pullFromSupabase(options = {}) {
+      const { confirmFirst = true, showMessage = true } = options;
+      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return false; }
+      if (confirmFirst && !confirm("Pull cloud data into this browser? This will replace the current local records.")) return false;
       try {
-        const churchResult = await state.supabaseClient.from("churches").select("*").eq("singleton_key", true).single();
+        const churchResult = await state.supabaseClient.from("churches").select("*").eq("singleton_key", true).maybeSingle();
         if (churchResult.error) throw churchResult.error;
         const c = churchResult.data;
-        state.settings = { ...state.settings, churchName: c.church_name, systemName: c.system_name, tagline: c.tagline, address: c.address, phone: c.phone, email: c.email, currency: c.currency_code, locale: c.locale_code, logoDataUrl: c.logo_url || "", backgroundImageDataUrl: c.system_background_url || "", primaryColor: c.primary_color, accentColor: c.accent_color, headerThemeColor: c.header_theme_color || state.settings.headerThemeColor, footerThemeColor: c.footer_theme_color || state.settings.footerThemeColor, verseOfDay: c.verse_of_day };
+        if (!c) {
+          if (showMessage) showToast("No cloud church setup was found yet.");
+          return false;
+        }
+
+        applyCloudChurchSettings(c);
         refreshDailyVerseOfTheDay({ persist: false });
         const mappings = cloudMappings();
         for (const [collectionName, config] of Object.entries(mappings)) {
           const { data, error } = await state.supabaseClient.from(config.table).select("*").order("created_at", { ascending: false });
-          if (error) throw error;
+          if (error) { console.warn(`Supabase pull skipped ${collectionName}`, error); continue; }
           state[collectionName] = (data || []).map(config.from);
         }
         persistDataset();
+        localStorage.setItem(STORAGE_KEYS.setupComplete, "true");
         renderAll();
-        showToast("Cloud data pulled into this browser.");
+        if (showMessage) showToast("Cloud data pulled into this browser.");
+        return true;
       } catch (error) {
         console.warn("Supabase pull failed", error);
-        showToast("Supabase pull failed: " + (error.message || "Unknown error"));
+        if (showMessage) showToast("Supabase pull failed: " + (error.message || "Unknown error"));
+        return false;
       }
+    }
+
+    async function bootstrapSharedDeploymentState() {
+      if (!hasCloudConnection()) {
+        if (isConfiguredDeployment()) markSetupComplete();
+        return false;
+      }
+
+      const localSetupDone = localStorage.getItem(STORAGE_KEYS.setupComplete) === "true";
+      if (localSetupDone) {
+        try {
+          await syncSettingsToSupabase();
+          return true;
+        } catch (error) {
+          console.warn("Supabase startup settings push failed", error);
+          return false;
+        }
+      }
+
+      const pulled = await pullFromSupabase({ confirmFirst: false, showMessage: false });
+      if (pulled) return true;
+
+      if (isConfiguredDeployment()) {
+        markSetupComplete();
+        try { await syncSettingsToSupabase(); } catch (error) { console.warn("Supabase startup settings seed failed", error); }
+        return true;
+      }
+
+      return false;
     }
 
     function showToast(message) {
@@ -1192,7 +1301,7 @@
     }
 
     function requireAuth() {
-      const setupDone = localStorage.getItem(STORAGE_KEYS.setupComplete) === "true";
+      const setupDone = setupIsComplete();
       $("#setupNotice").classList.toggle("hidden", setupDone);
       const locked = !state.currentUser;
       document.body.classList.toggle("auth-locked", locked);
@@ -1458,12 +1567,25 @@
     function updatePrayer(id, updates) { state.prayers = state.prayers.map(p => p.id === id ? { ...p, ...updates } : p); save(STORAGE_KEYS.prayers, state.prayers); renderAll(); queueCloudSync(); showToast("Prayer request updated."); }
 
     function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); showToast("Login successful."); }
-    function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); localStorage.setItem(STORAGE_KEYS.setupComplete, "true"); closeModal(); requireAuth(); renderAll(); showToast("Setup completed."); }
-    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; save(STORAGE_KEYS.settings, state.settings); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
+    function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
+    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
     function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
     function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); showToast("User added."); }
 
-    function bootApp() { loadState(); if (!localStorage.getItem(STORAGE_KEYS.users)) save(STORAGE_KEYS.users, state.users); bindEventListeners(); startDailyVerseAutoRefresh(); startLoginVerseAutoRefresh(); renderAll(); setActiveSection(location.hash.replace("#", "") || "dashboard", false); requireAuth(); }
+    async function bootApp() {
+      loadState();
+      if (!localStorage.getItem(STORAGE_KEYS.users)) save(STORAGE_KEYS.users, state.users);
+      bindEventListeners();
+      startDailyVerseAutoRefresh();
+      startLoginVerseAutoRefresh();
+      renderAll();
+      setActiveSection(location.hash.replace("#", "") || "dashboard", false);
+      requireAuth();
+      await bootstrapSharedDeploymentState();
+      renderAll();
+      setActiveSection(location.hash.replace("#", "") || "dashboard", false);
+      requireAuth();
+    }
     bootApp();
   </script>
 </body>
