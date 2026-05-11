@@ -426,6 +426,266 @@
       .auth-card { width: 100%; border-radius: 22px; }
       .auth-header, .auth-body { padding-left: 18px; padding-right: 18px; }
     }
+
+
+    /* Mobile professional login and app polish */
+    @media (max-width: 767px) {
+      body.auth-locked {
+        overflow: auto;
+        min-height: 100svh;
+      }
+      body.auth-locked .auth-screen.show {
+        display: flex !important;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 100svh;
+        height: 100svh;
+        overflow-y: auto;
+        padding: 12px;
+        background: linear-gradient(160deg, #f7f4ed 0%, #eef3f8 55%, #ffffff 100%) !important;
+      }
+      .auth-screen::before {
+        inset: 0;
+        border-radius: 0;
+        opacity: 0.09;
+        filter: blur(5px) saturate(0.85);
+        transform: scale(1.08);
+      }
+      .auth-layout {
+        width: 100%;
+        max-width: 440px;
+        gap: 12px;
+        align-items: stretch;
+        padding: 0 0 16px;
+      }
+      .auth-hero {
+        min-height: 230px;
+        border-radius: 24px;
+        box-shadow: 0 18px 44px rgba(21,42,69,0.14);
+      }
+      .auth-hero-media {
+        inset: 8px;
+        border-radius: 20px;
+      }
+      .auth-hero-content {
+        min-height: 230px;
+        padding: 18px;
+      }
+      .auth-hero-badge {
+        padding: 6px 12px;
+        font-size: 0.64rem;
+        letter-spacing: 0.11em;
+        margin-bottom: 10px;
+      }
+      .auth-hero-title {
+        font-size: clamp(2rem, 11vw, 2.75rem);
+        line-height: 1.02;
+        max-width: 92%;
+      }
+      .auth-hero-subtitle {
+        margin-top: 9px;
+        max-width: 95%;
+        font-size: 0.86rem;
+        line-height: 1.45;
+      }
+      .auth-hero-bottom {
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.16);
+      }
+      .auth-hero-bottom-title {
+        font-size: 0.9rem;
+        line-height: 1.35;
+        margin-bottom: 4px;
+      }
+      .auth-hero-bottom-text {
+        font-size: 0.8rem;
+        line-height: 1.42;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .auth-card-wrap {
+        justify-content: stretch;
+      }
+      .auth-card {
+        width: 100%;
+        max-height: none;
+        overflow: visible;
+        border-radius: 22px;
+        box-shadow: 0 18px 44px rgba(21,42,69,0.13);
+      }
+      .auth-header {
+        padding: 18px;
+        gap: 12px;
+      }
+      .auth-kicker {
+        font-size: 0.66rem;
+        letter-spacing: 0.13em;
+        margin-bottom: 7px;
+      }
+      .auth-header h2 {
+        font-size: clamp(1.78rem, 8vw, 2.12rem);
+        line-height: 1.02;
+      }
+      .auth-subtext {
+        margin-top: 8px;
+        font-size: 0.84rem;
+        line-height: 1.48;
+      }
+      .auth-header .brand-mark {
+        width: 54px;
+        height: 54px;
+        flex: 0 0 54px;
+        box-shadow: 0 12px 28px rgba(201,168,76,0.24);
+      }
+      .auth-body {
+        padding: 18px;
+      }
+      .auth-body .form-grid {
+        gap: 13px;
+      }
+      #loginForm label {
+        font-size: 0.9rem;
+      }
+      #loginForm input {
+        min-height: 48px;
+        border-radius: 12px;
+        padding: 11px 13px;
+      }
+      #loginForm .btn {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 12px;
+        margin-top: 2px;
+      }
+      #setupNotice.card {
+        padding: 16px;
+        border-radius: 18px;
+      }
+      #setupNotice h3 {
+        font-size: 1.18rem;
+      }
+      #setupNotice p {
+        margin: 8px 0 12px;
+        font-size: 0.88rem;
+      }
+      #setupNotice .btn {
+        width: 100%;
+      }
+      .auth-footnote {
+        margin-top: 12px;
+        font-size: 0.78rem;
+      }
+      .content-wrap {
+        padding: 18px 14px 28px;
+      }
+      .section-heading {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .section-heading h2 {
+        font-size: 1.75rem;
+      }
+      .section-heading p {
+        font-size: 0.9rem;
+      }
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+      .summary-card {
+        min-height: 94px;
+        gap: 12px;
+      }
+      .summary-icon {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+        border-radius: 14px;
+        font-size: 1.35rem;
+      }
+      .summary-value {
+        font-size: 1.35rem;
+      }
+      .button-row .btn,
+      .section-heading .btn,
+      .toolbar .btn {
+        width: 100%;
+      }
+      .table-wrap {
+        border-radius: 16px;
+      }
+      th, td {
+        padding: 11px 12px;
+      }
+      .modal-backdrop {
+        padding: 12px;
+        align-items: flex-start;
+        overflow-y: auto;
+      }
+      .modal-dialog {
+        margin: 12px 0 24px;
+        border-radius: 20px;
+        max-height: none;
+      }
+      .modal-header,
+      .modal-body {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      body.auth-locked .auth-screen.show {
+        padding: 10px;
+      }
+      .auth-layout {
+        gap: 10px;
+      }
+      .auth-hero {
+        min-height: 205px;
+        border-radius: 22px;
+      }
+      .auth-hero-content {
+        min-height: 205px;
+        padding: 16px;
+      }
+      .auth-hero-title {
+        font-size: clamp(1.85rem, 10.5vw, 2.35rem);
+      }
+      .auth-hero-subtitle {
+        font-size: 0.8rem;
+        line-height: 1.38;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .auth-hero-bottom {
+        padding: 10px 12px;
+      }
+      .auth-header,
+      .auth-body {
+        padding: 16px;
+      }
+      .auth-header h2 {
+        font-size: 1.68rem;
+      }
+      .auth-header .brand-mark {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+      }
+      #loginForm input,
+      #loginForm .btn {
+        min-height: 46px;
+      }
+    }
+
   </style>
 </head>
 <body>
