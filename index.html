@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reusable Church Management System</title>
+  <meta name="description" content="Reusable single church management system template for members, events, donations, prayers, attendance, reports, and church administration." />
+  <link id="dynamicFavicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e3a5f'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='32' fill='%23c9a84c'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-dark: #152a45;
+      --accent: #c9a84c;
+      --accent-dark: #a88428;
+      --header-theme: #f9f6f0;
+      --footer-theme: #152a45;
+      --header-text: #152a45;
+      --footer-text: #ffffff;
+      --login-bg-image: none;
+      --login-bg-overlay: none;
+      --login-bg-size: 100% auto;
+      --login-bg-position: center center;
+      --cream: #f9f6f0;
+      --white: #ffffff;
+      --text: #263238;
+      --muted: #667085;
+      --border: #e6e0d5;
+      --danger: #c0392b;
+      --success: #2f855a;
+      --warning: #b7791f;
+      --shadow: 0 12px 30px rgba(30, 58, 95, 0.12);
+      --soft-shadow: 0 8px 18px rgba(30, 58, 95, 0.08);
+      --radius: 14px;
+      --small-radius: 7px;
+      --sidebar-width: 288px;
+      --speed: 220ms ease;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Open Sans", Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--cream);
+      background-image: linear-gradient(135deg, var(--cream) 0%, #fffaf1 48%, #eef3f8 100%);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    body.auth-locked {
+      overflow: hidden;
+      background-color: var(--cream) !important;
+      background-image: linear-gradient(135deg, var(--cream) 0%, #fffaf1 48%, #eef3f8 100%) !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: scroll !important;
+    }
+    body.auth-locked .mobile-header,
+    body.auth-locked .sidebar,
+    body.auth-locked .sidebar-backdrop,
+    body.auth-locked .main-content,
+    body.auth-locked .site-footer {
+      display: none !important;
+    }
+    body.auth-locked .auth-screen.show {
+      display: flex !important;
+      background: linear-gradient(135deg, #f4f6fa 0%, #eef2f7 52%, #f9f6f0 100%) !important;
+      z-index: 9999;
+    }
+    h1, h2, h3, h4 { font-family: "Lora", Georgia, serif; color: var(--primary); margin: 0; line-height: 1.22; }
+    p { line-height: 1.65; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--primary); }
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .danger-text { color: var(--danger); }
+    .success-text { color: var(--success); }
+    .small { font-size: 0.84rem; }
+    .center { text-align: center; }
+    .app-shell { min-height: 100vh; display: flex; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 40;
+      width: var(--sidebar-width);
+      background: var(--primary);
+      color: var(--white);
+      padding: 24px 0;
+      overflow-y: auto;
+      box-shadow: 12px 0 32px rgba(21, 42, 69, 0.18);
+      transition: transform var(--speed);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 0 22px 22px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .brand-mark, .mobile-logo {
+      width: 50px; height: 50px; flex: 0 0 50px; display: grid; place-items: center; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ead58d); color: var(--primary-dark); font-size: 24px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(201, 168, 76, 0.28);
+    }
+    .brand-mark img, .mobile-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-title { font-family: "Lora", Georgia, serif; font-weight: 700; font-size: 1.03rem; line-height: 1.25; }
+    .brand-subtitle { display: block; color: rgba(255,255,255,0.72); font-size: 0.78rem; margin-top: 3px; }
+    .sidebar-nav { padding: 14px 0; }
+    .nav-link {
+      width: 100%; border: 0; background: transparent; color: rgba(255,255,255,0.84); display: flex; align-items: center; gap: 12px;
+      padding: 13px 22px; text-align: left; border-left: 4px solid transparent; transition: background var(--speed), color var(--speed), border-color var(--speed);
+    }
+    .nav-link:hover, .nav-link:focus-visible { background: rgba(255,255,255,0.08); color: var(--white); outline: none; }
+    .nav-link.active { background: rgba(255,255,255,0.12); border-left-color: var(--accent); color: var(--white); font-weight: 700; }
+    .nav-icon { width: 28px; text-align: center; font-size: 1.16rem; }
+    .sidebar-contact, .user-panel {
+      margin: 14px 18px 0; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.84); font-size: 0.88rem;
+    }
+    .sidebar-contact strong, .user-panel strong { display: block; color: var(--accent); margin-bottom: 7px; }
+    .mobile-header {
+      position: sticky; top: 0; z-index: 35; display: none; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px;
+      background: var(--header-theme); color: var(--header-text); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(230,224,213,0.78);
+    }
+    .mobile-header strong, .mobile-header .muted { color: var(--header-text) !important; }
+    .hamburger { width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--white); color: var(--primary); font-size: 1.4rem; }
+    .main-content { margin-left: var(--sidebar-width); min-height: 100vh; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; }
+    .page-header { position: sticky; top: 0; z-index: 25; background: var(--header-theme); color: var(--header-text); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(230,224,213,0.78); padding: 18px 34px; }
+    .page-header h1, .page-header .header-kicker, .page-header .header-contact { color: var(--header-text); }
+    .page-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .header-kicker { text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent-dark); font-size: 0.76rem; font-weight: 800; margin-bottom: 5px; }
+    .header-contact { text-align: right; color: var(--muted); font-size: 0.88rem; max-width: 380px; }
+    .content-wrap { width: min(1280px, 100%); margin: 0 auto; padding: 30px 34px 34px; flex: 1; }
+    .section-view { display: none; }
+    .section-view.active { display: block; animation: fadeIn 260ms ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .section-heading p { margin: 6px 0 0; color: var(--muted); max-width: 760px; }
+    .sidebar-backdrop { position: fixed; inset: 0; z-index: 36; background: rgba(21,42,69,0.44); opacity: 0; pointer-events: none; transition: opacity var(--speed); }
+    .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+    .grid { display: grid; gap: 18px; }
+    .summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 22px; }
+    .two-column-grid { grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr); }
+    .three-column-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { background: var(--white); border: 1px solid rgba(230,224,213,0.86); border-radius: var(--radius); box-shadow: var(--soft-shadow); padding: 20px; }
+    .summary-card { display: flex; align-items: center; gap: 16px; min-height: 118px; }
+    .summary-icon { width: 52px; height: 52px; flex: 0 0 52px; display: grid; place-items: center; border-radius: 16px; background: #f7edcf; color: var(--primary); font-size: 1.7rem; }
+    .summary-label { color: var(--muted); font-size: 0.92rem; margin-bottom: 4px; }
+    .summary-value { font-family: "Lora", Georgia, serif; font-size: 1.62rem; font-weight: 700; color: var(--primary); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: var(--small-radius); padding: 10px 15px; font-weight: 700; text-decoration: none; transition: background var(--speed), border-color var(--speed), color var(--speed), transform var(--speed); min-height: 41px; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); color: var(--primary-dark); border-color: var(--accent); }
+    .btn-primary:hover { background: #d8bb67; }
+    .btn-secondary { background: var(--white); color: var(--primary); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent-dark); }
+    .btn-danger { background: var(--danger); color: var(--white); border-color: var(--danger); }
+    .btn-success { background: var(--success); color: var(--white); border-color: var(--success); }
+    .btn-small { padding: 7px 10px; min-height: 34px; font-size: 0.86rem; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-weight: 700; color: var(--primary); font-size: 0.92rem; }
+    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 9px; padding: 11px 12px; background: var(--white); color: var(--text); outline: none; transition: border-color var(--speed), box-shadow var(--speed); }
+    textarea { min-height: 108px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(201,168,76,0.15); }
+    .is-invalid { border-color: var(--danger) !important; box-shadow: 0 0 0 4px rgba(192,57,43,0.1) !important; }
+    .field-error { min-height: 17px; color: var(--danger); font-size: 0.78rem; font-weight: 700; }
+    .login-background-panel { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: #fffaf1; }
+    .login-background-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .range-value { display: inline-flex; align-items: center; justify-content: center; min-width: 62px; padding: 5px 9px; border-radius: 999px; background: var(--primary); color: var(--white); font-weight: 800; font-size: 0.82rem; }
+    .login-background-preview { min-height: 190px; border: 1px dashed var(--border); border-radius: 14px; background-color: #eef3f8; background-image: linear-gradient(135deg, var(--cream) 0%, #fffaf1 48%, #eef3f8 100%); background-repeat: no-repeat; background-position: center center; display: grid; place-items: center; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.65); margin-bottom: 12px; }
+    .login-background-placeholder { color: var(--muted); text-align: center; padding: 18px; font-size: 0.9rem; }
+    .toolbar { display: flex; align-items: end; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+    .search-wrap { min-width: 260px; flex: 1; }
+    .table-wrap { overflow-x: auto; background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--soft-shadow); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; background: var(--white); }
+    th, td { padding: 13px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    th { background: #f3efe5; color: var(--primary); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.045em; }
+    tbody tr:nth-child(even) { background: #fcfaf6; }
+    tbody tr:hover { background: #f6f0de; }
+    .empty-state { padding: 24px; text-align: center; color: var(--muted); background: var(--white); border: 1px dashed var(--border); border-radius: var(--radius); }
+    .avatar { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: #edf2f7; color: var(--primary); font-size: 1.25rem; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; background: #f7edcf; color: var(--primary); }
+    .badge.green { background: #e6f4ea; color: var(--success); }
+    .badge.red { background: #fde8e7; color: var(--danger); }
+    .badge.blue { background: #e8f1fb; color: var(--primary); }
+    .mini-list { display: grid; gap: 12px; margin-top: 14px; }
+    .event-mini-card, .report-card { border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 13px; background: #fffdf8; }
+    .total-strip { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; padding: 16px 18px; border-radius: var(--radius); background: var(--primary); color: var(--white); box-shadow: var(--soft-shadow); }
+    .total-strip strong { color: var(--accent); font-family: "Lora", Georgia, serif; font-size: 1.5rem; }
+    .filter-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .prayer-list { display: grid; gap: 14px; }
+    .prayer-card { display: grid; gap: 9px; padding: 18px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--white); box-shadow: var(--soft-shadow); }
+    .prayer-card.prayed { opacity: 0.66; background: #f4f7f4; }
+    .prayer-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 0.9rem; }
+    .modal-backdrop, .auth-screen { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 26px; z-index: 90; }
+    .modal-backdrop { background: rgba(21,42,69,0.64); }
+    .auth-screen {
+      background: linear-gradient(135deg, #f4f6fa 0%, #eef2f7 52%, #f9f6f0 100%);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .auth-screen::before {
+      content: "";
+      position: absolute;
+      inset: 3.5% 4.5%;
+      border-radius: 42px;
+      background-image: var(--login-bg-image);
+      background-size: var(--login-bg-size);
+      background-position: var(--login-bg-position);
+      background-repeat: no-repeat;
+      opacity: 0.15;
+      filter: blur(4px) saturate(0.95);
+      transform: scale(1.06);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .auth-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 26% 34%, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.08) 34%, rgba(255,255,255,0) 60%), linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 42%, rgba(255,255,255,0.12) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .modal-backdrop.show, .auth-screen.show { display: flex; animation: backdropFade 180ms ease both; }
+    @keyframes backdropFade { from { opacity: 0; } to { opacity: 1; } }
+    .modal-dialog { width: min(760px, 100%); max-height: min(90vh, 860px); overflow-y: auto; background: var(--white); border-radius: 18px; box-shadow: 0 28px 70px rgba(21,42,69,0.28); animation: modalIn 220ms ease both; }
+    .auth-layout { width: min(1320px, 100%); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(360px, 430px); align-items: center; gap: 34px; animation: modalIn 220ms ease both; position: relative; z-index: 1; }
+    .auth-hero {
+      position: relative;
+      min-height: 600px;
+      border-radius: 30px;
+      overflow: hidden;
+      background: #dfe8f1;
+      border: 1px solid rgba(30,58,95,0.08);
+      box-shadow: 0 24px 70px rgba(21,42,69,0.14);
+    }
+    .auth-hero-media {
+      position: absolute;
+      inset: 18px;
+      border-radius: 28px;
+      background-image: var(--login-bg-overlay), var(--login-bg-image), linear-gradient(135deg, #d7e8f8 0%, #7aa8dc 42%, #2f5d88 100%);
+      background-size: cover, var(--login-bg-size), cover;
+      background-position: center, var(--login-bg-position), center;
+      background-repeat: no-repeat, no-repeat, no-repeat;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+    }
+    .auth-hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(130deg, rgba(11,25,43,0.78) 0%, rgba(11,25,43,0.48) 42%, rgba(0,0,0,0.12) 100%);
+    }
+    .auth-hero-content {
+      position: relative;
+      z-index: 1;
+      min-height: 600px;
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--white);
+    }
+    .auth-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      color: var(--primary-dark);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      width: fit-content;
+    }
+    .auth-hero-title {
+      color: var(--white);
+      font-size: clamp(2.2rem, 4vw, 4.05rem);
+      line-height: 0.98;
+      max-width: 520px;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.24);
+    }
+    .auth-hero-subtitle {
+      color: rgba(255,255,255,0.9);
+      margin-top: 18px;
+      max-width: 440px;
+      font-size: 1rem;
+    }
+    .auth-hero-bottom {
+      width: min(100%, 760px);
+      padding: 20px 24px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 14px 36px rgba(10,24,40,0.18);
+    }
+    .auth-hero-bottom-title {
+      display: block;
+      color: var(--white);
+      font-size: 1.02rem;
+      margin-bottom: 4px;
+    }
+    .auth-hero-bottom-text {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.94rem;
+      line-height: 1.65;
+      display: block;
+      transition: opacity 260ms ease, transform 260ms ease;
+    }
+    .auth-hero-bottom-text.verse-changing {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    .auth-card-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .auth-card {
+      width: min(430px, 100%);
+      max-height: min(90vh, 860px);
+      overflow-y: auto;
+      background: rgba(255,255,255,0.98);
+      border-radius: 26px;
+      box-shadow: 0 24px 70px rgba(21,42,69,0.16);
+      border: 1px solid rgba(230,224,213,0.95);
+    }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px; border-bottom: 1px solid var(--border); background: #fffaf1; }
+    .auth-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 26px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,250,241,0.9);
+    }
+    .auth-title-wrap { min-width: 0; }
+    .auth-kicker {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-dark);
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .auth-header h2 { font-size: 2rem; line-height: 1.02; }
+    .auth-subtext {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .auth-body { padding: 24px 26px 26px; }
+    .auth-footnote {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      text-align: center;
+    }
+    .modal-body { padding: 22px; }
+    .modal-close { width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 50%; background: var(--white); color: var(--primary); font-size: 1.2rem; }
+    .toast-container { position: fixed; right: 18px; bottom: 18px; z-index: 110; display: grid; gap: 10px; }
+    .toast { min-width: 240px; max-width: 380px; padding: 13px 15px; border-radius: 12px; background: var(--primary); color: var(--white); box-shadow: var(--shadow); animation: toastIn 260ms ease both; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+    .site-footer { margin-left: var(--sidebar-width); padding: 20px 34px; background: var(--footer-theme); color: var(--footer-text); }
+    .footer-inner { width: min(1280px, 100%); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; font-size: 0.9rem; }
+    .footer-verse, .site-footer strong, .site-footer span, .site-footer div { color: var(--footer-text); }
+    .footer-verse { max-width: 580px; opacity: 0.94; }
+    .print-header { display: none; }
+    @media print {
+      body { background: white; color: #111; }
+      .sidebar, .mobile-header, .page-header, .site-footer, .toolbar, .button-row.no-print, .btn, .toast-container, .modal-backdrop, .auth-screen { display: none !important; }
+      .main-content { margin-left: 0; width: 100%; }
+      .content-wrap { padding: 0; width: 100%; }
+      .section-view { display: block !important; }
+      .section-view:not(.active) { display: none !important; }
+      .card, .table-wrap { box-shadow: none; border-color: #aaa; }
+      .print-header { display: block; margin-bottom: 18px; padding: 0 0 12px; border-bottom: 2px solid #111; }
+      .print-letterhead { display: flex; align-items: center; justify-content: center; gap: 16px; text-align: center; }
+      .print-letterhead-logo { width: 84px; height: 84px; object-fit: contain; flex: 0 0 84px; }
+      .print-letterhead h1 { font-family: "Times New Roman", Times, serif; font-size: 22px; color: #111; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+      .print-letterhead p { font-family: "Times New Roman", Times, serif; font-size: 12px; color: #111; margin: 2px 0; line-height: 1.35; }
+      .print-letterhead-meta { margin-top: 8px; font-family: "Times New Roman", Times, serif; font-size: 11px; color: #333; text-align: center; }
+      table { font-size: 12px; min-width: 0; }
+      th, td { padding: 6px 7px; }
+    }
+    @media (max-width: 1120px) { .summary-grid, .two-column-grid, .three-column-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 1024px) {
+      .auth-layout {
+        grid-template-columns: 1fr;
+        max-width: 720px;
+      }
+      .auth-hero, .auth-hero-content {
+        min-height: 360px;
+      }
+      .auth-card {
+        width: min(100%, 520px);
+      }
+    }
+    @media (max-width: 767px) {
+      .app-shell { display: block; }
+      .mobile-header { display: flex; }
+      .sidebar { transform: translateX(-105%); width: min(86vw, 310px); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; width: 100%; }
+      .page-header { display: none; }
+      .content-wrap { padding: 22px 16px 28px; }
+      .section-heading { display: grid; }
+      .summary-grid, .two-column-grid, .three-column-grid, .filter-grid, .form-grid { grid-template-columns: 1fr; }
+      .toolbar { align-items: stretch; }
+      .search-wrap, .toolbar .btn { width: 100%; }
+      .site-footer { margin-left: 0; padding: 18px 16px; }
+      .auth-screen { padding: 16px; }
+      .auth-screen::before { inset: 6% 4%; border-radius: 28px; opacity: 0.13; }
+      .auth-layout { gap: 18px; }
+      .auth-hero, .auth-hero-content { min-height: 280px; }
+      .auth-hero-content { padding: 24px; }
+      .auth-hero-bottom { padding: 16px 18px; }
+      .auth-card { width: 100%; border-radius: 22px; }
+      .auth-header, .auth-body { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-layout">
+      <section class="auth-hero" aria-label="Church login introduction">
+        <div class="auth-hero-media"></div>
+        <div class="auth-hero-content">
+          <div>
+            <span class="auth-hero-badge">Secure Access</span>
+            <h1 class="auth-hero-title church-name-text">Reusable Church</h1>
+            <p class="auth-hero-subtitle" id="authHeroSubtitle">Manage worship, members, attendance, donations, prayer care, and reports from one secure church platform.</p>
+          </div>
+          <div class="auth-hero-bottom">
+            <strong class="auth-hero-bottom-title">Worship, administration, and church operations</strong>
+            <span class="auth-hero-bottom-text" id="loginRotatingVerse">Psalm 23:1 - The Lord is my shepherd; I shall not want.</span>
+          </div>
+        </div>
+      </section>
+      <div class="auth-card-wrap">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="auth-title-wrap">
+              <span class="auth-kicker">Church Management System</span>
+              <h2 id="authTitle">Church System Login</h2>
+              <p class="auth-subtext" id="authSubtext">Sign in with your approved church account credentials.</p>
+            </div>
+            <div class="brand-mark" id="authLogo">✝</div>
+          </div>
+          <div class="auth-body">
+            <div id="setupNotice" class="card hidden" style="margin-bottom:16px;background:#fffaf1;">
+              <h3>First Time Setup</h3>
+              <p class="muted">Set the church identity and main administrator account before using this reusable template.</p>
+              <button class="btn btn-primary" type="button" id="openSetupBtn">Run First Setup</button>
+            </div>
+            <form id="loginForm" class="form-grid" novalidate>
+              <div class="field full"><label for="loginUsername">Username</label><input id="loginUsername" name="username" required autocomplete="username"><small class="field-error"></small></div>
+              <div class="field full"><label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" required autocomplete="current-password"><small class="field-error"></small></div>
+              <div class="field full"><button class="btn btn-primary" type="submit">Login</button></div>
+            </form>
+            <p class="auth-footnote">Church: <span class="church-name-text">Reusable Church</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-header" role="banner">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+    <div class="mobile-logo" id="mobileLogo">✝</div>
+    <div style="flex:1;min-width:0;">
+      <strong class="church-name-text">Reusable Church</strong>
+      <div class="muted" style="font-size:0.78rem;">Church Management System</div>
+    </div>
+  </div>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div class="brand-mark" id="brandLogo">✝</div>
+      <div>
+        <div class="brand-title church-name-text">Reusable Church</div>
+        <span class="brand-subtitle" id="brandTagline">Grace, service, and fellowship</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" aria-label="Church management modules" id="sidebarNav">
+      <button class="nav-link active" type="button" data-section="dashboard" data-access="dashboard"><span class="nav-icon">🏠</span><span>Dashboard</span></button>
+      <button class="nav-link" type="button" data-section="members" data-access="members"><span class="nav-icon">👥</span><span>Members</span></button>
+      <button class="nav-link" type="button" data-section="events" data-access="events"><span class="nav-icon">📅</span><span>Events</span></button>
+      <button class="nav-link" type="button" data-section="attendance" data-access="attendance"><span class="nav-icon">✅</span><span>Attendance</span></button>
+      <button class="nav-link" type="button" data-section="donations" data-access="donations"><span class="nav-icon">💛</span><span>Donations</span></button>
+      <button class="nav-link" type="button" data-section="prayers" data-access="prayers"><span class="nav-icon">🙏</span><span>Prayer Requests</span></button>
+      <button class="nav-link" type="button" data-section="pastoral" data-access="pastoral"><span class="nav-icon">🤝</span><span>Pastoral Care</span></button>
+      <button class="nav-link" type="button" data-section="reports" data-access="reports"><span class="nav-icon">📊</span><span>Reports</span></button>
+      <button class="nav-link" type="button" data-section="settings" data-access="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
+    </nav>
+    <div class="user-panel" aria-label="Logged in user summary">
+      <strong id="currentUserName">Not logged in</strong>
+      <div id="currentUserRole">Role</div>
+      <button class="btn btn-secondary btn-small" type="button" id="logoutBtn" style="margin-top:10px;">Logout</button>
+    </div>
+    <div class="sidebar-contact" aria-label="Church contact summary">
+      <strong>Church Office</strong>
+      <div id="sidebarAddress">No. 21 Grace Avenue, Accra</div>
+      <div id="sidebarPhone">+233 24 000 0000</div>
+      <div id="sidebarEmail">info@example.org</div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="page-header" role="banner">
+      <div class="page-header-inner">
+        <div>
+          <div class="header-kicker">Church Management System</div>
+          <h1 class="church-name-text">Reusable Church</h1>
+        </div>
+        <div class="header-contact" id="headerContact">No. 21 Grace Avenue, Accra • +233 24 000 0000 • info@example.org</div>
+      </div>
+    </header>
+
+    <main class="content-wrap" id="mainContent">
+      <div class="print-header" id="printHeader"></div>
+
+      <section class="section-view active" id="dashboard" aria-labelledby="dashboardTitle">
+        <div class="section-heading"><div><h2 id="dashboardTitle">Dashboard</h2><p>View key ministry activity, giving, attendance, upcoming programs, and prayer care.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-print-current>Print Dashboard</button></div></div>
+        <div class="grid summary-grid" id="summaryCards" aria-live="polite"></div>
+        <div class="grid two-column-grid">
+          <article class="card"><h3>Recent Donations</h3><div class="table-wrap" style="margin-top:14px;box-shadow:none;"><table aria-label="Recent donations"><thead><tr><th>Donor</th><th>Purpose</th><th>Date</th><th>Amount</th></tr></thead><tbody id="recentDonationsBody"></tbody></table></div></article>
+          <article class="card"><h3>Upcoming Events</h3><div class="mini-list" id="dashboardEventsList"></div></article>
+        </div>
+      </section>
+
+      <section class="section-view" id="members" aria-labelledby="membersTitle">
+        <div class="section-heading"><div><h2 id="membersTitle">Members</h2><p>Maintain member profiles, contact details, ministry status, and follow-up information.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="members">Export CSV</button><button class="btn btn-secondary" type="button" data-print-current>Print</button><button class="btn btn-primary" type="button" id="addMemberBtn">＋ Add Member</button></div></div>
+        <div class="toolbar"><div class="field search-wrap"><label for="memberSearch">Search members</label><input id="memberSearch" type="search" placeholder="Search by name, email, phone, department, or status"><small class="field-error"></small></div></div>
+        <div class="table-wrap"><table aria-label="Members table"><thead><tr><th>Photo</th><th>Full Name</th><th>Contact</th><th>Department</th><th>Status</th><th>Date Joined</th><th>Actions</th></tr></thead><tbody id="membersTableBody"></tbody></table></div>
+      </section>
+
+      <section class="section-view" id="events" aria-labelledby="eventsTitle">
+        <div class="section-heading"><div><h2 id="eventsTitle">Events</h2><p>Plan worship services, outreach programs, meetings, fellowships, and recurring ministry activities.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="events">Export CSV</button><button class="btn btn-secondary" type="button" data-print-current>Print</button><button class="btn btn-primary" type="button" id="addEventBtn">＋ Add Event</button></div></div>
+        <div class="table-wrap"><table aria-label="Events table"><thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Time</th><th>Location</th><th>Recurring</th><th>Actions</th></tr></thead><tbody id="eventsTableBody"></tbody></table></div>
+      </section>
+
+      <section class="section-view" id="attendance" aria-labelledby="attendanceTitle">
+        <div class="section-heading"><div><h2 id="attendanceTitle">Attendance</h2><p>Track attendance by service, event, department, adults, children, visitors, and total count.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="attendance">Export CSV</button><button class="btn btn-secondary" type="button" data-print-current>Print</button><button class="btn btn-primary" type="button" id="addAttendanceBtn">＋ Record Attendance</button></div></div>
+        <div class="table-wrap"><table aria-label="Attendance table"><thead><tr><th>Service/Event</th><th>Date</th><th>Adults</th><th>Children</th><th>Visitors</th><th>Total</th><th>Recorded By</th><th>Actions</th></tr></thead><tbody id="attendanceTableBody"></tbody></table></div>
+      </section>
+
+      <section class="section-view" id="donations" aria-labelledby="donationsTitle">
+        <div class="section-heading"><div><h2 id="donationsTitle">Donations</h2><p>Record tithes, offerings, building fund gifts, missions, welfare contributions, and issue receipts.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="donations">Export CSV</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <article class="card" style="margin-bottom:20px;"><h3>Record a Donation</h3><form id="donationForm" class="form-grid" novalidate style="margin-top:16px;">
+          <div class="field"><label for="donorName">Donor Name</label><input id="donorName" name="donorName" type="text" required><small class="field-error"></small></div>
+          <div class="field"><label for="donationAmount">Amount</label><input id="donationAmount" name="amount" type="number" min="0.01" step="0.01" required><small class="field-error"></small></div>
+          <div class="field"><label for="donationDate">Date</label><input id="donationDate" name="date" type="date" required><small class="field-error"></small></div>
+          <div class="field"><label for="donationPurpose">Purpose</label><select id="donationPurpose" name="purpose" required><option value="">Select purpose</option><option>Tithe</option><option>Offering</option><option>Building Fund</option><option>Missions</option><option>Welfare</option><option>Other</option></select><small class="field-error"></small></div>
+          <div class="field"><label for="paymentMethod">Payment Method</label><select id="paymentMethod" name="paymentMethod" required><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option><option>Cheque</option><option>Card</option></select><small class="field-error"></small></div>
+          <div class="field"><label for="donationNotes">Notes</label><input id="donationNotes" name="notes" type="text" placeholder="Optional notes"><small class="field-error"></small></div>
+          <div class="field full"><button class="btn btn-primary" type="submit">Record Donation</button></div>
+        </form></article>
+        <div class="total-strip" aria-live="polite"><span>Displayed Donations Total</span><strong id="donationTotalDisplay">GHS 0.00</strong></div>
+        <div class="card" style="margin-bottom:16px;"><div class="filter-grid"><div class="field"><label for="purposeFilter">Filter by purpose</label><select id="purposeFilter"><option value="all">All purposes</option></select><small class="field-error"></small></div><div class="field"><label for="dateFromFilter">From date</label><input id="dateFromFilter" type="date"><small class="field-error"></small></div><div class="field"><label for="dateToFilter">To date</label><input id="dateToFilter" type="date"><small class="field-error"></small></div></div></div>
+        <div class="table-wrap"><table aria-label="Donations table"><thead><tr><th>Receipt</th><th>Donor</th><th>Amount</th><th>Date</th><th>Purpose</th><th>Method</th><th>Actions</th></tr></thead><tbody id="donationsTableBody"></tbody></table></div>
+      </section>
+
+      <section class="section-view" id="prayers" aria-labelledby="prayersTitle">
+        <div class="section-heading"><div><h2 id="prayersTitle">Prayer Requests</h2><p>Care for congregants through confidential prayer tracking, assignment, and answered prayer records.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-print-current>Print</button><button class="btn btn-primary" type="button" id="addPrayerBtn">＋ Add Prayer Request</button></div></div>
+        <article class="card hidden" id="prayerFormCard" style="margin-bottom:18px;"><h3>Submit Prayer Request</h3><form id="prayerForm" class="form-grid" novalidate style="margin-top:16px;">
+          <div class="field"><label for="prayerName">Name</label><input id="prayerName" name="name" type="text" placeholder="Optional"><small class="field-error"></small></div>
+          <div class="field"><label for="prayerPrivacy">Privacy</label><select id="prayerPrivacy" name="privacy"><option>Prayer Team</option><option>Pastors Only</option><option>Private</option><option>Public Testimony</option></select><small class="field-error"></small></div>
+          <div class="field"><label for="prayerAssignedTo">Assigned To</label><input id="prayerAssignedTo" name="assignedTo" type="text" placeholder="Pastor or prayer leader"><small class="field-error"></small></div>
+          <div class="field"><label for="prayerFollowUp">Follow Up Status</label><select id="prayerFollowUp" name="followUpStatus"><option>New</option><option>In Progress</option><option>Followed Up</option><option>Closed</option></select><small class="field-error"></small></div>
+          <div class="field full"><label for="prayerRequest">Request</label><textarea id="prayerRequest" name="request" required></textarea><small class="field-error"></small></div>
+          <div class="field full button-row"><button class="btn btn-primary" type="submit">Submit Request</button><button class="btn btn-secondary" type="button" id="cancelPrayerFormBtn">Cancel</button></div>
+        </form></article>
+        <div class="prayer-list" id="prayerList"></div>
+      </section>
+
+      <section class="section-view" id="pastoral" aria-labelledby="pastoralTitle">
+        <div class="section-heading"><div><h2 id="pastoralTitle">Pastoral Care</h2><p>Record visitations, counselling follow-ups, welfare support, and member care actions.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="care">Export CSV</button><button class="btn btn-secondary" type="button" data-print-current>Print</button><button class="btn btn-primary" type="button" id="addCareBtn">＋ Add Care Record</button></div></div>
+        <div class="table-wrap"><table aria-label="Pastoral care table"><thead><tr><th>Member</th><th>Care Type</th><th>Date</th><th>Status</th><th>Assigned To</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="careTableBody"></tbody></table></div>
+      </section>
+
+      <section class="section-view" id="reports" aria-labelledby="reportsTitle">
+        <div class="section-heading"><div><h2 id="reportsTitle">Reports</h2><p>Generate printable summaries and export church records for administration and accountability.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-print-current>Print Reports</button></div></div>
+        <div class="grid three-column-grid" id="reportsGrid"></div>
+      </section>
+
+      <section class="section-view" id="settings" aria-labelledby="settingsTitle">
+        <div class="section-heading"><div><h2 id="settingsTitle">Settings</h2><p>Configure church identity, logo, theme, users, data backup, and optional Supabase connection.</p></div></div>
+        <div class="grid two-column-grid">
+          <article class="card"><h3>Church Identity and Branding</h3><form id="settingsForm" class="form-grid" novalidate style="margin-top:16px;">
+            <div class="field"><label for="settingChurchName">Church Name</label><input id="settingChurchName" name="churchName" required><small class="field-error"></small></div>
+            <div class="field"><label for="settingTagline">Tagline</label><input id="settingTagline" name="tagline"><small class="field-error"></small></div>
+            <div class="field"><label for="settingPhone">Phone</label><input id="settingPhone" name="phone" required><small class="field-error"></small></div>
+            <div class="field"><label for="settingEmail">Email</label><input id="settingEmail" name="email" type="email" required><small class="field-error"></small></div>
+            <div class="field full"><label for="settingAddress">Address</label><input id="settingAddress" name="address" required><small class="field-error"></small></div>
+            <div class="field full"><label for="settingVerse">Auto Verse of the Day</label><input id="settingVerse" name="verseOfDay" readonly><small class="muted">This verse changes automatically each day from the built-in daily verse list.</small><small class="field-error"></small></div>
+            <div class="field"><label for="settingCurrency">Currency</label><select id="settingCurrency" name="currency"><option>GHS</option><option>USD</option><option>NGN</option><option>GBP</option><option>EUR</option></select><small class="field-error"></small></div>
+            <div class="field"><label for="settingLocale">Locale</label><input id="settingLocale" name="locale" placeholder="en-GH"><small class="field-error"></small></div>
+            <div class="field"><label for="settingPrimary">Primary Color</label><input id="settingPrimary" name="primaryColor" type="color"><small class="field-error"></small></div>
+            <div class="field"><label for="settingAccent">Accent Color</label><input id="settingAccent" name="accentColor" type="color"><small class="field-error"></small></div>
+            <div class="field"><label for="settingHeaderTheme">Header Theme Color</label><input id="settingHeaderTheme" name="headerThemeColor" type="color"><small class="field-error"></small></div>
+            <div class="field"><label for="settingFooterTheme">Footer Theme Color</label><input id="settingFooterTheme" name="footerThemeColor" type="color"><small class="field-error"></small></div>
+            <div class="field full"><label for="logoUpload">Church Logo</label><input id="logoUpload" type="file" accept="image/*"><small class="muted">The same logo is used in the system header, login screen, favicon, receipts, and printed letterhead.</small><small class="field-error"></small></div>
+            <div class="field full"><label for="backgroundUpload">Login Background Image</label><input id="backgroundUpload" type="file" accept="image/*"><small class="muted">The uploaded image is used only on the login page. It will not appear behind the dashboard or other system pages after login.</small><small class="field-error"></small></div>
+            <div class="field full login-background-panel">
+              <div class="login-background-panel-header"><strong>Login Background Preview and Zoom Control</strong><span class="range-value" id="loginBgZoomValue">100%</span></div>
+              <div class="login-background-preview" id="loginBackgroundPreview"><span class="login-background-placeholder" id="loginBackgroundPlaceholder">Upload a login background image to preview it here before applying the change.</span></div>
+              <label for="loginBackgroundZoom">Zoom Control</label>
+              <input id="loginBackgroundZoom" type="range" min="50" max="180" step="5" value="100">
+              <small class="muted">Move left to zoom out and show more of the image. Move right to zoom in. Click Apply Login Background after adjusting.</small>
+              <div class="button-row" style="margin-top:12px;"><button class="btn btn-primary" type="button" id="applyBackgroundBtn">Apply Login Background</button><button class="btn btn-secondary" type="button" id="resetBackgroundZoomBtn">Reset Zoom</button></div>
+            </div>
+            <div class="field full button-row"><button class="btn btn-primary" type="submit">Save Settings</button><button class="btn btn-secondary" type="button" id="removeLogoBtn">Remove Logo</button><button class="btn btn-secondary" type="button" id="removeBackgroundBtn">Remove Login Background</button></div>
+          </form></article>
+          <article class="card"><h3>Users and Roles</h3><p class="muted small">Frontend role control is suitable for a template demo. For production, connect Supabase Auth or a secure server login.</p><form id="userForm" class="form-grid" novalidate style="margin-top:12px;">
+            <div class="field"><label for="userDisplayName">Display Name</label><input id="userDisplayName" name="displayName" required><small class="field-error"></small></div>
+            <div class="field"><label for="userUsername">Username</label><input id="userUsername" name="username" required><small class="field-error"></small></div>
+            <div class="field"><label for="userPassword">Password</label><input id="userPassword" name="password" type="password" required><small class="field-error"></small></div>
+            <div class="field"><label for="userRole">Role</label><select id="userRole" name="role"><option>admin</option><option>pastor</option><option>finance</option><option>secretary</option><option>staff</option><option>viewer</option></select><small class="field-error"></small></div>
+            <div class="field full"><button class="btn btn-primary" type="submit">Add User</button></div>
+          </form><div class="table-wrap" style="margin-top:14px;box-shadow:none;"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></article>
+        </div>
+        <div class="grid two-column-grid hidden" id="technicalAdminTools" style="margin-top:18px;">
+          <article class="card"><h3>Supabase Connection</h3><p class="muted small">Optional cloud backend. Run the included no-RLS schema first, then save your Supabase URL and publishable key here.</p><form id="supabaseForm" class="form-grid" novalidate style="margin-top:12px;">
+            <div class="field full"><label for="supabaseUrl">Supabase URL</label><input id="supabaseUrl" name="supabaseUrl" placeholder="https://project.supabase.co"><small class="field-error"></small></div>
+            <div class="field full"><label for="supabaseAnonKey">Supabase Publishable Key</label><input id="supabaseAnonKey" name="supabaseAnonKey" placeholder="Paste publishable anon key"><small class="field-error"></small></div>
+            <div class="field full"><button class="btn btn-primary" type="submit">Save Supabase Settings</button></div>
+          </form><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="testSupabaseBtn">Test Connection</button><button class="btn btn-secondary" type="button" id="pushSupabaseBtn">Push Local Data</button><button class="btn btn-secondary" type="button" id="pullSupabaseBtn">Pull Cloud Data</button></div><p id="supabaseStatus" class="muted small"></p></article>
+          <article class="card"><h3>Backup, Restore, and Demo Data</h3><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="backupBtn">Download JSON Backup</button><label class="btn btn-secondary" for="restoreInput">Restore JSON<input id="restoreInput" type="file" accept="application/json" class="hidden"></label><button class="btn btn-secondary" type="button" id="seedDemoBtn">Load Demo Data</button><button class="btn btn-danger" type="button" id="clearDataBtn">Clear All Local Data</button></div><p class="muted small">Backup before clearing or restoring data. Restore replaces the current local dataset.</p></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner"><div><strong class="church-name-text">Reusable Church</strong><br><span id="footerContact">No. 21 Grace Avenue, Accra • +233 24 000 0000</span></div><div class="footer-verse" id="footerVerse">Verse of the day</div><div id="copyrightText">© 2026 Reusable Church. All rights reserved.</div></div>
+  </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="presentation"><div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-header"><h2 class="modal-title" id="modalTitle">Modal</h2><button class="modal-close" id="modalCloseBtn" type="button" aria-label="Close modal">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    "use strict";
+
+    const CHURCH_CONFIG = {
+      churchName: "Land of Dunamise Church",
+      systemName: "Church Management System",
+      tagline: "Grace, service, and fellowship",
+      address: "No. 21 Grace Avenue, Accra",
+      phone: "+233 24 000 0000",
+      email: "info@landofdunamise.org",
+      currency: "GHS",
+      locale: "en-GH",
+      logoDataUrl: "",
+      backgroundImageDataUrl: "",
+      loginBackgroundZoom: 100,
+      logoFallbackIcon: "✝",
+      verseOfDay: "The Lord is my shepherd; I shall not want. Psalm 23:1",
+      dailyVerseDate: "",
+      autoDailyVerse: true,
+      primaryColor: "#1e3a5f",
+      accentColor: "#c9a84c",
+      headerThemeColor: "#f9f6f0",
+      footerThemeColor: "#152a45",
+      supabaseUrl: "https://gipvrjhvgvyqhpedvfyf.supabase.co",
+      supabaseAnonKey: "sb_publishable_C-B2C0drdePvYOzBGI2AMw_vpocHkQ4"
+    };
+
+    const STORAGE_PREFIX = "singleChurchTemplate.";
+    const STORAGE_KEYS = {
+      settings: STORAGE_PREFIX + "settings",
+      users: STORAGE_PREFIX + "users",
+      members: STORAGE_PREFIX + "members",
+      events: STORAGE_PREFIX + "events",
+      donations: STORAGE_PREFIX + "donations",
+      prayers: STORAGE_PREFIX + "prayers",
+      attendance: STORAGE_PREFIX + "attendance",
+      care: STORAGE_PREFIX + "care",
+      currentUser: STORAGE_PREFIX + "currentUser",
+      setupComplete: STORAGE_PREFIX + "setupComplete"
+    };
+
+    const roleAccess = {
+      admin: ["dashboard", "members", "events", "attendance", "donations", "prayers", "pastoral", "reports", "settings"],
+      pastor: ["dashboard", "members", "events", "attendance", "prayers", "pastoral", "reports"],
+      finance: ["dashboard", "donations", "reports"],
+      secretary: ["dashboard", "members", "events", "attendance", "reports"],
+      staff: ["dashboard", "members", "events", "attendance", "reports"],
+      viewer: ["dashboard", "reports"]
+    };
+
+
+    const DAILY_VERSES = [
+      "Psalm 23:1 - The Lord is my shepherd; I shall not want.",
+      "Philippians 4:13 - I can do all things through Christ who strengthens me.",
+      "Jeremiah 29:11 - The Lord knows the plans He has for you, plans of peace and hope.",
+      "Proverbs 3:5 - Trust in the Lord with all your heart and lean not on your own understanding.",
+      "Psalm 46:1 - God is our refuge and strength, a very present help in trouble.",
+      "Isaiah 40:31 - Those who wait upon the Lord shall renew their strength.",
+      "Matthew 6:33 - Seek first the kingdom of God and His righteousness.",
+      "Romans 8:28 - All things work together for good to those who love God.",
+      "John 3:16 - God so loved the world that He gave His only begotten Son.",
+      "Psalm 118:24 - This is the day the Lord has made; we will rejoice and be glad in it.",
+      "Joshua 1:9 - Be strong and courageous, for the Lord your God is with you.",
+      "2 Corinthians 5:7 - We walk by faith, not by sight.",
+      "Psalm 119:105 - Your word is a lamp to my feet and a light to my path.",
+      "Isaiah 41:10 - Fear not, for I am with you; I will strengthen you and help you.",
+      "Matthew 11:28 - Come to Me, all who labor and are heavy laden, and I will give you rest.",
+      "1 Peter 5:7 - Cast all your care upon Him, for He cares for you.",
+      "Psalm 34:8 - Taste and see that the Lord is good.",
+      "John 14:27 - Peace I leave with you; My peace I give to you.",
+      "Romans 12:12 - Rejoice in hope, be patient in tribulation, continue in prayer.",
+      "Galatians 6:9 - Do not grow weary in doing good, for in due season we shall reap.",
+      "Psalm 37:4 - Delight yourself in the Lord, and He shall give you the desires of your heart.",
+      "Ephesians 3:20 - God is able to do exceeding abundantly above all that we ask or think.",
+      "Lamentations 3:22-23 - The Lord's mercies are new every morning; great is His faithfulness.",
+      "Hebrews 11:1 - Faith is the substance of things hoped for, the evidence of things not seen.",
+      "James 1:5 - If anyone lacks wisdom, let him ask God, who gives generously.",
+      "Psalm 91:1 - He who dwells in the secret place of the Most High shall abide under His shadow.",
+      "Colossians 3:23 - Whatever you do, do it heartily as unto the Lord.",
+      "1 Thessalonians 5:16-18 - Rejoice always, pray without ceasing, and give thanks in everything.",
+      "Deuteronomy 31:6 - Be strong and of good courage; the Lord will not forsake you.",
+      "Psalm 121:1-2 - My help comes from the Lord, who made heaven and earth.",
+      "Micah 6:8 - Do justice, love mercy, and walk humbly with your God.",
+      "John 15:5 - I am the vine; you are the branches. Without Me you can do nothing.",
+      "Romans 15:13 - May the God of hope fill you with all joy and peace in believing.",
+      "Psalm 27:1 - The Lord is my light and my salvation; whom shall I fear?",
+      "Isaiah 26:3 - You will keep in perfect peace the one whose mind is stayed on You.",
+      "Matthew 5:16 - Let your light so shine before others that they may glorify your Father.",
+      "2 Timothy 1:7 - God has not given us a spirit of fear, but of power, love, and sound mind.",
+      "Psalm 100:4 - Enter His gates with thanksgiving and His courts with praise.",
+      "Ephesians 6:10 - Be strong in the Lord and in the power of His might.",
+      "1 John 4:19 - We love because He first loved us.",
+      "Psalm 55:22 - Cast your burden on the Lord, and He shall sustain you.",
+      "Mark 10:27 - With God all things are possible.",
+      "Romans 10:17 - Faith comes by hearing, and hearing by the word of God.",
+      "Psalm 19:14 - Let the words of my mouth and the meditation of my heart be acceptable to You.",
+      "Isaiah 43:2 - When you pass through the waters, I will be with you.",
+      "Matthew 7:7 - Ask, and it shall be given; seek, and you shall find.",
+      "1 Corinthians 13:13 - Now abide faith, hope, and love; but the greatest of these is love.",
+      "Psalm 145:18 - The Lord is near to all who call upon Him in truth.",
+      "Hebrews 13:8 - Jesus Christ is the same yesterday, today, and forever.",
+      "Proverbs 18:10 - The name of the Lord is a strong tower; the righteous run to it and are safe.",
+      "John 8:36 - If the Son makes you free, you shall be free indeed.",
+      "Romans 5:8 - God demonstrates His love for us in that Christ died for us.",
+      "Psalm 103:2 - Bless the Lord, O my soul, and forget not all His benefits.",
+      "Isaiah 54:17 - No weapon formed against you shall prosper.",
+      "Matthew 28:20 - I am with you always, even to the end of the age.",
+      "2 Corinthians 12:9 - My grace is sufficient for you, for My strength is made perfect in weakness.",
+      "Psalm 16:11 - In Your presence is fullness of joy.",
+      "Philippians 4:6 - Be anxious for nothing, but in everything by prayer and thanksgiving make your requests known to God.",
+      "1 Peter 2:9 - You are a chosen generation, a royal priesthood, and a holy nation.",
+      "Psalm 30:5 - Weeping may endure for a night, but joy comes in the morning."
+    ];
+
+    const state = {
+      settings: { ...CHURCH_CONFIG }, users: [], members: [], events: [], donations: [], prayers: [], attendance: [], care: [], currentUser: null, supabaseClient: null
+    };
+
+    let cloudSyncTimer = null;
+    let pendingLoginBackgroundDataUrl = null;
+    let pendingLoginBackgroundZoom = null;
+
+    const $ = (selector, scope = document) => scope.querySelector(selector);
+    const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+    const uid = prefix => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    const todayInput = () => new Date().toISOString().slice(0, 10);
+    const addDays = days => { const date = new Date(); date.setDate(date.getDate() + days); return date.toISOString().slice(0, 10); };
+    const parseDate = value => { const [year, month, day] = String(value || todayInput()).split("-").map(Number); return new Date(year, month - 1, day); };
+    const formatDate = value => value ? parseDate(value).toLocaleDateString(state.settings.locale || "en-GH", { year: "numeric", month: "short", day: "numeric" }) : "Not set";
+    const formatCurrency = amount => new Intl.NumberFormat(state.settings.locale || "en-GH", { style: "currency", currency: state.settings.currency || "GHS", minimumFractionDigits: 2 }).format(Number(amount) || 0);
+    const escapeHtml = value => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    const escapeAttribute = escapeHtml;
+    const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+    const read = (key, fallback) => { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } };
+    let dailyVerseTimer = null;
+    let loginVerseTimer = null;
+    let loginVerseIndex = 0;
+
+    function localDateKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDayOfYear(date = new Date()) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      return Math.floor((date - start) / 86400000);
+    }
+
+    function getAutoVerseOfTheDay(date = new Date()) {
+      const index = Math.max(0, getDayOfYear(date) - 1) % DAILY_VERSES.length;
+      return DAILY_VERSES[index];
+    }
+
+    function refreshDailyVerseOfTheDay(options = {}) {
+      const { persist = false, rerender = false } = options;
+      const todayKey = localDateKey();
+      const todaysVerse = getAutoVerseOfTheDay();
+      const changed = state.settings.verseOfDay !== todaysVerse || state.settings.dailyVerseDate !== todayKey || state.settings.autoDailyVerse !== true;
+      state.settings.autoDailyVerse = true;
+      state.settings.dailyVerseDate = todayKey;
+      state.settings.verseOfDay = todaysVerse;
+      if (changed && persist) save(STORAGE_KEYS.settings, state.settings);
+      if (changed && rerender) renderAll();
+      return changed;
+    }
+
+    function startDailyVerseAutoRefresh() {
+      clearInterval(dailyVerseTimer);
+      dailyVerseTimer = setInterval(() => {
+        if (refreshDailyVerseOfTheDay({ persist: true, rerender: true })) queueCloudSync();
+      }, 60000);
+    }
+
+    function updateLoginRotatingVerse(animate = true) {
+      const verseNode = $("#loginRotatingVerse");
+      if (!verseNode || !DAILY_VERSES.length) return;
+      const verseText = DAILY_VERSES[loginVerseIndex % DAILY_VERSES.length];
+      if (!animate) {
+        verseNode.textContent = verseText;
+        return;
+      }
+      verseNode.classList.add("verse-changing");
+      setTimeout(() => {
+        verseNode.textContent = verseText;
+        verseNode.classList.remove("verse-changing");
+      }, 260);
+    }
+
+    function startLoginVerseAutoRefresh() {
+      clearInterval(loginVerseTimer);
+      loginVerseIndex = Math.floor(Date.now() / 60000) % DAILY_VERSES.length;
+      updateLoginRotatingVerse(false);
+      loginVerseTimer = setInterval(() => {
+        loginVerseIndex = (loginVerseIndex + 1) % DAILY_VERSES.length;
+        updateLoginRotatingVerse(true);
+      }, 60000);
+    }
+
+    function defaultUsers() {
+      return [{ id: uid("usr"), displayName: "System Administrator", username: "admin", password: "admin12345", role: "admin", isActive: true, createdAt: new Date().toISOString() }];
+    }
+
+    function demoData() {
+      return {
+        members: [
+          { id: uid("mem"), firstName: "Grace", lastName: "Mensah", email: "grace.mensah@example.com", phone: "+233 24 111 2233", address: "East Legon, Accra", gender: "Female", dateOfBirth: "1994-06-14", maritalStatus: "Married", occupation: "Teacher", department: "Choir", baptismStatus: "Baptized", status: "Active", emergencyContact: "+233 24 900 1111", dateJoined: "2023-01-15", photoDataUrl: "", notes: "" },
+          { id: uid("mem"), firstName: "Daniel", lastName: "Owusu", email: "daniel.owusu@example.com", phone: "+233 20 456 7890", address: "Adenta, Accra", gender: "Male", dateOfBirth: "1989-09-02", maritalStatus: "Single", occupation: "Accountant", department: "Men Ministry", baptismStatus: "Baptized", status: "Active", emergencyContact: "+233 20 800 2222", dateJoined: "2022-08-22", photoDataUrl: "", notes: "" },
+          { id: uid("mem"), firstName: "Esi", lastName: "Boateng", email: "esi.boateng@example.com", phone: "+233 55 321 6547", address: "Tema Community 8", gender: "Female", dateOfBirth: "1998-03-27", maritalStatus: "Single", occupation: "Student", department: "Youth Ministry", baptismStatus: "Pending", status: "New Convert", emergencyContact: "+233 55 555 1111", dateJoined: "2024-03-05", photoDataUrl: "", notes: "Needs discipleship follow-up." }
+        ],
+        events: [
+          { id: uid("evt"), title: "Midweek Prayer Service", category: "Prayer", date: addDays(2), time: "18:30", location: "Main Auditorium", recurring: "Weekly", description: "A warm evening of prayer, worship, and encouragement for all members." },
+          { id: uid("evt"), title: "Community Outreach", category: "Outreach", date: addDays(7), time: "09:00", location: "Local Community", recurring: "None", description: "Evangelism and welfare outreach for families in the local community." },
+          { id: uid("evt"), title: "Youth Fellowship Night", category: "Youth", date: addDays(19), time: "17:00", location: "Youth Hall", recurring: "Monthly", description: "A fellowship evening for young adults." }
+        ],
+        donations: [
+          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Grace Mensah", amount: 250, date: addDays(-1), purpose: "Tithe", paymentMethod: "Mobile Money", notes: "", recordedBy: "System Administrator" },
+          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Daniel Owusu", amount: 120, date: addDays(-3), purpose: "Offering", paymentMethod: "Cash", notes: "", recordedBy: "System Administrator" },
+          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Anonymous", amount: 300, date: addDays(-10), purpose: "Welfare", paymentMethod: "Cash", notes: "Anonymous giving", recordedBy: "System Administrator" }
+        ],
+        prayers: [
+          { id: uid("pray"), name: "Ama", request: "Please pray for strength and wisdom during my final exams.", privacy: "Prayer Team", assignedTo: "Prayer Leader", followUpStatus: "New", date: addDays(-1), prayed: false, answered: false },
+          { id: uid("pray"), name: "Kojo", request: "Thank God for healing in my family and pray for continued peace.", privacy: "Pastors Only", assignedTo: "Pastor", followUpStatus: "Followed Up", date: addDays(-5), prayed: true, answered: true }
+        ],
+        attendance: [
+          { id: uid("att"), serviceName: "Sunday Worship Service", date: addDays(-2), adults: 155, children: 42, visitors: 13, notes: "Normal service", recordedBy: "System Administrator" }
+        ],
+        care: [
+          { id: uid("care"), memberName: "Esi Boateng", careType: "Discipleship Follow Up", date: addDays(-1), status: "Open", assignedTo: "Youth Pastor", notes: "Schedule a follow-up call." }
+        ]
+      };
+    }
+
+    function loadState() {
+      state.settings = { ...CHURCH_CONFIG, ...read(STORAGE_KEYS.settings, {}) };
+      state.users = read(STORAGE_KEYS.users, defaultUsers());
+      state.members = read(STORAGE_KEYS.members, []);
+      state.events = read(STORAGE_KEYS.events, []);
+      state.donations = read(STORAGE_KEYS.donations, []);
+      state.prayers = read(STORAGE_KEYS.prayers, []);
+      state.attendance = read(STORAGE_KEYS.attendance, []);
+      state.care = read(STORAGE_KEYS.care, []);
+      state.currentUser = read(STORAGE_KEYS.currentUser, null);
+      refreshDailyVerseOfTheDay({ persist: true });
+      initSupabaseClient();
+    }
+
+    function persistDataset() {
+      save(STORAGE_KEYS.settings, state.settings);
+      save(STORAGE_KEYS.users, state.users);
+      save(STORAGE_KEYS.members, state.members);
+      save(STORAGE_KEYS.events, state.events);
+      save(STORAGE_KEYS.donations, state.donations);
+      save(STORAGE_KEYS.prayers, state.prayers);
+      save(STORAGE_KEYS.attendance, state.attendance);
+      save(STORAGE_KEYS.care, state.care);
+    }
+
+    function initSupabaseClient() {
+      state.supabaseClient = null;
+      if (state.settings.supabaseUrl && state.settings.supabaseAnonKey && window.supabase) {
+        try { state.supabaseClient = window.supabase.createClient(state.settings.supabaseUrl, state.settings.supabaseAnonKey); } catch { state.supabaseClient = null; }
+      }
+    }
+
+    function hasCloudConnection() {
+      return Boolean(state.supabaseClient);
+    }
+
+    function nullIfEmpty(value) {
+      const text = String(value ?? "").trim();
+      return text ? text : null;
+    }
+
+    function queueCloudSync() {
+      if (!hasCloudConnection()) return;
+      clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = setTimeout(() => { syncAllToSupabase(false); }, 900);
+    }
+
+    function cloudMappings() {
+      return {
+        members: {
+          table: "church_members",
+          map: m => ({ client_ref: m.id, first_name: m.firstName, last_name: m.lastName, gender: nullIfEmpty(m.gender), date_of_birth: nullIfEmpty(m.dateOfBirth), marital_status: nullIfEmpty(m.maritalStatus), occupation: nullIfEmpty(m.occupation), email: nullIfEmpty(m.email), phone: m.phone || "", address: nullIfEmpty(m.address), department_name: nullIfEmpty(m.department), baptism_status: m.baptismStatus || "Pending", membership_status: m.status || "Active", emergency_contact: nullIfEmpty(m.emergencyContact), photo_url: nullIfEmpty(m.photoDataUrl), notes: nullIfEmpty(m.notes), date_joined: m.dateJoined || todayInput(), is_active: m.status !== "Inactive" }),
+          from: r => ({ id: r.client_ref || r.id, firstName: r.first_name || "", lastName: r.last_name || "", gender: r.gender || "", dateOfBirth: r.date_of_birth || "", maritalStatus: r.marital_status || "", occupation: r.occupation || "", email: r.email || "", phone: r.phone || "", address: r.address || "", department: r.department_name || "", baptismStatus: r.baptism_status || "Pending", status: r.membership_status || "Active", emergencyContact: r.emergency_contact || "", photoDataUrl: r.photo_url || "", notes: r.notes || "", dateJoined: r.date_joined || todayInput() })
+        },
+        events: {
+          table: "church_events",
+          map: e => ({ client_ref: e.id, title: e.title, category: e.category || "General", event_date: e.date || todayInput(), event_time: e.time || "09:00", location: nullIfEmpty(e.location), recurring_rule: e.recurring || "None", description: e.description || "" }),
+          from: r => ({ id: r.client_ref || r.id, title: r.title || "", category: r.category || "General", date: r.event_date || todayInput(), time: String(r.event_time || "09:00").slice(0, 5), location: r.location || "", recurring: r.recurring_rule || "None", description: r.description || "" })
+        },
+        attendance: {
+          table: "church_attendance_records",
+          map: a => ({ client_ref: a.id, service_name: a.serviceName, attendance_date: a.date || todayInput(), adults_count: Number(a.adults || 0), children_count: Number(a.children || 0), visitors_count: Number(a.visitors || 0), notes: nullIfEmpty(a.notes) }),
+          from: r => ({ id: r.client_ref || r.id, serviceName: r.service_name || "", date: r.attendance_date || todayInput(), adults: Number(r.adults_count || 0), children: Number(r.children_count || 0), visitors: Number(r.visitors_count || 0), notes: r.notes || "", recordedBy: "" })
+        },
+        donations: {
+          table: "church_donations",
+          map: d => ({ client_ref: d.id, receipt_no: d.receiptNo || nextReceiptNo(), donor_name: d.donorName, amount: Number(d.amount || 0), donation_date: d.date || todayInput(), purpose: d.purpose || "Other", payment_method: d.paymentMethod || "Cash", notes: nullIfEmpty(d.notes) }),
+          from: r => ({ id: r.client_ref || r.id, receiptNo: r.receipt_no || "", donorName: r.donor_name || "", amount: Number(r.amount || 0), date: r.donation_date || todayInput(), purpose: r.purpose || "Other", paymentMethod: r.payment_method || "Cash", notes: r.notes || "", recordedBy: "" })
+        },
+        prayers: {
+          table: "church_prayer_requests",
+          map: p => ({ client_ref: p.id, requester_name: nullIfEmpty(p.name), request_text: p.request, privacy_level: p.privacy || "Prayer Team", assigned_to_name: nullIfEmpty(p.assignedTo), follow_up_status: p.followUpStatus || "New", prayed: Boolean(p.prayed), answered: Boolean(p.answered), submitted_date: p.date || todayInput() }),
+          from: r => ({ id: r.client_ref || r.id, name: r.requester_name || "", request: r.request_text || "", privacy: r.privacy_level || "Prayer Team", assignedTo: r.assigned_to_name || "", followUpStatus: r.follow_up_status || "New", prayed: Boolean(r.prayed), answered: Boolean(r.answered), date: r.submitted_date || todayInput() })
+        },
+        care: {
+          table: "church_pastoral_care_records",
+          map: c => ({ client_ref: c.id, member_name: c.memberName, care_type: c.careType || "Other", care_date: c.date || todayInput(), status: c.status || "Open", assigned_to_name: nullIfEmpty(c.assignedTo), notes: nullIfEmpty(c.notes) }),
+          from: r => ({ id: r.client_ref || r.id, memberName: r.member_name || "", careType: r.care_type || "Other", date: r.care_date || todayInput(), status: r.status || "Open", assignedTo: r.assigned_to_name || "", notes: r.notes || "" })
+        }
+      };
+    }
+
+    async function testSupabaseConnection() {
+      if (!hasCloudConnection()) { showToast("Supabase is not configured."); return; }
+      const { error } = await state.supabaseClient.from("churches").select("id, church_name").limit(1);
+      if (error) { showToast("Supabase test failed: " + error.message); return; }
+      showToast("Supabase connection successful.");
+    }
+
+    async function syncSettingsToSupabase() {
+      refreshDailyVerseOfTheDay({ persist: true });
+      const s = state.settings;
+      const payload = { church_name: s.churchName, system_name: s.systemName, tagline: s.tagline, address: s.address, phone: s.phone, email: s.email, currency_code: s.currency, locale_code: s.locale, logo_url: nullIfEmpty(s.logoDataUrl), system_background_url: nullIfEmpty(s.backgroundImageDataUrl), primary_color: s.primaryColor, accent_color: s.accentColor, header_theme_color: s.headerThemeColor, footer_theme_color: s.footerThemeColor, verse_of_day: s.verseOfDay, setup_completed: true };
+      const { error } = await state.supabaseClient.from("churches").update(payload).eq("singleton_key", true);
+      if (error) throw error;
+    }
+
+    async function syncCollectionToSupabase(collectionName) {
+      const mappings = cloudMappings();
+      const config = mappings[collectionName];
+      if (!config) return;
+      const rows = state[collectionName].map(config.map);
+      if (!rows.length) return;
+      const { error } = await state.supabaseClient.from(config.table).upsert(rows, { onConflict: "church_id,client_ref" });
+      if (error) throw error;
+    }
+
+    async function syncAllToSupabase(showMessage = true) {
+      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return; }
+      try {
+        await syncSettingsToSupabase();
+        for (const collectionName of ["members", "events", "attendance", "donations", "prayers", "care"]) {
+          await syncCollectionToSupabase(collectionName);
+        }
+        if (showMessage) showToast("Local data pushed to Supabase.");
+      } catch (error) {
+        console.warn("Supabase sync failed", error);
+        if (showMessage) showToast("Supabase sync failed: " + (error.message || "Unknown error"));
+      }
+    }
+
+    async function pullFromSupabase() {
+      if (!hasCloudConnection()) { showToast("Supabase is not configured."); return; }
+      if (!confirm("Pull cloud data into this browser? This will replace the current local records.")) return;
+      try {
+        const churchResult = await state.supabaseClient.from("churches").select("*").eq("singleton_key", true).single();
+        if (churchResult.error) throw churchResult.error;
+        const c = churchResult.data;
+        state.settings = { ...state.settings, churchName: c.church_name, systemName: c.system_name, tagline: c.tagline, address: c.address, phone: c.phone, email: c.email, currency: c.currency_code, locale: c.locale_code, logoDataUrl: c.logo_url || "", backgroundImageDataUrl: c.system_background_url || "", primaryColor: c.primary_color, accentColor: c.accent_color, headerThemeColor: c.header_theme_color || state.settings.headerThemeColor, footerThemeColor: c.footer_theme_color || state.settings.footerThemeColor, verseOfDay: c.verse_of_day };
+        refreshDailyVerseOfTheDay({ persist: false });
+        const mappings = cloudMappings();
+        for (const [collectionName, config] of Object.entries(mappings)) {
+          const { data, error } = await state.supabaseClient.from(config.table).select("*").order("created_at", { ascending: false });
+          if (error) throw error;
+          state[collectionName] = (data || []).map(config.from);
+        }
+        persistDataset();
+        renderAll();
+        showToast("Cloud data pulled into this browser.");
+      } catch (error) {
+        console.warn("Supabase pull failed", error);
+        showToast("Supabase pull failed: " + (error.message || "Unknown error"));
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      $("#toastContainer").appendChild(toast);
+      setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translateX(18px)"; setTimeout(() => toast.remove(), 260); }, 3000);
+    }
+
+    function openModal(title, bodyHtml) {
+      $("#modalTitle").textContent = title;
+      $("#modalBody").innerHTML = bodyHtml;
+      $("#modalBackdrop").classList.add("show");
+      document.body.style.overflow = "hidden";
+      const firstInput = $("input, textarea, select, button", $("#modalBody"));
+      if (firstInput) firstInput.focus();
+    }
+    function closeModal() { $("#modalBackdrop").classList.remove("show"); $("#modalBody").innerHTML = ""; document.body.style.overflow = ""; }
+    function clearValidation(form) { $$(".is-invalid", form).forEach(field => field.classList.remove("is-invalid")); $$(".field-error", form).forEach(error => error.textContent = ""); }
+    function setFieldError(field, message) { field.classList.add("is-invalid"); const wrapper = field.closest(".field"); const error = wrapper ? $(".field-error", wrapper) : null; if (error) error.textContent = message; }
+    function validateForm(form) {
+      clearValidation(form); let valid = true;
+      $$("[required]", form).forEach(field => { if (!String(field.value || "").trim()) { setFieldError(field, "This field is required."); valid = false; } });
+      $$("input[type='email']", form).forEach(field => { const value = field.value.trim(); if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) { setFieldError(field, "Enter a valid email address."); valid = false; } });
+      $$("input[type='number']", form).forEach(field => { if (field.required || field.value.trim()) { const number = Number(field.value); const min = field.min ? Number(field.min) : null; if (Number.isNaN(number) || (min !== null && number < min)) { setFieldError(field, `Enter a number of at least ${field.min || 0}.`); valid = false; } } });
+      return valid;
+    }
+    const formDataObject = form => Object.fromEntries(new FormData(form).entries());
+
+    function logoMarkup(sizeClass = "") {
+      return state.settings.logoDataUrl ? `<img src="${escapeAttribute(state.settings.logoDataUrl)}" alt="${escapeAttribute(state.settings.churchName)} logo" class="${sizeClass}">` : escapeHtml(state.settings.logoFallbackIcon || "✝");
+    }
+
+    function updateFavicon() {
+      const link = $("#dynamicFavicon");
+      if (state.settings.logoDataUrl) { link.href = state.settings.logoDataUrl; return; }
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='${state.settings.primaryColor || "#1e3a5f"}'/><text x='32' y='42' text-anchor='middle' font-size='32' fill='${state.settings.accentColor || "#c9a84c"}'>${state.settings.logoFallbackIcon || "✝"}</text></svg>`;
+      link.href = "data:image/svg+xml," + encodeURIComponent(svg);
+    }
+
+    function applySettings() {
+      refreshDailyVerseOfTheDay({ persist: false });
+      const s = state.settings;
+      document.documentElement.style.setProperty("--primary", s.primaryColor || CHURCH_CONFIG.primaryColor);
+      document.documentElement.style.setProperty("--primary-dark", darkenHex(s.primaryColor || CHURCH_CONFIG.primaryColor, 18));
+      document.documentElement.style.setProperty("--accent", s.accentColor || CHURCH_CONFIG.accentColor);
+      document.documentElement.style.setProperty("--accent-dark", darkenHex(s.accentColor || CHURCH_CONFIG.accentColor, 15));
+      document.documentElement.style.setProperty("--header-theme", s.headerThemeColor || CHURCH_CONFIG.headerThemeColor);
+      document.documentElement.style.setProperty("--footer-theme", s.footerThemeColor || CHURCH_CONFIG.footerThemeColor);
+      document.documentElement.style.setProperty("--header-text", readableTextColor(s.headerThemeColor || CHURCH_CONFIG.headerThemeColor));
+      document.documentElement.style.setProperty("--footer-text", readableTextColor(s.footerThemeColor || CHURCH_CONFIG.footerThemeColor));
+      const loginBgZoom = Math.min(180, Math.max(50, Number(s.loginBackgroundZoom || 100)));
+      document.documentElement.style.setProperty("--login-bg-image", s.backgroundImageDataUrl ? `url("${s.backgroundImageDataUrl}")` : "none");
+      document.documentElement.style.setProperty("--login-bg-overlay", s.backgroundImageDataUrl ? "linear-gradient(rgba(21,42,69,0.38), rgba(21,42,69,0.38))" : "none");
+      document.documentElement.style.setProperty("--login-bg-size", `${loginBgZoom}% auto`);
+      document.documentElement.style.setProperty("--login-bg-position", "center center");
+      $$(".church-name-text").forEach(node => node.textContent = s.churchName);
+      $("#brandTagline").textContent = s.tagline || "";
+      $("#brandLogo").innerHTML = logoMarkup();
+      $("#mobileLogo").innerHTML = logoMarkup();
+      $("#authLogo").innerHTML = logoMarkup();
+      const authHeroSubtitle = $("#authHeroSubtitle");
+      if (authHeroSubtitle) authHeroSubtitle.textContent = s.tagline ? `${s.tagline}. Manage members, attendance, donations, and church records securely.` : `${s.systemName || "Church Management System"}. Manage members, attendance, donations, and church records securely.`;
+      const authSubtext = $("#authSubtext");
+      if (authSubtext) authSubtext.textContent = `Sign in to access ${s.churchName}.`;
+      $("#sidebarAddress").textContent = s.address;
+      $("#sidebarPhone").textContent = s.phone;
+      $("#sidebarEmail").textContent = s.email;
+      $("#headerContact").textContent = `${s.address} • ${s.phone} • ${s.email}`;
+      $("#footerContact").textContent = `${s.address} • ${s.phone}`;
+      $("#footerVerse").textContent = `Verse of the day: ${s.verseOfDay}`;
+      $("#copyrightText").textContent = `© ${new Date().getFullYear()} ${s.churchName}. All rights reserved.`;
+      document.title = `${s.churchName} ${s.systemName}`;
+      $("#printHeader").innerHTML = `<div class="print-letterhead">${s.logoDataUrl ? `<img class="print-letterhead-logo" src="${escapeAttribute(s.logoDataUrl)}" alt="Church logo">` : ""}<div><h1>${escapeHtml(s.churchName)}</h1><p>${escapeHtml(s.address)}</p><p>${escapeHtml(s.phone)} • ${escapeHtml(s.email)}</p><p>${escapeHtml(s.tagline || s.systemName || "Church Management System")}</p></div></div><div class="print-letterhead-meta">Printed: ${new Date().toLocaleString(s.locale || "en-GH")} • Prepared by: ${escapeHtml(state.currentUser?.displayName || "System User")}</div>`;
+      updateFavicon();
+      renderSettingsForms();
+    }
+
+    function darkenHex(hex, percent) {
+      const clean = String(hex || "#1e3a5f").replace("#", "");
+      const num = parseInt(clean, 16);
+      const amt = Math.round(2.55 * percent);
+      const r = Math.max(0, (num >> 16) - amt);
+      const g = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+      const b = Math.max(0, (num & 0x0000FF) - amt);
+      return `#${(0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    }
+
+    function readableTextColor(hex) {
+      const clean = String(hex || "#ffffff").replace("#", "");
+      if (!/^[0-9A-Fa-f]{6}$/.test(clean)) return "#111111";
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.58 ? "#152a45" : "#ffffff";
+    }
+
+    function renderSettingsForms() {
+      const s = state.settings;
+      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
+      Object.entries(mappings).forEach(([id, value]) => { const el = $("#" + id); if (el && document.activeElement !== el) el.value = value || ""; });
+      updateLoginBackgroundPreview();
+      const supabaseStatus = state.supabaseClient ? "Supabase client is configured. Use the included SQL schema before enabling cloud CRUD." : "Supabase is not configured. The system is using local browser storage.";
+      $("#supabaseStatus").textContent = supabaseStatus;
+    }
+
+    function currentLoginBackgroundZoom() {
+      return Math.min(180, Math.max(50, Number(pendingLoginBackgroundZoom ?? state.settings.loginBackgroundZoom ?? 100)));
+    }
+
+    function updateLoginBackgroundPreview() {
+      const preview = $("#loginBackgroundPreview");
+      const placeholder = $("#loginBackgroundPlaceholder");
+      const slider = $("#loginBackgroundZoom");
+      const valueLabel = $("#loginBgZoomValue");
+      if (!preview || !slider || !valueLabel) return;
+      const image = pendingLoginBackgroundDataUrl || state.settings.backgroundImageDataUrl || "";
+      const zoom = currentLoginBackgroundZoom();
+      if (document.activeElement !== slider) slider.value = String(zoom);
+      valueLabel.textContent = `${zoom}%`;
+      if (image) {
+        preview.style.backgroundImage = `linear-gradient(rgba(21,42,69,0.24), rgba(21,42,69,0.24)), url("${image}")`;
+        preview.style.backgroundSize = `cover, ${zoom}% auto`;
+        preview.style.backgroundPosition = "center, center center";
+        preview.style.backgroundRepeat = "no-repeat, no-repeat";
+        if (placeholder) placeholder.classList.add("hidden");
+      } else {
+        preview.style.backgroundImage = "linear-gradient(135deg, var(--cream) 0%, #fffaf1 48%, #eef3f8 100%)";
+        preview.style.backgroundSize = "cover";
+        preview.style.backgroundPosition = "center";
+        if (placeholder) placeholder.classList.remove("hidden");
+      }
+    }
+
+    function applyLoginBackgroundChange() {
+      const image = pendingLoginBackgroundDataUrl || state.settings.backgroundImageDataUrl || "";
+      if (!image) { showToast("Upload a login background image before applying."); return; }
+      state.settings.backgroundImageDataUrl = image;
+      state.settings.loginBackgroundZoom = currentLoginBackgroundZoom();
+      pendingLoginBackgroundDataUrl = null;
+      pendingLoginBackgroundZoom = null;
+      save(STORAGE_KEYS.settings, state.settings);
+      applySettings();
+      queueCloudSync();
+      showToast("Login background applied.");
+    }
+
+    function hasAccess(section) {
+      const role = state.currentUser?.role || "viewer";
+      return (roleAccess[role] || roleAccess.viewer).includes(section);
+    }
+
+    function applyRoleAccess() {
+      $$(".nav-link").forEach(button => {
+        const section = button.dataset.access;
+        button.classList.toggle("hidden", !hasAccess(section));
+      });
+      $("#currentUserName").textContent = state.currentUser?.displayName || "Not logged in";
+      $("#currentUserRole").textContent = state.currentUser ? `Role: ${state.currentUser.role}` : "Role";
+      const currentSection = $(".section-view.active")?.id || "dashboard";
+      if (!hasAccess(currentSection)) setActiveSection("dashboard", false);
+    }
+
+    function requireAuth() {
+      const setupDone = localStorage.getItem(STORAGE_KEYS.setupComplete) === "true";
+      $("#setupNotice").classList.toggle("hidden", setupDone);
+      const locked = !state.currentUser;
+      document.body.classList.toggle("auth-locked", locked);
+      document.body.style.overflow = locked ? "hidden" : "";
+      $("#authScreen").classList.toggle("show", locked);
+      if (locked) closeSidebar();
+    }
+
+    function setActiveSection(sectionId, updateHash = true) {
+      if (!hasAccess(sectionId)) sectionId = "dashboard";
+      $$(".section-view").forEach(section => section.classList.toggle("active", section.id === sectionId));
+      $$(".nav-link").forEach(button => { const active = button.dataset.section === sectionId; button.classList.toggle("active", active); if (active) button.setAttribute("aria-current", "page"); else button.removeAttribute("aria-current"); });
+      closeSidebar();
+      if (updateHash) history.replaceState(null, "", `#${sectionId}`);
+    }
+    function openSidebar() { $("#sidebar").classList.add("open"); $("#sidebarBackdrop").classList.add("show"); $("#hamburgerBtn").setAttribute("aria-expanded", "true"); }
+    function closeSidebar() { $("#sidebar").classList.remove("open"); $("#sidebarBackdrop").classList.remove("show"); $("#hamburgerBtn").setAttribute("aria-expanded", "false"); }
+
+    function memberFullName(member) { return `${member.firstName || ""} ${member.lastName || ""}`.trim(); }
+    function totalAttendance(record) { return Number(record.adults || 0) + Number(record.children || 0) + Number(record.visitors || 0); }
+    function donationsThisMonthTotal() {
+      const now = new Date();
+      return state.donations.filter(d => { const date = parseDate(d.date); return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear(); }).reduce((sum, d) => sum + Number(d.amount || 0), 0);
+    }
+    function eventsThisWeekCount() {
+      const start = parseDate(todayInput()); const end = new Date(start); end.setDate(start.getDate() + 6);
+      return state.events.filter(event => { const date = parseDate(event.date); return date >= start && date <= end; }).length;
+    }
+    function getUpcomingEvents() { const today = parseDate(todayInput()); return [...state.events].filter(e => parseDate(e.date) >= today).sort((a,b) => parseDate(a.date) - parseDate(b.date)); }
+    function nextReceiptNo() { return `RCPT-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 900000) + 100000)}`; }
+
+    function renderDashboard() {
+      const cards = [
+        { icon: "👥", label: "Total Members", value: state.members.length },
+        { icon: "📅", label: "Events This Week", value: eventsThisWeekCount() },
+        { icon: "💛", label: "Donations This Month", value: formatCurrency(donationsThisMonthTotal()) },
+        { icon: "✅", label: "Latest Attendance", value: state.attendance.length ? totalAttendance([...state.attendance].sort((a,b) => parseDate(b.date) - parseDate(a.date))[0]) : 0 },
+        { icon: "🙏", label: "Open Prayer Requests", value: state.prayers.filter(p => !p.prayed).length },
+        { icon: "🤝", label: "Open Care Records", value: state.care.filter(c => c.status !== "Closed").length },
+        { icon: "🆕", label: "New Converts", value: state.members.filter(m => m.status === "New Convert").length },
+        { icon: "🏛️", label: "Departments", value: new Set(state.members.map(m => m.department).filter(Boolean)).size }
+      ];
+      $("#summaryCards").innerHTML = cards.map(card => `<article class="card summary-card"><div class="summary-icon" aria-hidden="true">${card.icon}</div><div><div class="summary-label">${card.label}</div><div class="summary-value">${card.value}</div></div></article>`).join("");
+      const recentDonations = [...state.donations].sort((a,b) => parseDate(b.date) - parseDate(a.date)).slice(0, 5);
+      $("#recentDonationsBody").innerHTML = recentDonations.length ? recentDonations.map(d => `<tr><td>${escapeHtml(d.donorName)}</td><td>${escapeHtml(d.purpose)}</td><td>${formatDate(d.date)}</td><td><strong>${formatCurrency(d.amount)}</strong></td></tr>`).join("") : `<tr><td colspan="4" class="muted">No donations recorded yet.</td></tr>`;
+      const upcoming = getUpcomingEvents().slice(0, 5);
+      $("#dashboardEventsList").innerHTML = upcoming.length ? upcoming.map(e => `<div class="event-mini-card"><strong>${escapeHtml(e.title)}</strong><div class="muted">${formatDate(e.date)} at ${escapeHtml(e.time)} • ${escapeHtml(e.location || "No location")}</div></div>`).join("") : `<div class="empty-state">No upcoming events.</div>`;
+    }
+
+    function renderMembers() {
+      const query = ($("#memberSearch")?.value || "").toLowerCase().trim();
+      const filtered = state.members.filter(m => [memberFullName(m), m.email, m.phone, m.department, m.status].join(" ").toLowerCase().includes(query));
+      $("#membersTableBody").innerHTML = filtered.length ? filtered.map(m => `<tr><td><div class="avatar">${m.photoDataUrl ? `<img src="${escapeAttribute(m.photoDataUrl)}" alt="Member photo">` : "👤"}</div></td><td><strong>${escapeHtml(memberFullName(m))}</strong><br><span class="muted">${escapeHtml(m.gender || "")} ${m.maritalStatus ? "• " + escapeHtml(m.maritalStatus) : ""}</span></td><td>${escapeHtml(m.email || "")}<br><span class="muted">${escapeHtml(m.phone || "")}</span></td><td>${escapeHtml(m.department || "Not assigned")}</td><td><span class="badge blue">${escapeHtml(m.status || "Active")}</span></td><td>${formatDate(m.dateJoined)}</td><td><div class="button-row no-print"><button class="btn btn-secondary btn-small" type="button" data-edit-member="${m.id}">Edit</button><button class="btn btn-danger btn-small" type="button" data-delete-member="${m.id}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="7" class="muted">No members found.</td></tr>`;
+    }
+
+    function memberFormHtml(member = null) {
+      const m = member || {};
+      return `<form id="memberForm" class="form-grid" novalidate data-id="${escapeAttribute(m.id || "")}">
+        <div class="field"><label for="memberFirstName">First Name</label><input id="memberFirstName" name="firstName" required value="${escapeAttribute(m.firstName || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberLastName">Last Name</label><input id="memberLastName" name="lastName" required value="${escapeAttribute(m.lastName || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberEmail">Email</label><input id="memberEmail" name="email" type="email" value="${escapeAttribute(m.email || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberPhone">Phone</label><input id="memberPhone" name="phone" required value="${escapeAttribute(m.phone || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberGender">Gender</label><select id="memberGender" name="gender">${options(["", "Male", "Female"], m.gender)}</select><small class="field-error"></small></div>
+        <div class="field"><label for="memberDateOfBirth">Date of Birth</label><input id="memberDateOfBirth" name="dateOfBirth" type="date" value="${escapeAttribute(m.dateOfBirth || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberMaritalStatus">Marital Status</label><select id="memberMaritalStatus" name="maritalStatus">${options(["", "Single", "Married", "Widowed", "Divorced"], m.maritalStatus)}</select><small class="field-error"></small></div>
+        <div class="field"><label for="memberOccupation">Occupation</label><input id="memberOccupation" name="occupation" value="${escapeAttribute(m.occupation || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberDepartment">Department/Ministry</label><input id="memberDepartment" name="department" value="${escapeAttribute(m.department || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberBaptismStatus">Baptism Status</label><select id="memberBaptismStatus" name="baptismStatus">${options(["", "Baptized", "Pending", "Not Baptized"], m.baptismStatus)}</select><small class="field-error"></small></div>
+        <div class="field"><label for="memberStatus">Membership Status</label><select id="memberStatus" name="status">${options(["Active", "Inactive", "Visitor", "New Convert"], m.status || "Active")}</select><small class="field-error"></small></div>
+        <div class="field"><label for="memberDateJoined">Date Joined</label><input id="memberDateJoined" name="dateJoined" type="date" required value="${escapeAttribute(m.dateJoined || todayInput())}"><small class="field-error"></small></div>
+        <div class="field full"><label for="memberAddress">Address</label><input id="memberAddress" name="address" value="${escapeAttribute(m.address || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberEmergencyContact">Emergency Contact</label><input id="memberEmergencyContact" name="emergencyContact" value="${escapeAttribute(m.emergencyContact || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberPhotoUpload">Photo</label><input id="memberPhotoUpload" type="file" accept="image/*"><small class="field-error"></small></div>
+        <div class="field full"><label for="memberNotes">Notes</label><textarea id="memberNotes" name="notes">${escapeHtml(m.notes || "")}</textarea><small class="field-error"></small></div>
+        <input type="hidden" name="photoDataUrl" id="memberPhotoDataUrl" value="${escapeAttribute(m.photoDataUrl || "")}">
+        <div class="field full"><button class="btn btn-primary" type="submit">Save Member</button></div></form>`;
+    }
+
+    function options(values, selected) { return values.map(value => `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value || "Select")}</option>`).join(""); }
+
+    function renderEvents() {
+      const sorted = [...state.events].sort((a,b) => parseDate(a.date) - parseDate(b.date));
+      $("#eventsTableBody").innerHTML = sorted.length ? sorted.map(e => `<tr><td><strong>${escapeHtml(e.title)}</strong><br><span class="muted">${escapeHtml(e.description || "")}</span></td><td>${escapeHtml(e.category || "General")}</td><td>${formatDate(e.date)}</td><td>${escapeHtml(e.time || "")}</td><td>${escapeHtml(e.location || "")}</td><td>${escapeHtml(e.recurring || "None")}</td><td><div class="button-row no-print"><button class="btn btn-secondary btn-small" type="button" data-edit-event="${e.id}">Edit</button><button class="btn btn-danger btn-small" type="button" data-delete-event="${e.id}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="7" class="muted">No events recorded.</td></tr>`;
+    }
+
+    function eventFormHtml(event = null) {
+      const e = event || {};
+      return `<form id="eventForm" class="form-grid" novalidate data-id="${escapeAttribute(e.id || "")}"><div class="field"><label for="eventTitle">Title</label><input id="eventTitle" name="title" required value="${escapeAttribute(e.title || "")}"><small class="field-error"></small></div><div class="field"><label for="eventCategory">Category</label><select id="eventCategory" name="category">${options(["Worship", "Prayer", "Youth", "Outreach", "Leadership", "Women", "Men", "Children", "General"], e.category || "General")}</select><small class="field-error"></small></div><div class="field"><label for="eventDate">Date</label><input id="eventDate" name="date" type="date" required value="${escapeAttribute(e.date || todayInput())}"><small class="field-error"></small></div><div class="field"><label for="eventTime">Time</label><input id="eventTime" name="time" type="time" required value="${escapeAttribute(e.time || "09:00")}"><small class="field-error"></small></div><div class="field"><label for="eventLocation">Location</label><input id="eventLocation" name="location" value="${escapeAttribute(e.location || "")}"><small class="field-error"></small></div><div class="field"><label for="eventRecurring">Recurring</label><select id="eventRecurring" name="recurring">${options(["None", "Daily", "Weekly", "Monthly", "Yearly"], e.recurring || "None")}</select><small class="field-error"></small></div><div class="field full"><label for="eventDescription">Description</label><textarea id="eventDescription" name="description">${escapeHtml(e.description || "")}</textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Event</button></div></form>`;
+    }
+
+    function renderAttendance() {
+      const sorted = [...state.attendance].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+      $("#attendanceTableBody").innerHTML = sorted.length ? sorted.map(a => `<tr><td><strong>${escapeHtml(a.serviceName)}</strong><br><span class="muted">${escapeHtml(a.notes || "")}</span></td><td>${formatDate(a.date)}</td><td>${Number(a.adults || 0)}</td><td>${Number(a.children || 0)}</td><td>${Number(a.visitors || 0)}</td><td><strong>${totalAttendance(a)}</strong></td><td>${escapeHtml(a.recordedBy || "")}</td><td><div class="button-row no-print"><button class="btn btn-secondary btn-small" type="button" data-edit-attendance="${a.id}">Edit</button><button class="btn btn-danger btn-small" type="button" data-delete-attendance="${a.id}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="8" class="muted">No attendance records.</td></tr>`;
+    }
+
+    function attendanceFormHtml(record = null) {
+      const a = record || {};
+      return `<form id="attendanceForm" class="form-grid" novalidate data-id="${escapeAttribute(a.id || "")}"><div class="field"><label for="attendanceService">Service/Event</label><input id="attendanceService" name="serviceName" required value="${escapeAttribute(a.serviceName || "Sunday Worship Service")}"><small class="field-error"></small></div><div class="field"><label for="attendanceDate">Date</label><input id="attendanceDate" name="date" type="date" required value="${escapeAttribute(a.date || todayInput())}"><small class="field-error"></small></div><div class="field"><label for="attendanceAdults">Adults</label><input id="attendanceAdults" name="adults" type="number" min="0" value="${escapeAttribute(a.adults || 0)}"><small class="field-error"></small></div><div class="field"><label for="attendanceChildren">Children</label><input id="attendanceChildren" name="children" type="number" min="0" value="${escapeAttribute(a.children || 0)}"><small class="field-error"></small></div><div class="field"><label for="attendanceVisitors">Visitors</label><input id="attendanceVisitors" name="visitors" type="number" min="0" value="${escapeAttribute(a.visitors || 0)}"><small class="field-error"></small></div><div class="field"><label for="attendanceRecordedBy">Recorded By</label><input id="attendanceRecordedBy" name="recordedBy" value="${escapeAttribute(a.recordedBy || state.currentUser?.displayName || "")}"><small class="field-error"></small></div><div class="field full"><label for="attendanceNotes">Notes</label><textarea id="attendanceNotes" name="notes">${escapeHtml(a.notes || "")}</textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Attendance</button></div></form>`;
+    }
+
+    function filteredDonations() {
+      const purpose = $("#purposeFilter")?.value || "all";
+      const from = $("#dateFromFilter")?.value;
+      const to = $("#dateToFilter")?.value;
+      return state.donations.filter(d => (purpose === "all" || d.purpose === purpose) && (!from || d.date >= from) && (!to || d.date <= to));
+    }
+    function renderDonations() {
+      const purposes = ["all", ...Array.from(new Set(state.donations.map(d => d.purpose).filter(Boolean)))];
+      const old = $("#purposeFilter").value || "all";
+      $("#purposeFilter").innerHTML = purposes.map(p => `<option value="${escapeAttribute(p)}">${p === "all" ? "All purposes" : escapeHtml(p)}</option>`).join("");
+      $("#purposeFilter").value = purposes.includes(old) ? old : "all";
+      const filtered = filteredDonations().sort((a,b) => parseDate(b.date) - parseDate(a.date));
+      const total = filtered.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+      $("#donationTotalDisplay").textContent = formatCurrency(total);
+      $("#donationsTableBody").innerHTML = filtered.length ? filtered.map(d => `<tr><td>${escapeHtml(d.receiptNo || "")}</td><td>${escapeHtml(d.donorName)}</td><td><strong>${formatCurrency(d.amount)}</strong></td><td>${formatDate(d.date)}</td><td>${escapeHtml(d.purpose)}</td><td>${escapeHtml(d.paymentMethod || "")}</td><td><div class="button-row no-print"><button class="btn btn-secondary btn-small" type="button" data-print-receipt="${d.id}">Receipt</button><button class="btn btn-danger btn-small" type="button" data-delete-donation="${d.id}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="7" class="muted">No donations recorded.</td></tr>`;
+    }
+
+    function renderPrayers() {
+      const visible = state.prayers.filter(p => hasAccess("prayers"));
+      $("#prayerList").innerHTML = visible.length ? visible.sort((a,b) => parseDate(b.date) - parseDate(a.date)).map(p => `<article class="prayer-card ${p.prayed ? "prayed" : ""}"><div class="prayer-meta"><strong>${escapeHtml(p.name || "Anonymous")}</strong><span>${formatDate(p.date)} • ${escapeHtml(p.privacy || "Prayer Team")}</span></div><p>${escapeHtml(p.request)}</p><div class="button-row no-print"><span class="badge ${p.prayed ? "green" : "blue"}">${p.prayed ? "Prayed" : "Open"}</span><span class="badge ${p.answered ? "green" : "blue"}">${p.answered ? "Answered" : escapeHtml(p.followUpStatus || "New")}</span><span class="muted small">Assigned: ${escapeHtml(p.assignedTo || "Not assigned")}</span>${!p.prayed ? `<button class="btn btn-success btn-small" type="button" data-mark-prayed="${p.id}">Mark Prayed</button>` : ""}${!p.answered ? `<button class="btn btn-secondary btn-small" type="button" data-mark-answered="${p.id}">Mark Answered</button>` : ""}<button class="btn btn-danger btn-small" type="button" data-delete-prayer="${p.id}">Delete</button></div></article>`).join("") : `<div class="empty-state">No prayer requests recorded.</div>`;
+    }
+
+    function renderCare() {
+      const sorted = [...state.care].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+      $("#careTableBody").innerHTML = sorted.length ? sorted.map(c => `<tr><td>${escapeHtml(c.memberName)}</td><td>${escapeHtml(c.careType)}</td><td>${formatDate(c.date)}</td><td><span class="badge ${c.status === "Closed" ? "green" : "blue"}">${escapeHtml(c.status)}</span></td><td>${escapeHtml(c.assignedTo || "")}</td><td>${escapeHtml(c.notes || "")}</td><td><div class="button-row no-print"><button class="btn btn-secondary btn-small" type="button" data-edit-care="${c.id}">Edit</button><button class="btn btn-danger btn-small" type="button" data-delete-care="${c.id}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="7" class="muted">No pastoral care records.</td></tr>`;
+    }
+    function careFormHtml(record = null) {
+      const c = record || {};
+      return `<form id="careForm" class="form-grid" novalidate data-id="${escapeAttribute(c.id || "")}"><div class="field"><label for="careMemberName">Member Name</label><input id="careMemberName" name="memberName" required value="${escapeAttribute(c.memberName || "")}"><small class="field-error"></small></div><div class="field"><label for="careType">Care Type</label><select id="careType" name="careType">${options(["Visitation", "Counselling", "Discipleship Follow Up", "Welfare Support", "Bereavement", "Hospital Visit", "Other"], c.careType || "Visitation")}</select><small class="field-error"></small></div><div class="field"><label for="careDate">Date</label><input id="careDate" name="date" type="date" required value="${escapeAttribute(c.date || todayInput())}"><small class="field-error"></small></div><div class="field"><label for="careStatus">Status</label><select id="careStatus" name="status">${options(["Open", "In Progress", "Completed", "Closed"], c.status || "Open")}</select><small class="field-error"></small></div><div class="field"><label for="careAssignedTo">Assigned To</label><input id="careAssignedTo" name="assignedTo" value="${escapeAttribute(c.assignedTo || state.currentUser?.displayName || "")}"><small class="field-error"></small></div><div class="field full"><label for="careNotes">Notes</label><textarea id="careNotes" name="notes">${escapeHtml(c.notes || "")}</textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Care Record</button></div></form>`;
+    }
+
+    function renderReports() {
+      const donationTotal = state.donations.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+      const attendanceTotal = state.attendance.reduce((sum, a) => sum + totalAttendance(a), 0);
+      const reports = [
+        ["Members Summary", `${state.members.length} total members, ${state.members.filter(m => m.status === "Active").length} active, ${state.members.filter(m => m.status === "New Convert").length} new converts.`],
+        ["Giving Summary", `${formatCurrency(donationTotal)} total recorded giving, ${formatCurrency(donationsThisMonthTotal())} received this month.`],
+        ["Events Summary", `${state.events.length} total events, ${getUpcomingEvents().length} upcoming programs.`],
+        ["Attendance Summary", `${state.attendance.length} records with cumulative attendance of ${attendanceTotal}.`],
+        ["Prayer Care Summary", `${state.prayers.filter(p => !p.prayed).length} open prayer requests and ${state.prayers.filter(p => p.answered).length} answered records.`],
+        ["Pastoral Care Summary", `${state.care.filter(c => c.status !== "Closed").length} open care records and ${state.care.filter(c => c.status === "Closed").length} closed records.`]
+      ];
+      $("#reportsGrid").innerHTML = reports.map(([title, body]) => `<article class="card report-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p></article>`).join("");
+    }
+
+    function renderUsers() {
+      $("#usersTableBody").innerHTML = state.users.length ? state.users.map(user => `<tr><td>${escapeHtml(user.displayName)}</td><td>${escapeHtml(user.username)}</td><td><span class="badge blue">${escapeHtml(user.role)}</span></td><td><div class="button-row"><button class="btn btn-danger btn-small" type="button" data-delete-user="${user.id}" ${user.id === state.currentUser?.id ? "disabled" : ""}>Delete</button></div></td></tr>`).join("") : `<tr><td colspan="4" class="muted">No users found.</td></tr>`;
+    }
+
+    function renderAll() { applySettings(); applyRoleAccess(); renderDashboard(); renderMembers(); renderEvents(); renderAttendance(); renderDonations(); renderPrayers(); renderCare(); renderReports(); renderUsers(); if (!$("#donationDate").value) $("#donationDate").value = todayInput(); }
+
+    function handleMemberSubmit(form) {
+      if (!validateForm(form)) return;
+      const data = formDataObject(form); const id = form.dataset.id || uid("mem");
+      const record = { id, ...data };
+      const index = state.members.findIndex(m => m.id === id);
+      if (index >= 0) state.members[index] = record; else state.members.unshift(record);
+      save(STORAGE_KEYS.members, state.members); closeModal(); renderAll(); queueCloudSync(); showToast("Member saved.");
+    }
+    function handleEventSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("evt"); const record = { id, ...data }; const index = state.events.findIndex(e => e.id === id); if (index >= 0) state.events[index] = record; else state.events.unshift(record); save(STORAGE_KEYS.events, state.events); closeModal(); renderAll(); queueCloudSync(); showToast("Event saved."); }
+    function handleAttendanceSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("att"); const record = { id, ...data, adults: Number(data.adults || 0), children: Number(data.children || 0), visitors: Number(data.visitors || 0) }; const index = state.attendance.findIndex(a => a.id === id); if (index >= 0) state.attendance[index] = record; else state.attendance.unshift(record); save(STORAGE_KEYS.attendance, state.attendance); closeModal(); renderAll(); queueCloudSync(); showToast("Attendance saved."); }
+    function handleDonationSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.donations.unshift({ id: uid("don"), receiptNo: nextReceiptNo(), ...data, amount: Number(data.amount || 0), recordedBy: state.currentUser?.displayName || "System" }); save(STORAGE_KEYS.donations, state.donations); form.reset(); $("#donationDate").value = todayInput(); renderAll(); queueCloudSync(); showToast("Donation recorded."); }
+    function handlePrayerSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.prayers.unshift({ id: uid("pray"), ...data, date: todayInput(), prayed: false, answered: false }); save(STORAGE_KEYS.prayers, state.prayers); form.reset(); $("#prayerFormCard").classList.add("hidden"); renderAll(); queueCloudSync(); showToast("Prayer request added."); }
+    function handleCareSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("care"); const record = { id, ...data }; const index = state.care.findIndex(c => c.id === id); if (index >= 0) state.care[index] = record; else state.care.unshift(record); save(STORAGE_KEYS.care, state.care); closeModal(); renderAll(); queueCloudSync(); showToast("Care record saved."); }
+
+    function setupWizardHtml() {
+      return `<form id="setupForm" class="form-grid" novalidate><div class="field"><label for="setupChurchName">Church Name</label><input id="setupChurchName" name="churchName" required value="${escapeAttribute(state.settings.churchName)}"><small class="field-error"></small></div><div class="field"><label for="setupAdminName">Admin Full Name</label><input id="setupAdminName" name="adminName" required value="System Administrator"><small class="field-error"></small></div><div class="field"><label for="setupPhone">Phone</label><input id="setupPhone" name="phone" required value="${escapeAttribute(state.settings.phone)}"><small class="field-error"></small></div><div class="field"><label for="setupEmail">Email</label><input id="setupEmail" name="email" type="email" required value="${escapeAttribute(state.settings.email)}"><small class="field-error"></small></div><div class="field full"><label for="setupAddress">Address</label><input id="setupAddress" name="address" required value="${escapeAttribute(state.settings.address)}"><small class="field-error"></small></div><div class="field"><label for="setupUsername">Admin Username</label><input id="setupUsername" name="username" required value="admin"><small class="field-error"></small></div><div class="field"><label for="setupPassword">Admin Password</label><input id="setupPassword" name="password" type="password" required value="admin12345"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Complete Setup</button></div></form>`;
+    }
+
+    function printReceipt(id) {
+      const d = state.donations.find(item => item.id === id); if (!d) return;
+      const s = state.settings;
+      const html = `<div style="font-family:Arial;padding:24px;max-width:680px;margin:auto;"><div style="text-align:center;border-bottom:1px solid #ccc;padding-bottom:12px;">${s.logoDataUrl ? `<img src="${escapeAttribute(s.logoDataUrl)}" style="width:76px;height:76px;object-fit:contain;">` : ""}<h1>${escapeHtml(s.churchName)}</h1><p>${escapeHtml(s.address)} • ${escapeHtml(s.phone)} • ${escapeHtml(s.email)}</p><h2>Donation Receipt</h2></div><table style="width:100%;margin-top:18px;border-collapse:collapse;"><tr><td><strong>Receipt No.</strong></td><td>${escapeHtml(d.receiptNo)}</td></tr><tr><td><strong>Donor</strong></td><td>${escapeHtml(d.donorName)}</td></tr><tr><td><strong>Amount</strong></td><td>${formatCurrency(d.amount)}</td></tr><tr><td><strong>Date</strong></td><td>${formatDate(d.date)}</td></tr><tr><td><strong>Purpose</strong></td><td>${escapeHtml(d.purpose)}</td></tr><tr><td><strong>Payment Method</strong></td><td>${escapeHtml(d.paymentMethod || "")}</td></tr><tr><td><strong>Recorded By</strong></td><td>${escapeHtml(d.recordedBy || "")}</td></tr></table><p style="margin-top:32px;">Authorized Signature: ___________________________</p></div>`;
+      const win = window.open("", "_blank"); win.document.write(`<!DOCTYPE html><title>Receipt ${escapeHtml(d.receiptNo)}</title>${html}`); win.document.close(); win.focus(); win.print();
+    }
+
+    function exportCsv(type) {
+      const map = { members: state.members, events: state.events, donations: filteredDonations(), attendance: state.attendance, care: state.care };
+      const rows = map[type] || [];
+      if (!rows.length) { showToast("No records to export."); return; }
+      const headers = Array.from(new Set(rows.flatMap(row => Object.keys(row))));
+      const csv = [headers.join(","), ...rows.map(row => headers.map(h => `"${String(row[h] ?? "").replaceAll('"', '""')}"`).join(","))].join("\n");
+      downloadBlob(csv, `${type}_${todayInput()}.csv`, "text/csv");
+    }
+    function downloadBlob(content, filename, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
+    function backupData() { const data = { version: "2.0-single-template", exportedAt: new Date().toISOString(), settings: state.settings, users: state.users, members: state.members, events: state.events, donations: state.donations, prayers: state.prayers, attendance: state.attendance, care: state.care }; downloadBlob(JSON.stringify(data, null, 2), `church_system_backup_${todayInput()}.json`, "application/json"); }
+
+    function bindFileToBase64(input, callback) {
+      input.addEventListener("change", () => { const file = input.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => callback(String(reader.result || "")); reader.readAsDataURL(file); });
+    }
+
+    function bindEventListeners() {
+      $("#hamburgerBtn").addEventListener("click", openSidebar);
+      $("#sidebarBackdrop").addEventListener("click", closeSidebar);
+      $("#modalCloseBtn").addEventListener("click", closeModal);
+      $("#modalBackdrop").addEventListener("click", event => { if (event.target.id === "modalBackdrop") closeModal(); });
+      $("#openSetupBtn").addEventListener("click", () => openModal("First Time Setup", setupWizardHtml()));
+      $("#logoutBtn").addEventListener("click", () => { state.currentUser = null; localStorage.removeItem(STORAGE_KEYS.currentUser); closeSidebar(); requireAuth(); showToast("Logged out."); });
+      $("#sidebarNav").addEventListener("click", event => { const button = event.target.closest(".nav-link"); if (button) setActiveSection(button.dataset.section); });
+      $("#memberSearch").addEventListener("input", renderMembers);
+      $("#purposeFilter").addEventListener("change", renderDonations);
+      $("#dateFromFilter").addEventListener("input", renderDonations);
+      $("#dateToFilter").addEventListener("input", renderDonations);
+      bindFileToBase64($("#logoUpload"), dataUrl => { state.settings.logoDataUrl = dataUrl; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo saved."); });
+      bindFileToBase64($("#backgroundUpload"), dataUrl => { pendingLoginBackgroundDataUrl = dataUrl; pendingLoginBackgroundZoom = Number($("#loginBackgroundZoom")?.value || state.settings.loginBackgroundZoom || 100); updateLoginBackgroundPreview(); showToast("Login background preview ready. Adjust zoom, then apply."); });
+      $("#loginBackgroundZoom").addEventListener("input", event => { pendingLoginBackgroundZoom = Number(event.target.value || 100); updateLoginBackgroundPreview(); });
+      $("#applyBackgroundBtn").addEventListener("click", applyLoginBackgroundChange);
+      $("#resetBackgroundZoomBtn").addEventListener("click", () => { pendingLoginBackgroundZoom = 100; $("#loginBackgroundZoom").value = "100"; updateLoginBackgroundPreview(); showToast("Login background zoom reset. Click Apply Login Background to save it."); });
+      $("#removeLogoBtn").addEventListener("click", () => { state.settings.logoDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo removed."); });
+      $("#removeBackgroundBtn").addEventListener("click", () => { state.settings.backgroundImageDataUrl = ""; state.settings.loginBackgroundZoom = 100; pendingLoginBackgroundDataUrl = null; pendingLoginBackgroundZoom = null; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Login background removed."); });
+      $("#backupBtn").addEventListener("click", backupData);
+      $("#testSupabaseBtn").addEventListener("click", testSupabaseConnection);
+      $("#pushSupabaseBtn").addEventListener("click", () => syncAllToSupabase(true));
+      $("#pullSupabaseBtn").addEventListener("click", pullFromSupabase);
+      $("#seedDemoBtn").addEventListener("click", () => { if (!confirm("Load demo records into the current system?")) return; const demo = demoData(); Object.assign(state, demo); persistDataset(); renderAll(); showToast("Demo data loaded."); });
+      $("#clearDataBtn").addEventListener("click", () => { if (!confirm("This will clear all local records. Continue?")) return; Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); loadState(); renderAll(); requireAuth(); showToast("Local data cleared."); });
+      $("#restoreInput").addEventListener("change", event => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(String(reader.result)); ["settings", "users", "members", "events", "donations", "prayers", "attendance", "care"].forEach(key => { if (data[key]) state[key] = data[key]; }); persistDataset(); renderAll(); showToast("Backup restored."); } catch { showToast("Invalid backup file."); } }; reader.readAsText(file); });
+      document.addEventListener("click", event => {
+        const target = event.target.closest("button"); if (!target) return;
+        if (target.id === "addMemberBtn") { openModal("Add Member", memberFormHtml()); bindModalMemberPhoto(); }
+        if (target.id === "addEventBtn") openModal("Add Event", eventFormHtml());
+        if (target.id === "addAttendanceBtn") openModal("Record Attendance", attendanceFormHtml());
+        if (target.id === "addCareBtn") openModal("Add Pastoral Care Record", careFormHtml());
+        if (target.id === "addPrayerBtn") { $("#prayerFormCard").classList.remove("hidden"); $("#prayerName").focus(); }
+        if (target.id === "cancelPrayerFormBtn") { $("#prayerForm").reset(); $("#prayerFormCard").classList.add("hidden"); }
+        if (target.hasAttribute("data-edit-member")) { const record = state.members.find(m => m.id === target.dataset.editMember); openModal("Edit Member", memberFormHtml(record)); bindModalMemberPhoto(); }
+        if (target.hasAttribute("data-edit-event")) { const record = state.events.find(e => e.id === target.dataset.editEvent); openModal("Edit Event", eventFormHtml(record)); }
+        if (target.hasAttribute("data-edit-attendance")) { const record = state.attendance.find(a => a.id === target.dataset.editAttendance); openModal("Edit Attendance", attendanceFormHtml(record)); }
+        if (target.hasAttribute("data-edit-care")) { const record = state.care.find(c => c.id === target.dataset.editCare); openModal("Edit Care Record", careFormHtml(record)); }
+        if (target.hasAttribute("data-delete-member")) deleteById("members", target.dataset.deleteMember, "Member deleted.");
+        if (target.hasAttribute("data-delete-event")) deleteById("events", target.dataset.deleteEvent, "Event deleted.");
+        if (target.hasAttribute("data-delete-attendance")) deleteById("attendance", target.dataset.deleteAttendance, "Attendance deleted.");
+        if (target.hasAttribute("data-delete-care")) deleteById("care", target.dataset.deleteCare, "Care record deleted.");
+        if (target.hasAttribute("data-delete-donation")) deleteById("donations", target.dataset.deleteDonation, "Donation deleted.");
+        if (target.hasAttribute("data-delete-prayer")) deleteById("prayers", target.dataset.deletePrayer, "Prayer request deleted.");
+        if (target.hasAttribute("data-delete-user")) deleteById("users", target.dataset.deleteUser, "User deleted.");
+        if (target.hasAttribute("data-mark-prayed")) { updatePrayer(target.dataset.markPrayed, { prayed: true }); }
+        if (target.hasAttribute("data-mark-answered")) { updatePrayer(target.dataset.markAnswered, { answered: true, prayed: true, followUpStatus: "Closed" }); }
+        if (target.hasAttribute("data-print-receipt")) printReceipt(target.dataset.printReceipt);
+        if (target.hasAttribute("data-export")) exportCsv(target.dataset.export);
+        if (target.hasAttribute("data-print-current")) window.print();
+      });
+      document.addEventListener("submit", event => {
+        event.preventDefault(); const form = event.target;
+        if (form.id === "loginForm") handleLogin(form);
+        if (form.id === "setupForm") handleSetup(form);
+        if (form.id === "memberForm") handleMemberSubmit(form);
+        if (form.id === "eventForm") handleEventSubmit(form);
+        if (form.id === "attendanceForm") handleAttendanceSubmit(form);
+        if (form.id === "donationForm") handleDonationSubmit(form);
+        if (form.id === "prayerForm") handlePrayerSubmit(form);
+        if (form.id === "careForm") handleCareSubmit(form);
+        if (form.id === "settingsForm") handleSettingsSubmit(form);
+        if (form.id === "supabaseForm") handleSupabaseSubmit(form);
+        if (form.id === "userForm") handleUserSubmit(form);
+      });
+      window.addEventListener("hashchange", () => setActiveSection(location.hash.replace("#", "") || "dashboard", false));
+      document.addEventListener("keydown", event => { if (event.key === "Escape") { closeModal(); closeSidebar(); } });
+    }
+
+    function bindModalMemberPhoto() { const input = $("#memberPhotoUpload"); if (!input) return; bindFileToBase64(input, dataUrl => { $("#memberPhotoDataUrl").value = dataUrl; showToast("Member photo attached."); }); }
+    function deleteById(collection, id, message) { if (!confirm("Delete this record?")) return; state[collection] = state[collection].filter(item => item.id !== id); save(STORAGE_KEYS[collection], state[collection]); renderAll(); queueCloudSync(); showToast(message); }
+    function updatePrayer(id, updates) { state.prayers = state.prayers.map(p => p.id === id ? { ...p, ...updates } : p); save(STORAGE_KEYS.prayers, state.prayers); renderAll(); queueCloudSync(); showToast("Prayer request updated."); }
+
+    function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); showToast("Login successful."); }
+    function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); localStorage.setItem(STORAGE_KEYS.setupComplete, "true"); closeModal(); requireAuth(); renderAll(); showToast("Setup completed."); }
+    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; save(STORAGE_KEYS.settings, state.settings); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
+    function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
+    function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); showToast("User added."); }
+
+    function bootApp() { loadState(); if (!localStorage.getItem(STORAGE_KEYS.users)) save(STORAGE_KEYS.users, state.users); bindEventListeners(); startDailyVerseAutoRefresh(); startLoginVerseAutoRefresh(); renderAll(); setActiveSection(location.hash.replace("#", "") || "dashboard", false); requireAuth(); }
+    bootApp();
+  </script>
+</body>
+</html>
