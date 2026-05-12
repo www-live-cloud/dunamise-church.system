@@ -1216,6 +1216,69 @@
       }
     }
 
+
+    /* Permanent laptop and desktop top header fix */
+    :root {
+      --desktop-fixed-header-height: 88px;
+    }
+    @media (min-width: 981px) {
+      body:not(.auth-locked) .page-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: var(--sidebar-width) !important;
+        right: 0 !important;
+        width: calc(100% - var(--sidebar-width)) !important;
+        min-height: var(--desktop-fixed-header-height);
+        height: var(--desktop-fixed-header-height);
+        display: flex !important;
+        align-items: center;
+        z-index: 155 !important;
+        padding: 16px 34px;
+        background: rgba(249, 246, 240, 0.985) !important;
+        border-bottom: 1px solid rgba(230,224,213,0.92);
+        box-shadow: 0 10px 30px rgba(21,42,69,0.10);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        transform: translateZ(0);
+        will-change: transform;
+      }
+      body:not(.auth-locked) .page-header-inner {
+        width: 100%;
+      }
+      body:not(.auth-locked) .main-content {
+        padding-top: var(--desktop-fixed-header-height);
+      }
+      body:not(.auth-locked) .section-view {
+        scroll-margin-top: calc(var(--desktop-fixed-header-height) + 22px);
+      }
+      body:not(.auth-locked) .sidebar {
+        z-index: 170;
+      }
+    }
+
+    /* Certificate signature size adjustment controls */
+    .signature-size-preview {
+      min-height: 96px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f7f1df 100%);
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      margin: 10px 0 12px;
+      overflow: hidden;
+    }
+    .signature-size-preview img {
+      max-width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .signature-size-empty {
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
   </style>
 </head>
 <body>
@@ -1470,6 +1533,14 @@
             <div class="field"><label for="settingGeneralOverseerName">General Overseer Name</label><input id="settingGeneralOverseerName" name="generalOverseerName" placeholder="General Overseer"><small class="muted">This name appears below the signature on generated certificates.</small><small class="field-error"></small></div>
             <div class="field"><label for="generalOverseerSignatureUpload">General Overseer Signature</label><input id="generalOverseerSignatureUpload" type="file" accept="image/*"><small class="muted">Upload a transparent PNG signature if available. It will reflect automatically on generated certificates.</small><small class="field-error"></small></div>
             <div class="field full"><div class="login-background-panel" style="padding:12px;"><strong>Certificate Signature Status</strong><p class="muted small" id="generalOverseerSignatureStatus" style="margin:6px 0 0;">No General Overseer signature uploaded yet.</p></div></div>
+            <div class="field full login-background-panel">
+              <div class="login-background-panel-header"><strong>Certificate Signature Size Control</strong><span class="range-value" id="certificateSignatureScaleValue">135%</span></div>
+              <div class="signature-size-preview" id="certificateSignaturePreview"><span class="signature-size-empty">Upload the General Overseer signature to preview and adjust its size before saving.</span></div>
+              <label for="certificateSignatureScale">Signature Size</label>
+              <input id="certificateSignatureScale" name="generalOverseerSignatureScale" type="range" min="70" max="220" step="5" value="135">
+              <small class="muted">Move left to reduce the signature or move right to enlarge it. Click Apply Signature Size or Save Settings to keep the selected size.</small>
+              <div class="button-row" style="margin-top:12px;"><button class="btn btn-primary" type="button" id="applySignatureScaleBtn">Apply Signature Size</button><button class="btn btn-secondary" type="button" id="resetSignatureScaleBtn">Reset Signature Size</button></div>
+            </div>
             <div class="field full"><label for="backgroundUpload">Login Background Image</label><input id="backgroundUpload" type="file" accept="image/*"><small class="muted">The uploaded image is used only on the login page. It will not appear behind the dashboard or other system pages after login.</small><small class="field-error"></small></div>
             <div class="field full login-background-panel">
               <div class="login-background-panel-header"><strong>Login Background Preview and Zoom Control</strong><span class="range-value" id="loginBgZoomValue">100%</span></div>
@@ -1524,6 +1595,7 @@
       logoDataUrl: "",
       generalOverseerName: "General Overseer",
       generalOverseerSignatureDataUrl: "",
+      generalOverseerSignatureScale: 135,
       backgroundImageDataUrl: "",
       loginBackgroundZoom: 100,
       logoFallbackIcon: "✝",
@@ -1653,6 +1725,7 @@
     let cloudSyncTimer = null;
     let pendingLoginBackgroundDataUrl = null;
     let pendingLoginBackgroundZoom = null;
+    let pendingCertificateSignatureScale = null;
 
     const $ = (selector, scope = document) => scope.querySelector(selector);
     const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
@@ -1834,6 +1907,7 @@
         logoDataUrl: row.logo_url || state.settings.logoDataUrl || "",
         generalOverseerName: row.general_overseer_name || state.settings.generalOverseerName || "General Overseer",
         generalOverseerSignatureDataUrl: row.general_overseer_signature_url || state.settings.generalOverseerSignatureDataUrl || "",
+        generalOverseerSignatureScale: Math.min(220, Math.max(70, Number(row.general_overseer_signature_scale || state.settings.generalOverseerSignatureScale || 135))),
         backgroundImageDataUrl: row.system_background_url || state.settings.backgroundImageDataUrl || "",
         primaryColor: row.primary_color || state.settings.primaryColor,
         accentColor: row.accent_color || state.settings.accentColor,
@@ -2047,6 +2121,7 @@
         logo_url: nullIfEmpty(s.logoDataUrl),
         general_overseer_name: nullIfEmpty(s.generalOverseerName),
         general_overseer_signature_url: nullIfEmpty(s.generalOverseerSignatureDataUrl),
+        general_overseer_signature_scale: Math.min(220, Math.max(70, Number(s.generalOverseerSignatureScale || 135))),
         system_background_url: nullIfEmpty(s.backgroundImageDataUrl),
         primary_color: s.primaryColor,
         accent_color: s.accentColor,
@@ -2262,13 +2337,44 @@
 
     function renderSettingsForms() {
       const s = state.settings;
-      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, settingGeneralOverseerName: s.generalOverseerName, supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
+      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, settingGeneralOverseerName: s.generalOverseerName, certificateSignatureScale: Math.min(220, Math.max(70, Number(s.generalOverseerSignatureScale || 135))), supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
       Object.entries(mappings).forEach(([id, value]) => { const el = $("#" + id); if (el && document.activeElement !== el) el.value = value || ""; });
       const signatureStatus = $("#generalOverseerSignatureStatus");
-      if (signatureStatus) signatureStatus.innerHTML = s.generalOverseerSignatureDataUrl ? `Signature uploaded for <strong>${escapeHtml(s.generalOverseerName || "General Overseer")}</strong>. It will appear on new and existing printed certificates.` : "No General Overseer signature uploaded yet.";
+      if (signatureStatus) signatureStatus.innerHTML = s.generalOverseerSignatureDataUrl ? `Signature uploaded for <strong>${escapeHtml(s.generalOverseerName || "General Overseer")}</strong>. Current certificate signature size is <strong>${currentCertificateSignatureScale()}%</strong>.` : "No General Overseer signature uploaded yet.";
+      updateCertificateSignaturePreview();
       updateLoginBackgroundPreview();
       const supabaseStatus = state.supabaseClient ? "Supabase client is configured. Use the included SQL schema before enabling cloud CRUD." : "Supabase is not configured. The system is using local browser storage.";
       $("#supabaseStatus").textContent = supabaseStatus;
+    }
+
+
+    function currentCertificateSignatureScale() {
+      return Math.min(220, Math.max(70, Number(pendingCertificateSignatureScale ?? state.settings.generalOverseerSignatureScale ?? 135)));
+    }
+
+    function updateCertificateSignaturePreview() {
+      const preview = $("#certificateSignaturePreview");
+      const slider = $("#certificateSignatureScale");
+      const valueLabel = $("#certificateSignatureScaleValue");
+      if (!preview || !slider || !valueLabel) return;
+      const scale = currentCertificateSignatureScale();
+      if (document.activeElement !== slider) slider.value = String(scale);
+      valueLabel.textContent = `${scale}%`;
+      if (state.settings.generalOverseerSignatureDataUrl) {
+        const previewHeight = Math.round(64 * (scale / 100));
+        preview.innerHTML = `<img src="${escapeAttribute(state.settings.generalOverseerSignatureDataUrl)}" alt="General Overseer signature preview" style="height:${previewHeight}px;">`;
+      } else {
+        preview.innerHTML = `<span class="signature-size-empty">Upload the General Overseer signature to preview and adjust its size before saving.</span>`;
+      }
+    }
+
+    function applyCertificateSignatureScaleChange() {
+      state.settings.generalOverseerSignatureScale = currentCertificateSignatureScale();
+      pendingCertificateSignatureScale = null;
+      save(STORAGE_KEYS.settings, state.settings);
+      renderSettingsForms();
+      queueCloudSync();
+      showToast("Certificate signature size saved.");
     }
 
     function currentLoginBackgroundZoom() {
@@ -2829,6 +2935,11 @@
       const authorizedName = c.authorizedBy || s.generalOverseerName || "General Overseer";
       const logo = s.logoDataUrl || "";
       const signature = s.generalOverseerSignatureDataUrl || "";
+      const signatureScale = Math.min(220, Math.max(70, Number(s.generalOverseerSignatureScale || 135)));
+      const signatureHeightPx = Math.round(94 * signatureScale / 100);
+      const signatureMaxWidthPx = Math.round(235 * signatureScale / 100);
+      const signaturePrintHeightMm = (21 * signatureScale / 100).toFixed(1);
+      const signaturePrintMaxWidthMm = (58 * signatureScale / 100).toFixed(1);
       const cert = certificateDetailsForType(c.type, c.memberName, s.churchName, issueDate);
       const html = `<!DOCTYPE html><html><head><title>${escapeHtml(cert.title)}</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
         @page { size: A4 landscape; margin: 0; }
@@ -2859,8 +2970,8 @@
         .scripture { margin: 12px auto 0; max-width: 760px; font-size: clamp(13px, 1.35vw, 16px); line-height: 1.45; color: #6d5a27; font-style: italic; }
         .signature-row { display: grid; grid-template-columns: 245px 82px 320px; align-items: end; justify-content: center; gap: 42px; width: 100%; margin-top: auto; padding-top: 16px; }
         .signature-block, .date-block { width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-        .signature-image { height: 94px; max-width: 235px; object-fit: contain; display: block; margin: 0 auto -5px; position: relative; z-index: 2; }
-        .signature-placeholder { height: 94px; }
+        .signature-image { height: ${signatureHeightPx}px; max-width: ${signatureMaxWidthPx}px; object-fit: contain; display: block; margin: 0 auto -5px; position: relative; z-index: 2; }
+        .signature-placeholder { height: ${signatureHeightPx}px; }
         .signature-line, .date-line { height: 34px; border-bottom: 2px solid #132a44; display: flex; align-items: flex-end; justify-content: center; padding: 0 10px 4px; font-weight: 700; color: #132a44; font-size: 15px; line-height: 1.1; white-space: nowrap; }
         .signature-line { width: min(320px, 100%); }
         .date-line { width: min(245px, 100%); }
@@ -2880,8 +2991,8 @@
           .certificate-copy { font-size: 16px; line-height: 1.45; max-width: 820px; }
           .scripture { font-size: 13px; margin-top: 9px; }
           .signature-row { padding-top: 10px; gap: 34px; grid-template-columns: 60mm 20mm 76mm; }
-          .signature-image, .signature-placeholder { height: 21mm; }
-          .signature-image { max-width: 58mm; margin-bottom: -1mm; }
+          .signature-image, .signature-placeholder { height: ${signaturePrintHeightMm}mm; }
+          .signature-image { max-width: ${signaturePrintMaxWidthMm}mm; margin-bottom: -1mm; }
           .signature-line, .date-line { height: 9mm; font-size: 14px; padding-bottom: 1.2mm; }
           .signature-line { width: 76mm; }
           .date-line { width: 60mm; }
@@ -2960,13 +3071,16 @@
       $("#dateFromFilter").addEventListener("input", renderDonations);
       $("#dateToFilter").addEventListener("input", renderDonations);
       bindFileToBase64($("#logoUpload"), dataUrl => { state.settings.logoDataUrl = dataUrl; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo saved."); });
-      bindFileToBase64($("#generalOverseerSignatureUpload"), dataUrl => { state.settings.generalOverseerSignatureDataUrl = dataUrl; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("General Overseer signature saved for certificates."); });
+      bindFileToBase64($("#generalOverseerSignatureUpload"), dataUrl => { state.settings.generalOverseerSignatureDataUrl = dataUrl; if (!state.settings.generalOverseerSignatureScale) state.settings.generalOverseerSignatureScale = 135; save(STORAGE_KEYS.settings, state.settings); applySettings(); renderSettingsForms(); queueCloudSync(); showToast("General Overseer signature saved for certificates. Adjust the signature size if needed."); });
+      $("#certificateSignatureScale").addEventListener("input", event => { pendingCertificateSignatureScale = Number(event.target.value || 135); updateCertificateSignaturePreview(); });
+      $("#applySignatureScaleBtn").addEventListener("click", applyCertificateSignatureScaleChange);
+      $("#resetSignatureScaleBtn").addEventListener("click", () => { pendingCertificateSignatureScale = 135; $("#certificateSignatureScale").value = "135"; updateCertificateSignaturePreview(); showToast("Signature size reset. Click Apply Signature Size or Save Settings to keep it."); });
       bindFileToBase64($("#backgroundUpload"), dataUrl => { pendingLoginBackgroundDataUrl = dataUrl; pendingLoginBackgroundZoom = Number($("#loginBackgroundZoom")?.value || state.settings.loginBackgroundZoom || 100); updateLoginBackgroundPreview(); showToast("Login background preview ready. Adjust zoom, then apply."); });
       $("#loginBackgroundZoom").addEventListener("input", event => { pendingLoginBackgroundZoom = Number(event.target.value || 100); updateLoginBackgroundPreview(); });
       $("#applyBackgroundBtn").addEventListener("click", applyLoginBackgroundChange);
       $("#resetBackgroundZoomBtn").addEventListener("click", () => { pendingLoginBackgroundZoom = 100; $("#loginBackgroundZoom").value = "100"; updateLoginBackgroundPreview(); showToast("Login background zoom reset. Click Apply Login Background to save it."); });
       $("#removeLogoBtn").addEventListener("click", () => { state.settings.logoDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo removed."); });
-      $("#removeGeneralOverseerSignatureBtn").addEventListener("click", () => { state.settings.generalOverseerSignatureDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("General Overseer signature removed."); });
+      $("#removeGeneralOverseerSignatureBtn").addEventListener("click", () => { state.settings.generalOverseerSignatureDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); renderSettingsForms(); queueCloudSync(); showToast("General Overseer signature removed."); });
       $("#removeBackgroundBtn").addEventListener("click", () => { state.settings.backgroundImageDataUrl = ""; state.settings.loginBackgroundZoom = 100; pendingLoginBackgroundDataUrl = null; pendingLoginBackgroundZoom = null; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Login background removed."); });
       $("#backupBtn").addEventListener("click", backupData);
       $("#testSupabaseBtn").addEventListener("click", testSupabaseConnection);
@@ -3073,7 +3187,7 @@
 
     async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); logActivity("User login", user.username); showToast("Login successful."); }
     function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
-    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, generalOverseerName: data.generalOverseerName || "General Overseer", autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
+    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, generalOverseerName: data.generalOverseerName || "General Overseer", generalOverseerSignatureScale: currentCertificateSignatureScale(), autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
     function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
     function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); queueCloudSync(); showToast("User added and queued for shared password sync."); }
 
