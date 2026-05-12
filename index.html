@@ -1041,6 +1041,53 @@
       }
     }
 
+
+
+    /* Phase 1 to Phase 11 professional enhancement suite */
+    .suite-kicker { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; font-weight: 800; color: var(--accent-dark); margin-bottom: 6px; }
+    .suite-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 18px; }
+    .suite-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--soft-shadow); }
+    .suite-card h3 { font-size: 1.08rem; margin-bottom: 6px; }
+    .suite-metric { font-family: "Lora", Georgia, serif; font-size: 1.55rem; color: var(--primary); font-weight: 800; }
+    .suite-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .suite-tab { border: 1px solid var(--border); background: var(--white); color: var(--primary); border-radius: 999px; padding: 8px 12px; font-weight: 800; font-size: 0.86rem; }
+    .suite-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+    .suite-panel { display: none; }
+    .suite-panel.active { display: block; animation: fadeIn 220ms ease both; }
+    .stack-list { display: grid; gap: 12px; }
+    .stack-item { border: 1px solid var(--border); border-radius: 12px; background: #fffdf8; padding: 14px; }
+    .stack-item strong { color: var(--primary); }
+    .inline-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+    .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .profile-grid { display: grid; grid-template-columns: 140px minmax(0,1fr); gap: 18px; align-items: start; }
+    .profile-photo { width: 140px; height: 140px; border-radius: 24px; background: #edf2f7; display: grid; place-items: center; overflow: hidden; font-size: 3rem; color: var(--primary); }
+    .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .chart-list { display: grid; gap: 12px; margin-top: 14px; }
+    .chart-row { display: grid; grid-template-columns: minmax(92px, 180px) 1fr auto; gap: 10px; align-items: center; }
+    .chart-track { height: 12px; background: #edf2f7; border-radius: 999px; overflow: hidden; }
+    .chart-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: inherit; min-width: 4px; }
+    .notification-bell { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; background: #fff7dc; color: var(--primary); padding: 8px 12px; font-weight: 800; border: 1px solid #ead58d; }
+    .sync-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 10px; font-size: 0.78rem; font-weight: 800; background: #e8f1fb; color: var(--primary); }
+    .sync-pill.failed { background: #fde8e7; color: var(--danger); }
+    .sync-pill.pending { background: #fff7dc; color: var(--warning); }
+    .sync-pill.synced { background: #e6f4ea; color: var(--success); }
+    .qr-preview { width: 190px; height: 190px; object-fit: contain; border: 1px solid var(--border); border-radius: 14px; background: var(--white); padding: 10px; }
+    .settings-tabs-shell { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: #fffaf1; margin-bottom: 16px; }
+    .mobile-table-cards table { min-width: 0; }
+    @media (max-width: 1120px) { .suite-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 767px) {
+      .suite-grid, .profile-grid { grid-template-columns: 1fr; }
+      .profile-photo { width: 112px; height: 112px; border-radius: 20px; }
+      .chart-row { grid-template-columns: 1fr; gap: 6px; }
+      .suite-tab { flex: 1 1 auto; text-align: center; }
+      .table-wrap.mobile-table-cards { border: 0; box-shadow: none; background: transparent; }
+      .mobile-table-cards table, .mobile-table-cards thead, .mobile-table-cards tbody, .mobile-table-cards tr, .mobile-table-cards td { display: block; width: 100%; }
+      .mobile-table-cards thead { display: none; }
+      .mobile-table-cards tr { background: var(--white) !important; border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; padding: 10px; box-shadow: var(--soft-shadow); }
+      .mobile-table-cards td { border-bottom: 0; padding: 8px 6px; }
+      .mobile-table-cards td::before { content: attr(data-label); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 800; margin-bottom: 2px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1116,6 +1163,15 @@
       <button class="nav-link" type="button" data-section="prayers" data-access="prayers"><span class="nav-icon">🙏</span><span>Prayer Requests</span></button>
       <button class="nav-link" type="button" data-section="pastoral" data-access="pastoral"><span class="nav-icon">🤝</span><span>Pastoral Care</span></button>
       <button class="nav-link" type="button" data-section="reports" data-access="reports"><span class="nav-icon">📊</span><span>Reports</span></button>
+
+      <button class="nav-link" type="button" data-section="membertools" data-access="membertools"><span class="nav-icon">🧾</span><span>Member Tools</span></button>
+      <button class="nav-link" type="button" data-section="eventhub" data-access="eventhub"><span class="nav-icon">🎟️</span><span>Event Hub</span></button>
+      <button class="nav-link" type="button" data-section="financeplus" data-access="financeplus"><span class="nav-icon">💼</span><span>Finance Plus</span></button>
+      <button class="nav-link" type="button" data-section="careplus" data-access="careplus"><span class="nav-icon">🕊️</span><span>Care Plus</span></button>
+      <button class="nav-link" type="button" data-section="communications" data-access="communications"><span class="nav-icon">📣</span><span>Communications</span></button>
+      <button class="nav-link" type="button" data-section="resources" data-access="resources"><span class="nav-icon">🗂️</span><span>Resources</span></button>
+      <button class="nav-link" type="button" data-section="analytics" data-access="analytics"><span class="nav-icon">📈</span><span>Analytics</span></button>
+      <button class="nav-link" type="button" data-section="security" data-access="security"><span class="nav-icon">🔐</span><span>Security & Logs</span></button>
       <button class="nav-link" type="button" data-section="settings" data-access="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
     </nav>
     <div class="user-panel" aria-label="Logged in user summary">
@@ -1209,8 +1265,65 @@
         <div class="grid three-column-grid" id="reportsGrid"></div>
       </section>
 
+
+
+      <section class="section-view" id="membertools" aria-labelledby="memberToolsTitle">
+        <div class="section-heading"><div><h2 id="memberToolsTitle">Member Tools</h2><p>Manage member profiles, family linking, categories, reminders, birthdays, anniversaries, certificates, and pastoral visibility.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="families">Export Families</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="suite-grid" id="memberToolsMetrics"></div>
+        <div class="suite-tabs" data-tabs="membertools"><button class="suite-tab active" type="button" data-panel="memberProfilesPanel">Profiles</button><button class="suite-tab" type="button" data-panel="familyPanel">Families</button><button class="suite-tab" type="button" data-panel="reminderPanel">Reminders</button></div>
+        <div class="suite-panel active" id="memberProfilesPanel"><article class="card"><h3>Member Profile Directory</h3><p class="muted small">Open a member profile to view attendance, giving, prayer requests, care notes, family links, and certificate shortcuts.</p><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Department</th><th>Care Snapshot</th><th>Actions</th></tr></thead><tbody id="memberProfilesBody"></tbody></table></div></article></div>
+        <div class="suite-panel" id="familyPanel"><div class="grid two-column-grid"><article class="card"><h3>Family and Household Linking</h3><form id="familyForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="familyName">Household Name</label><input id="familyName" name="familyName" required placeholder="e.g., Mensah Family"><small class="field-error"></small></div><div class="field"><label for="familyHead">Family Head</label><input id="familyHead" name="familyHead" placeholder="Name of head"><small class="field-error"></small></div><div class="field full"><label for="familyMembers">Members</label><input id="familyMembers" name="members" placeholder="Names separated by commas"><small class="field-error"></small></div><div class="field"><label for="familyPhone">Primary Phone</label><input id="familyPhone" name="phone"><small class="field-error"></small></div><div class="field"><label for="familyAddress">Address</label><input id="familyAddress" name="address"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Household</button></div></form></article><article class="card"><h3>Households</h3><div class="stack-list" id="familyList"></div></article></div></div>
+        <div class="suite-panel" id="reminderPanel"><div class="grid two-column-grid"><article class="card"><h3>Birthday, Anniversary, and Follow-up Reminders</h3><form id="reminderForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="reminderTitle">Reminder Title</label><input id="reminderTitle" name="title" required><small class="field-error"></small></div><div class="field"><label for="reminderType">Type</label><select id="reminderType" name="type"><option>Birthday</option><option>Wedding Anniversary</option><option>Membership Anniversary</option><option>Pastoral Follow-up</option><option>Other</option></select><small class="field-error"></small></div><div class="field"><label for="reminderDate">Date</label><input id="reminderDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="reminderAssignedTo">Assigned To</label><input id="reminderAssignedTo" name="assignedTo" value="${state.currentUser?.displayName || ''}"><small class="field-error"></small></div><div class="field full"><label for="reminderNotes">Notes</label><textarea id="reminderNotes" name="notes"></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Reminder</button></div></form></article><article class="card"><h3>Upcoming Reminders</h3><div class="stack-list" id="reminderList"></div></article></div></div>
+      </section>
+
+      <section class="section-view" id="eventhub" aria-labelledby="eventHubTitle">
+        <div class="section-heading"><div><h2 id="eventHubTitle">Event Hub</h2><p>Handle event registration, QR attendance codes, event budgets, recurring program planning, and event participation tracking.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="eventRegistrations">Export Registrations</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="suite-grid" id="eventHubMetrics"></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Event Registration</h3><form id="eventRegistrationForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="registrationEvent">Event</label><select id="registrationEvent" name="eventId" required></select><small class="field-error"></small></div><div class="field"><label for="registrationName">Registrant Name</label><input id="registrationName" name="name" required><small class="field-error"></small></div><div class="field"><label for="registrationPhone">Phone</label><input id="registrationPhone" name="phone"><small class="field-error"></small></div><div class="field"><label for="registrationStatus">Status</label><select id="registrationStatus" name="status"><option>Registered</option><option>Confirmed</option><option>Attended</option><option>Cancelled</option></select><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Registration</button></div></form><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Event</th><th>Name</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody id="eventRegistrationsBody"></tbody></table></div></article><article class="card"><h3>QR Check-in and Event Budget</h3><div class="field"><label for="qrEventSelect">Select Event</label><select id="qrEventSelect"></select><small class="field-error"></small></div><div class="center" id="qrPreviewBox" style="margin:14px 0;"></div><form id="eventBudgetForm" class="form-grid" novalidate><div class="field"><label for="budgetEvent">Budget Event</label><select id="budgetEvent" name="eventId" required></select><small class="field-error"></small></div><div class="field"><label for="estimatedCost">Estimated Cost</label><input id="estimatedCost" name="estimatedCost" type="number" step="0.01" min="0"><small class="field-error"></small></div><div class="field"><label for="actualCost">Actual Cost</label><input id="actualCost" name="actualCost" type="number" step="0.01" min="0"><small class="field-error"></small></div><div class="field"><label for="eventIncome">Income Received</label><input id="eventIncome" name="income" type="number" step="0.01" min="0"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Event Budget</button></div></form><div class="stack-list" id="eventBudgetList" style="margin-top:14px;"></div></article></div>
+      </section>
+
+      <section class="section-view" id="financeplus" aria-labelledby="financePlusTitle">
+        <div class="section-heading"><div><h2 id="financePlusTitle">Finance Plus</h2><p>Track expenses, offering batches, income versus expense, fund summaries, receipts, and finance accountability reports.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="expenses">Export Expenses</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="suite-grid" id="financeMetrics"></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Expense Tracking</h3><form id="expenseForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="expenseTitle">Expense Title</label><input id="expenseTitle" name="title" required><small class="field-error"></small></div><div class="field"><label for="expenseCategory">Category</label><select id="expenseCategory" name="category"><option>Utility Bills</option><option>Rent</option><option>Welfare Support</option><option>Missions Spending</option><option>Equipment</option><option>Salaries or Allowances</option><option>Maintenance</option><option>Other</option></select><small class="field-error"></small></div><div class="field"><label for="expenseAmount">Amount</label><input id="expenseAmount" name="amount" type="number" min="0.01" step="0.01" required><small class="field-error"></small></div><div class="field"><label for="expenseDate">Date</label><input id="expenseDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="expenseApprovedBy">Approved By</label><input id="expenseApprovedBy" name="approvedBy" value="${state.currentUser?.displayName || ''}"><small class="field-error"></small></div><div class="field"><label for="expensePaymentMethod">Payment Method</label><select id="expensePaymentMethod" name="paymentMethod"><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option><option>Cheque</option><option>Card</option></select><small class="field-error"></small></div><div class="field full"><label for="expenseNotes">Notes</label><textarea id="expenseNotes" name="notes"></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Expense</button></div></form></article><article class="card"><h3>Offering Batch Entry</h3><form id="offeringBatchForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="batchService">Service/Event</label><input id="batchService" name="service" required><small class="field-error"></small></div><div class="field"><label for="batchDate">Date</label><input id="batchDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="batchCash">Cash</label><input id="batchCash" name="cash" type="number" min="0" step="0.01" value="0"><small class="field-error"></small></div><div class="field"><label for="batchMomo">Mobile Money</label><input id="batchMomo" name="momo" type="number" min="0" step="0.01" value="0"><small class="field-error"></small></div><div class="field"><label for="batchBank">Bank Transfer</label><input id="batchBank" name="bank" type="number" min="0" step="0.01" value="0"><small class="field-error"></small></div><div class="field"><label for="batchPurpose">Purpose</label><select id="batchPurpose" name="purpose"><option>Offering</option><option>Tithe</option><option>Building Fund</option><option>Missions</option><option>Welfare</option></select><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Post Offering Batch</button></div></form></article></div><div class="grid two-column-grid" style="margin-top:18px;"><article class="card"><h3>Recent Expenses</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Amount</th><th>Actions</th></tr></thead><tbody id="expensesBody"></tbody></table></div></article><article class="card"><h3>Income versus Expense</h3><div class="chart-list" id="incomeExpenseChart"></div><div class="stack-list" id="offeringBatchList" style="margin-top:14px;"></div></article></div>
+      </section>
+
+      <section class="section-view" id="careplus" aria-labelledby="carePlusTitle">
+        <div class="section-heading"><div><h2 id="carePlusTitle">Care Plus</h2><p>Schedule pastoral follow-ups, record confidential notes, manage welfare support, and publish answered prayer testimonies.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="followups">Export Follow-ups</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="suite-grid" id="carePlusMetrics"></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Pastoral Follow-up Scheduler</h3><form id="followupForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="followupMember">Member or Visitor</label><input id="followupMember" name="memberName" required><small class="field-error"></small></div><div class="field"><label for="followupType">Care Type</label><select id="followupType" name="careType"><option>Counselling</option><option>Hospital Visit</option><option>Home Visit</option><option>Bereavement Care</option><option>New Convert Care</option><option>Welfare Support</option></select><small class="field-error"></small></div><div class="field"><label for="followupDate">Follow-up Date</label><input id="followupDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="followupStatus">Status</label><select id="followupStatus" name="status"><option>Scheduled</option><option>Completed</option><option>Rescheduled</option><option>Closed</option></select><small class="field-error"></small></div><div class="field"><label for="followupAssignedTo">Assigned To</label><input id="followupAssignedTo" name="assignedTo" value="${state.currentUser?.displayName || ''}"><small class="field-error"></small></div><div class="field"><label for="followupConfidential">Confidential</label><select id="followupConfidential" name="confidential"><option>No</option><option>Yes</option></select><small class="field-error"></small></div><div class="field full"><label for="followupNotes">Notes</label><textarea id="followupNotes" name="notes"></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Follow-up</button></div></form></article><article class="card"><h3>Answered Prayer Testimonies</h3><form id="testimonyForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="testimonyName">Name</label><input id="testimonyName" name="name"><small class="field-error"></small></div><div class="field"><label for="testimonyDate">Date</label><input id="testimonyDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="testimonyVisibility">Visibility</label><select id="testimonyVisibility" name="visibility"><option>Private</option><option>Public</option></select><small class="field-error"></small></div><div class="field full"><label for="testimonyText">Testimony</label><textarea id="testimonyText" name="text" required></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Testimony</button></div></form></article></div><div class="grid two-column-grid" style="margin-top:18px;"><article class="card"><h3>Follow-up Queue</h3><div class="stack-list" id="followupList"></div></article><article class="card"><h3>Welfare Support</h3><form id="welfareForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="welfareMember">Member Name</label><input id="welfareMember" name="memberName" required><small class="field-error"></small></div><div class="field"><label for="welfareSupportType">Support Type</label><input id="welfareSupportType" name="supportType" placeholder="Cash, food, medical, rent"><small class="field-error"></small></div><div class="field"><label for="welfareAmount">Amount or Value</label><input id="welfareAmount" name="amount" type="number" step="0.01" min="0"><small class="field-error"></small></div><div class="field"><label for="welfareDate">Date</label><input id="welfareDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="welfareApprovedBy">Approved By</label><input id="welfareApprovedBy" name="approvedBy" value="${state.currentUser?.displayName || ''}"><small class="field-error"></small></div><div class="field full"><label for="welfareNotes">Notes</label><textarea id="welfareNotes" name="notes"></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Welfare Record</button></div></form><div class="stack-list" id="welfareList" style="margin-top:14px;"></div></article></div>
+      </section>
+
+      <section class="section-view" id="communications" aria-labelledby="communicationsTitle">
+        <div class="section-heading"><div><h2 id="communicationsTitle">Communications</h2><p>Prepare announcements, group messages, WhatsApp and SMS contact exports, email announcements, and ministry communication lists.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" id="exportContactsBtn">Export Contact List</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Announcement Builder</h3><form id="announcementForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="announcementTitle">Title</label><input id="announcementTitle" name="title" required><small class="field-error"></small></div><div class="field"><label for="announcementGroup">Audience Group</label><select id="announcementGroup" name="group"><option>All Members</option><option>Workers</option><option>Choir</option><option>Youth</option><option>Women</option><option>Men</option><option>Visitors</option><option>Leaders</option></select><small class="field-error"></small></div><div class="field"><label for="announcementChannel">Channel</label><select id="announcementChannel" name="channel"><option>SMS</option><option>WhatsApp</option><option>Email</option><option>Notice Board</option></select><small class="field-error"></small></div><div class="field"><label for="announcementDate">Date</label><input id="announcementDate" name="date" type="date" required><small class="field-error"></small></div><div class="field full"><label for="announcementMessage">Message</label><textarea id="announcementMessage" name="message" required></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Announcement</button></div></form></article><article class="card"><h3>Group Contact Export</h3><div class="form-grid"><div class="field"><label for="contactGroupFilter">Group</label><select id="contactGroupFilter"><option>All Members</option><option>Workers</option><option>Choir</option><option>Youth Ministry</option><option>Women Ministry</option><option>Men Ministry</option><option>Visitors</option><option>Leaders</option></select><small class="field-error"></small></div><div class="field"><label for="contactExportType">Export Type</label><select id="contactExportType"><option value="phones">Phone Numbers</option><option value="emails">Email Addresses</option><option value="whatsapp">WhatsApp Format</option></select><small class="field-error"></small></div></div><div class="stack-list" id="contactExportPreview" style="margin-top:14px;"></div></article></div><article class="card" style="margin-top:18px;"><h3>Announcements</h3><div class="stack-list" id="announcementList"></div></article>
+      </section>
+
+      <section class="section-view" id="resources" aria-labelledby="resourcesTitle">
+        <div class="section-heading"><div><h2 id="resourcesTitle">Resources</h2><p>Manage departments, church documents, inventory, certificates, assets, official letters, and ministry resources.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" data-export="inventory">Export Inventory</button><button class="btn btn-secondary" type="button" data-print-current>Print</button></div></div>
+        <div class="suite-grid" id="resourceMetrics"></div>
+        <div class="suite-tabs" data-tabs="resources"><button class="suite-tab active" type="button" data-panel="departmentsPanel">Departments</button><button class="suite-tab" type="button" data-panel="documentsPanel">Documents</button><button class="suite-tab" type="button" data-panel="inventoryPanel">Inventory</button><button class="suite-tab" type="button" data-panel="certificatesPanel">Certificates</button></div>
+        <div class="suite-panel active" id="departmentsPanel"><div class="grid two-column-grid"><article class="card"><h3>Department Management</h3><form id="departmentForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="departmentName">Department</label><input id="departmentName" name="name" required><small class="field-error"></small></div><div class="field"><label for="departmentLeader">Leader</label><input id="departmentLeader" name="leader"><small class="field-error"></small></div><div class="field"><label for="departmentAssistant">Assistant Leader</label><input id="departmentAssistant" name="assistant"><small class="field-error"></small></div><div class="field"><label for="departmentMeeting">Meeting Schedule</label><input id="departmentMeeting" name="meetingSchedule"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Department</button></div></form></article><article class="card"><h3>Departments</h3><div class="stack-list" id="departmentList"></div></article></div></div>
+        <div class="suite-panel" id="documentsPanel"><div class="grid two-column-grid"><article class="card"><h3>Church Document Manager</h3><form id="documentForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="documentTitle">Document Title</label><input id="documentTitle" name="title" required><small class="field-error"></small></div><div class="field"><label for="documentType">Type</label><select id="documentType" name="type"><option>Constitution</option><option>Meeting Minutes</option><option>Financial Document</option><option>Report</option><option>Certificate</option><option>Official Letter</option><option>Other</option></select><small class="field-error"></small></div><div class="field"><label for="documentDate">Date</label><input id="documentDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="documentOwner">Owner</label><input id="documentOwner" name="owner"><small class="field-error"></small></div><div class="field full"><label for="documentNotes">Notes or Link</label><textarea id="documentNotes" name="notes"></textarea><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Document Record</button></div></form></article><article class="card"><h3>Documents</h3><div class="stack-list" id="documentList"></div></article></div></div>
+        <div class="suite-panel" id="inventoryPanel"><div class="grid two-column-grid"><article class="card"><h3>Inventory and Assets</h3><form id="inventoryForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="inventoryItem">Item</label><input id="inventoryItem" name="item" required><small class="field-error"></small></div><div class="field"><label for="inventoryCategory">Category</label><select id="inventoryCategory" name="category"><option>Chairs</option><option>Instruments</option><option>Speakers</option><option>Projectors</option><option>Computers</option><option>Vehicles</option><option>Office Equipment</option><option>Other</option></select><small class="field-error"></small></div><div class="field"><label for="inventoryQuantity">Quantity</label><input id="inventoryQuantity" name="quantity" type="number" min="1" value="1" required><small class="field-error"></small></div><div class="field"><label for="inventoryCondition">Condition</label><select id="inventoryCondition" name="condition"><option>Excellent</option><option>Good</option><option>Needs Repair</option><option>Damaged</option></select><small class="field-error"></small></div><div class="field"><label for="inventoryLocation">Location</label><input id="inventoryLocation" name="location"><small class="field-error"></small></div><div class="field"><label for="inventoryValue">Estimated Value</label><input id="inventoryValue" name="value" type="number" min="0" step="0.01"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Save Inventory Item</button></div></form></article><article class="card"><h3>Inventory List</h3><div class="stack-list" id="inventoryList"></div></article></div></div>
+        <div class="suite-panel" id="certificatesPanel"><div class="grid two-column-grid"><article class="card"><h3>Membership Certificate Generator</h3><form id="certificateForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field"><label for="certificateMember">Member Name</label><input id="certificateMember" name="memberName" required><small class="field-error"></small></div><div class="field"><label for="certificateType">Certificate Type</label><select id="certificateType" name="type"><option>Baptism</option><option>Membership</option><option>Child Dedication</option><option>Leadership Appointment</option><option>Marriage Blessing</option></select><small class="field-error"></small></div><div class="field"><label for="certificateDate">Date</label><input id="certificateDate" name="date" type="date" required><small class="field-error"></small></div><div class="field"><label for="certificateAuthorizedBy">Authorized By</label><input id="certificateAuthorizedBy" name="authorizedBy"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Create Certificate</button></div></form></article><article class="card"><h3>Certificates</h3><div class="stack-list" id="certificateList"></div></article></div></div>
+      </section>
+
+      <section class="section-view" id="analytics" aria-labelledby="analyticsTitle">
+        <div class="section-heading"><div><h2 id="analyticsTitle">Analytics and Advanced Reports</h2><p>View visual charts, advanced report summaries, attendance trends, giving trends, member growth, and department distribution.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" id="printAdvancedReportBtn">Print or Save PDF Report</button></div></div>
+        <div class="suite-grid" id="analyticsMetrics"></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Giving by Purpose</h3><div class="chart-list" id="givingPurposeChart"></div></article><article class="card"><h3>Members by Department</h3><div class="chart-list" id="departmentChart"></div></article><article class="card"><h3>Attendance Trend</h3><div class="chart-list" id="attendanceTrendChart"></div></article><article class="card"><h3>Advanced Report Center</h3><div class="stack-list" id="advancedReportsList"></div></article></div>
+      </section>
+
+      <section class="section-view" id="security" aria-labelledby="securityTitle">
+        <div class="section-heading"><div><h2 id="securityTitle">Security, Logs, and Sync</h2><p>Control passwords, user status, activity logs, deletion safeguards, cloud sync status, manual sync, and production security readiness.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" id="syncNowBtn">Sync Now</button><button class="btn btn-secondary" type="button" data-export="activityLogs">Export Logs</button></div></div>
+        <div class="suite-grid" id="securityMetrics"></div>
+        <div class="grid two-column-grid"><article class="card"><h3>Change My Password</h3><form id="changePasswordForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field full"><label for="currentPassword">Current Password</label><input id="currentPassword" name="currentPassword" type="password" required><small class="field-error"></small></div><div class="field"><label for="newPassword">New Password</label><input id="newPassword" name="newPassword" type="password" minlength="6" required><small class="field-error"></small></div><div class="field"><label for="confirmPassword">Confirm Password</label><input id="confirmPassword" name="confirmPassword" type="password" required><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Update Password</button></div></form><p class="muted small">Password changes are saved locally and pushed to Supabase so other browsers use the same credentials.</p></article><article class="card"><h3>Notifications</h3><div class="stack-list" id="notificationList"></div></article></div><article class="card" style="margin-top:18px;"><h3>User Status and Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>User</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="securityUsersBody"></tbody></table></div><h3 style="margin-top:18px;">Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody id="activityLogsBody"></tbody></table></div></article>
+      </section>
+
       <section class="section-view" id="settings" aria-labelledby="settingsTitle">
         <div class="section-heading"><div><h2 id="settingsTitle">Settings</h2><p>Configure church identity, logo, theme, users, data backup, and optional Supabase connection.</p></div></div>
+        <div class="settings-tabs-shell"><strong>Settings Center</strong><p class="muted small">Church Profile, Branding, Users, Security, Backup, Supabase Sync, and Print Settings are now grouped across Settings and Security & Logs for cleaner administration.</p></div>
         <div class="grid two-column-grid">
           <article class="card"><h3>Church Identity and Branding</h3><form id="settingsForm" class="form-grid" novalidate style="margin-top:16px;">
             <div class="field"><label for="settingChurchName">Church Name</label><input id="settingChurchName" name="churchName" required><small class="field-error"></small></div>
@@ -1302,17 +1415,33 @@
       prayers: STORAGE_PREFIX + "prayers",
       attendance: STORAGE_PREFIX + "attendance",
       care: STORAGE_PREFIX + "care",
+      expenses: STORAGE_PREFIX + "expenses",
+      offeringBatches: STORAGE_PREFIX + "offeringBatches",
+      families: STORAGE_PREFIX + "families",
+      reminders: STORAGE_PREFIX + "reminders",
+      followups: STORAGE_PREFIX + "followups",
+      testimonies: STORAGE_PREFIX + "testimonies",
+      eventRegistrations: STORAGE_PREFIX + "eventRegistrations",
+      eventBudgets: STORAGE_PREFIX + "eventBudgets",
+      announcements: STORAGE_PREFIX + "announcements",
+      documents: STORAGE_PREFIX + "documents",
+      certificates: STORAGE_PREFIX + "certificates",
+      departments: STORAGE_PREFIX + "departments",
+      welfare: STORAGE_PREFIX + "welfare",
+      inventory: STORAGE_PREFIX + "inventory",
+      activityLogs: STORAGE_PREFIX + "activityLogs",
+      notifications: STORAGE_PREFIX + "notifications",
       currentUser: STORAGE_PREFIX + "currentUser",
       setupComplete: STORAGE_PREFIX + "setupComplete"
     };
 
     const roleAccess = {
-      admin: ["dashboard", "members", "events", "attendance", "donations", "prayers", "pastoral", "reports", "settings"],
-      pastor: ["dashboard", "members", "events", "attendance", "prayers", "pastoral", "reports"],
-      finance: ["dashboard", "donations", "reports"],
-      secretary: ["dashboard", "members", "events", "attendance", "reports"],
-      staff: ["dashboard", "members", "events", "attendance", "reports"],
-      viewer: ["dashboard", "reports"]
+      admin: ["dashboard", "members", "membertools", "events", "eventhub", "attendance", "donations", "financeplus", "prayers", "pastoral", "careplus", "communications", "resources", "reports", "analytics", "security", "settings"],
+      pastor: ["dashboard", "members", "membertools", "events", "eventhub", "attendance", "prayers", "pastoral", "careplus", "communications", "reports", "analytics", "security"],
+      finance: ["dashboard", "donations", "financeplus", "reports", "analytics", "security"],
+      secretary: ["dashboard", "members", "membertools", "events", "eventhub", "attendance", "communications", "resources", "reports", "analytics", "security"],
+      staff: ["dashboard", "members", "membertools", "events", "eventhub", "attendance", "communications", "resources", "reports", "analytics", "security"],
+      viewer: ["dashboard", "reports", "analytics", "security"]
     };
 
 
@@ -1380,10 +1509,13 @@
     ];
 
     const state = {
-      settings: { ...CHURCH_CONFIG }, users: [], members: [], events: [], donations: [], prayers: [], attendance: [], care: [], currentUser: null, supabaseClient: null
+      settings: { ...CHURCH_CONFIG }, users: [], members: [], events: [], donations: [], prayers: [], attendance: [], care: [],
+      expenses: [], offeringBatches: [], families: [], reminders: [], followups: [], testimonies: [], eventRegistrations: [], eventBudgets: [], announcements: [], documents: [], certificates: [], departments: [], welfare: [], inventory: [], activityLogs: [], notifications: [],
+      currentUser: null, supabaseClient: null, syncStatus: "offline", lastSyncAt: ""
     };
 
     const CLOUD_USERS_TABLE = "church_system_users";
+    const EXTENDED_COLLECTIONS = ["expenses", "offeringBatches", "families", "reminders", "followups", "testimonies", "eventRegistrations", "eventBudgets", "announcements", "documents", "certificates", "departments", "welfare", "inventory", "activityLogs", "notifications"];
 
     let cloudSyncTimer = null;
     let pendingLoginBackgroundDataUrl = null;
@@ -1510,6 +1642,7 @@
       state.prayers = read(STORAGE_KEYS.prayers, []);
       state.attendance = read(STORAGE_KEYS.attendance, []);
       state.care = read(STORAGE_KEYS.care, []);
+      EXTENDED_COLLECTIONS.forEach(collection => { state[collection] = read(STORAGE_KEYS[collection], []); });
       state.currentUser = read(STORAGE_KEYS.currentUser, null);
       refreshDailyVerseOfTheDay({ persist: true });
       initSupabaseClient();
@@ -1524,6 +1657,7 @@
       save(STORAGE_KEYS.prayers, state.prayers);
       save(STORAGE_KEYS.attendance, state.attendance);
       save(STORAGE_KEYS.care, state.care);
+      EXTENDED_COLLECTIONS.forEach(collection => save(STORAGE_KEYS[collection], state[collection] || []));
     }
 
     function initSupabaseClient() {
@@ -1691,9 +1825,18 @@
     }
 
     function queueCloudSync() {
+      state.syncStatus = hasCloudConnection() ? "pending" : "offline";
       if (!hasCloudConnection()) return;
       clearTimeout(cloudSyncTimer);
       cloudSyncTimer = setTimeout(() => { syncAllToSupabase(false); }, 900);
+    }
+
+    function simpleCloudConfig(collectionName, tableName) {
+      return {
+        table: tableName,
+        map: record => ({ client_ref: record.id, payload: record }),
+        from: row => ({ id: row.client_ref || row.id, ...(row.payload || {}) })
+      };
     }
 
     function cloudMappings() {
@@ -1727,7 +1870,22 @@
           table: "church_pastoral_care_records",
           map: c => ({ client_ref: c.id, member_name: c.memberName, care_type: c.careType || "Other", care_date: c.date || todayInput(), status: c.status || "Open", assigned_to_name: nullIfEmpty(c.assignedTo), notes: nullIfEmpty(c.notes) }),
           from: r => ({ id: r.client_ref || r.id, memberName: r.member_name || "", careType: r.care_type || "Other", date: r.care_date || todayInput(), status: r.status || "Open", assignedTo: r.assigned_to_name || "", notes: r.notes || "" })
-        }
+        },
+        expenses: simpleCloudConfig("expenses", "church_expenses"),
+        offeringBatches: simpleCloudConfig("offeringBatches", "church_offering_batches"),
+        families: simpleCloudConfig("families", "church_families"),
+        reminders: simpleCloudConfig("reminders", "church_reminders"),
+        followups: simpleCloudConfig("followups", "church_followups"),
+        testimonies: simpleCloudConfig("testimonies", "church_testimonies"),
+        eventRegistrations: simpleCloudConfig("eventRegistrations", "church_event_registrations"),
+        eventBudgets: simpleCloudConfig("eventBudgets", "church_event_budgets"),
+        announcements: simpleCloudConfig("announcements", "church_announcements"),
+        documents: simpleCloudConfig("documents", "church_documents"),
+        certificates: simpleCloudConfig("certificates", "church_certificates"),
+        departments: simpleCloudConfig("departments", "church_departments"),
+        welfare: simpleCloudConfig("welfare", "church_welfare_records"),
+        inventory: simpleCloudConfig("inventory", "church_inventory"),
+        activityLogs: simpleCloudConfig("activityLogs", "church_activity_logs")
       };
     }
 
@@ -1791,12 +1949,12 @@
       try {
         await syncSettingsToSupabase();
         await syncUsersToSupabase({ silentMissingTable: !showMessage });
-        for (const collectionName of ["members", "events", "attendance", "donations", "prayers", "care"]) {
+        for (const collectionName of ["members", "events", "attendance", "donations", "prayers", "care", ...EXTENDED_COLLECTIONS.filter(name => name !== "notifications")]) {
           await syncCollectionToSupabase(collectionName);
         }
-        if (showMessage) showToast("Local data pushed to Supabase.");
+        state.syncStatus = "synced"; state.lastSyncAt = new Date().toISOString(); if (showMessage) showToast("Local data pushed to Supabase.");
       } catch (error) {
-        console.warn("Supabase sync failed", error);
+        state.syncStatus = "failed"; console.warn("Supabase sync failed", error);
         if (showMessage) showToast("Supabase sync failed: " + (error.message || "Unknown error"));
       }
     }
@@ -2064,6 +2222,104 @@
     function getUpcomingEvents() { const today = parseDate(todayInput()); return [...state.events].filter(e => parseDate(e.date) >= today).sort((a,b) => parseDate(a.date) - parseDate(b.date)); }
     function nextReceiptNo() { return `RCPT-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 900000) + 100000)}`; }
 
+
+
+    function getMemberId(member) {
+      if (member.memberId) return member.memberId;
+      const index = state.members.findIndex(m => m.id === member.id);
+      return `LDC-${String(index + 1 || state.members.length + 1).padStart(4, "0")}`;
+    }
+
+    function normalizeRecord(record) {
+      return { ...record, updatedAt: new Date().toISOString(), updatedBy: state.currentUser?.displayName || "System" };
+    }
+
+    function logActivity(action, details = "") {
+      const entry = { id: uid("log"), date: new Date().toISOString(), user: state.currentUser?.displayName || "System", role: state.currentUser?.role || "system", action, details };
+      state.activityLogs.unshift(entry);
+      state.activityLogs = state.activityLogs.slice(0, 500);
+      save(STORAGE_KEYS.activityLogs, state.activityLogs);
+    }
+
+    function getDateDistanceDays(dateValue) {
+      const target = parseDate(dateValue || todayInput());
+      const now = parseDate(todayInput());
+      return Math.ceil((target - now) / 86400000);
+    }
+
+    function buildNotifications() {
+      const notices = [];
+      getUpcomingEvents().slice(0, 3).forEach(event => notices.push({ id: `evt_${event.id}`, type: "Event", title: event.title, date: event.date, message: `${formatDate(event.date)} at ${event.time || "time not set"}` }));
+      state.reminders.filter(r => getDateDistanceDays(r.date) >= 0 && getDateDistanceDays(r.date) <= 30).slice(0, 5).forEach(r => notices.push({ id: `rem_${r.id}`, type: r.type || "Reminder", title: r.title, date: r.date, message: `Due ${formatDate(r.date)}${r.assignedTo ? " • " + r.assignedTo : ""}` }));
+      state.followups.filter(f => f.status !== "Closed" && getDateDistanceDays(f.date) >= 0 && getDateDistanceDays(f.date) <= 14).slice(0, 5).forEach(f => notices.push({ id: `fol_${f.id}`, type: "Pastoral Follow-up", title: f.memberName, date: f.date, message: `${f.careType} due ${formatDate(f.date)}` }));
+      state.members.forEach(member => {
+        if (member.dateOfBirth) {
+          const thisYear = `${new Date().getFullYear()}-${String(member.dateOfBirth).slice(5)}`;
+          const days = getDateDistanceDays(thisYear);
+          if (days >= 0 && days <= 30) notices.push({ id: `birth_${member.id}`, type: "Birthday", title: memberFullName(member), date: thisYear, message: `${memberFullName(member)} has a birthday on ${formatDate(thisYear)}` });
+        }
+        if (member.anniversaryDate) {
+          const thisYear = `${new Date().getFullYear()}-${String(member.anniversaryDate).slice(5)}`;
+          const days = getDateDistanceDays(thisYear);
+          if (days >= 0 && days <= 30) notices.push({ id: `ann_${member.id}`, type: "Anniversary", title: memberFullName(member), date: thisYear, message: `${memberFullName(member)} has an anniversary on ${formatDate(thisYear)}` });
+        }
+      });
+      state.prayers.filter(p => !p.prayed).slice(0, 3).forEach(p => notices.push({ id: `pray_${p.id}`, type: "Prayer", title: p.name || "Prayer request", date: p.date, message: "Pending prayer follow-up" }));
+      state.notifications = notices.slice(0, 20);
+      save(STORAGE_KEYS.notifications, state.notifications);
+      return state.notifications;
+    }
+
+    function sumBy(rows, amountField = "amount") { return rows.reduce((sum, row) => sum + Number(row[amountField] || 0), 0); }
+    function groupCount(rows, field) { return rows.reduce((acc, row) => { const key = row[field] || "Unspecified"; acc[key] = (acc[key] || 0) + 1; return acc; }, {}); }
+    function groupSum(rows, field, amountField = "amount") { return rows.reduce((acc, row) => { const key = row[field] || "Unspecified"; acc[key] = (acc[key] || 0) + Number(row[amountField] || 0); return acc; }, {}); }
+
+    function renderMetricCards(targetId, cards) {
+      const target = $("#" + targetId);
+      if (!target) return;
+      target.innerHTML = cards.map(card => `<article class="suite-card"><div class="suite-kicker">${escapeHtml(card.kicker || "Summary")}</div><h3>${escapeHtml(card.label)}</h3><div class="suite-metric">${card.value}</div><p class="muted small">${escapeHtml(card.note || "")}</p></article>`).join("");
+    }
+
+    function renderBarChart(targetId, data, formatter = value => value) {
+      const target = $("#" + targetId);
+      if (!target) return;
+      const entries = Object.entries(data || {}).sort((a,b) => Number(b[1]) - Number(a[1])).slice(0, 8);
+      const max = Math.max(1, ...entries.map(([,value]) => Number(value) || 0));
+      target.innerHTML = entries.length ? entries.map(([label, value]) => `<div class="chart-row"><strong>${escapeHtml(label)}</strong><div class="chart-track"><div class="chart-bar" style="width:${Math.max(4, (Number(value) / max) * 100)}%;"></div></div><span>${escapeHtml(formatter(value))}</span></div>`).join("") : `<div class="empty-state">No chart data available yet.</div>`;
+    }
+
+    function renderStack(targetId, rows, mapper, empty = "No records yet.") {
+      const target = $("#" + targetId);
+      if (!target) return;
+      target.innerHTML = rows.length ? rows.map(mapper).join("") : `<div class="empty-state">${escapeHtml(empty)}</div>`;
+    }
+
+    function renderEventSelects() {
+      const eventOptions = state.events.length ? state.events.map(e => `<option value="${escapeAttribute(e.id)}">${escapeHtml(e.title)} • ${formatDate(e.date)}</option>`).join("") : `<option value="">No events available</option>`;
+      ["registrationEvent", "qrEventSelect", "budgetEvent"].forEach(id => { const el = $("#" + id); if (el) el.innerHTML = eventOptions; });
+      updateQrPreview();
+    }
+
+    function updateQrPreview() {
+      const select = $("#qrEventSelect"); const box = $("#qrPreviewBox");
+      if (!select || !box) return;
+      const event = state.events.find(e => e.id === select.value) || state.events[0];
+      if (!event) { box.innerHTML = `<div class="empty-state">Create an event first to generate a QR check-in code.</div>`; return; }
+      const payload = encodeURIComponent(`${state.settings.churchName}|${event.id}|${event.title}|${event.date}`);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${payload}`;
+      box.innerHTML = `<img class="qr-preview" src="${qrUrl}" alt="QR code for ${escapeAttribute(event.title)}"><p class="muted small">Check-in code: <strong>${escapeHtml(event.id.slice(-8).toUpperCase())}</strong></p>`;
+    }
+
+    function enhanceMobileTableCells(tbodyId, labels) {
+      const tbody = $("#" + tbodyId); if (!tbody) return;
+      $$('tr', tbody).forEach(row => $$('td', row).forEach((cell, index) => cell.setAttribute('data-label', labels[index] || 'Field')));
+    }
+
+    function safeDeleteConfirm(collection, id) {
+      const response = prompt("This action cannot be undone. Type DELETE to confirm.");
+      return response === "DELETE";
+    }
+
     function renderDashboard() {
       const cards = [
         { icon: "👥", label: "Total Members", value: state.members.length },
@@ -2100,6 +2356,10 @@
         <div class="field"><label for="memberMaritalStatus">Marital Status</label><select id="memberMaritalStatus" name="maritalStatus">${options(["", "Single", "Married", "Widowed", "Divorced"], m.maritalStatus)}</select><small class="field-error"></small></div>
         <div class="field"><label for="memberOccupation">Occupation</label><input id="memberOccupation" name="occupation" value="${escapeAttribute(m.occupation || "")}"><small class="field-error"></small></div>
         <div class="field"><label for="memberDepartment">Department/Ministry</label><input id="memberDepartment" name="department" value="${escapeAttribute(m.department || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberMemberId">Member ID</label><input id="memberMemberId" name="memberId" value="${escapeAttribute(m.memberId || getMemberId(m))}" readonly><small class="field-error"></small></div>
+        <div class="field"><label for="memberCategory">Member Category</label><select id="memberCategory" name="memberCategory">${options(["New Convert", "Baptized Member", "Full Member", "Worker", "Leader", "Pastor", "Visitor", "Child", "Youth"], m.memberCategory || m.status || "Full Member")}</select><small class="field-error"></small></div>
+        <div class="field"><label for="memberAnniversaryDate">Wedding Anniversary</label><input id="memberAnniversaryDate" name="anniversaryDate" type="date" value="${escapeAttribute(m.anniversaryDate || "")}"><small class="field-error"></small></div>
+        <div class="field"><label for="memberHouseholdId">Household Name</label><input id="memberHouseholdId" name="householdId" value="${escapeAttribute(m.householdId || "")}" placeholder="e.g., Mensah Family"><small class="field-error"></small></div>
         <div class="field"><label for="memberBaptismStatus">Baptism Status</label><select id="memberBaptismStatus" name="baptismStatus">${options(["", "Baptized", "Pending", "Not Baptized"], m.baptismStatus)}</select><small class="field-error"></small></div>
         <div class="field"><label for="memberStatus">Membership Status</label><select id="memberStatus" name="status">${options(["Active", "Inactive", "Visitor", "New Convert"], m.status || "Active")}</select><small class="field-error"></small></div>
         <div class="field"><label for="memberDateJoined">Date Joined</label><input id="memberDateJoined" name="dateJoined" type="date" required value="${escapeAttribute(m.dateJoined || todayInput())}"><small class="field-error"></small></div>
@@ -2182,7 +2442,139 @@
       $("#usersTableBody").innerHTML = state.users.length ? state.users.map(user => `<tr><td>${escapeHtml(user.displayName)}</td><td>${escapeHtml(user.username)}</td><td><span class="badge blue">${escapeHtml(user.role)}</span></td><td><div class="button-row"><button class="btn btn-danger btn-small" type="button" data-delete-user="${user.id}" ${user.id === state.currentUser?.id ? "disabled" : ""}>Delete</button></div></td></tr>`).join("") : `<tr><td colspan="4" class="muted">No users found.</td></tr>`;
     }
 
-    function renderAll() { applySettings(); applyRoleAccess(); renderDashboard(); renderMembers(); renderEvents(); renderAttendance(); renderDonations(); renderPrayers(); renderCare(); renderReports(); renderUsers(); if (!$("#donationDate").value) $("#donationDate").value = todayInput(); }
+
+
+    function renderMemberTools() {
+      const families = state.families || [];
+      const upcomingReminders = buildNotifications().filter(n => ["Birthday", "Anniversary", "Wedding Anniversary", "Membership Anniversary", "Pastoral Follow-up", "Reminder"].includes(n.type));
+      renderMetricCards("memberToolsMetrics", [
+        { label: "Members", value: state.members.length, note: "Total registered profiles" },
+        { label: "Families", value: families.length, note: "Linked household records" },
+        { label: "Upcoming Reminders", value: upcomingReminders.length, note: "Next 30 days" },
+        { label: "New Converts", value: state.members.filter(m => m.status === "New Convert" || m.memberCategory === "New Convert").length, note: "For discipleship follow-up" }
+      ]);
+      const rows = [...state.members].sort((a,b) => memberFullName(a).localeCompare(memberFullName(b)));
+      const body = $("#memberProfilesBody");
+      if (body) body.innerHTML = rows.length ? rows.map(m => `<tr><td>${escapeHtml(getMemberId(m))}</td><td><strong>${escapeHtml(memberFullName(m))}</strong><br><span class="muted">${escapeHtml(m.phone || "")}</span></td><td><span class="badge blue">${escapeHtml(m.memberCategory || m.status || "Member")}</span></td><td>${escapeHtml(m.department || "Not assigned")}</td><td>${state.attendance.filter(a => String(a.notes || "").includes(memberFullName(m))).length} attendance notes • ${state.care.filter(c => c.memberName === memberFullName(m)).length} care records</td><td><div class="button-row"><button class="btn btn-secondary btn-small" type="button" data-view-member="${m.id}">View Profile</button><button class="btn btn-secondary btn-small" type="button" data-certificate-member="${escapeAttribute(memberFullName(m))}">Certificate</button></div></td></tr>`).join("") : `<tr><td colspan="6" class="muted">No member profiles yet.</td></tr>`;
+      enhanceMobileTableCells("memberProfilesBody", ["Member ID", "Name", "Category", "Department", "Care Snapshot", "Actions"]);
+      renderStack("familyList", families, f => `<div class="stack-item"><strong>${escapeHtml(f.familyName)}</strong><div class="muted">Head: ${escapeHtml(f.familyHead || "Not set")} • ${escapeHtml(f.phone || "No phone")}</div><div>${escapeHtml(f.members || "No linked names yet")}</div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-family="${f.id}">Delete</button></div></div>`);
+      renderStack("reminderList", [...state.reminders].sort((a,b) => parseDate(a.date) - parseDate(b.date)), r => `<div class="stack-item"><strong>${escapeHtml(r.title)}</strong><div class="inline-meta"><span class="badge blue">${escapeHtml(r.type || "Reminder")}</span><span>${formatDate(r.date)}</span><span class="muted">${escapeHtml(r.assignedTo || "")}</span></div><p>${escapeHtml(r.notes || "")}</p><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-reminder="${r.id}">Delete</button></div></div>`);
+    }
+
+    function renderEventHub() {
+      renderEventSelects();
+      const attended = state.eventRegistrations.filter(r => r.status === "Attended").length;
+      renderMetricCards("eventHubMetrics", [
+        { label: "Upcoming Events", value: getUpcomingEvents().length, note: "Scheduled programs" },
+        { label: "Registrations", value: state.eventRegistrations.length, note: "All event registrations" },
+        { label: "Confirmed", value: state.eventRegistrations.filter(r => r.status === "Confirmed").length, note: "Confirmed participants" },
+        { label: "Attended", value: attended, note: "Event attendance confirmations" }
+      ]);
+      const body = $("#eventRegistrationsBody");
+      if (body) body.innerHTML = state.eventRegistrations.length ? state.eventRegistrations.map(r => { const event = state.events.find(e => e.id === r.eventId); return `<tr><td>${escapeHtml(event?.title || "Unknown event")}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.phone || "")}</td><td><span class="badge blue">${escapeHtml(r.status || "Registered")}</span></td><td><div class="button-row"><button class="btn btn-secondary btn-small" type="button" data-mark-registration-attended="${r.id}">Mark Attended</button><button class="btn btn-danger btn-small" type="button" data-delete-event-registration="${r.id}">Delete</button></div></td></tr>`; }).join("") : `<tr><td colspan="5" class="muted">No event registrations yet.</td></tr>`;
+      enhanceMobileTableCells("eventRegistrationsBody", ["Event", "Name", "Phone", "Status", "Actions"]);
+      renderStack("eventBudgetList", state.eventBudgets, b => { const event = state.events.find(e => e.id === b.eventId); const balance = Number(b.income || 0) - Number(b.actualCost || 0); return `<div class="stack-item"><strong>${escapeHtml(event?.title || "Event budget")}</strong><div class="inline-meta"><span>Estimated: ${formatCurrency(b.estimatedCost)}</span><span>Actual: ${formatCurrency(b.actualCost)}</span><span>Income: ${formatCurrency(b.income)}</span><span class="badge ${balance >= 0 ? "green" : "red"}">Balance ${formatCurrency(balance)}</span></div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-event-budget="${b.id}">Delete</button></div></div>`; });
+    }
+
+    function renderFinancePlus() {
+      const income = sumBy(state.donations) + sumBy(state.offeringBatches, "total");
+      const expenses = sumBy(state.expenses);
+      const balance = income - expenses;
+      renderMetricCards("financeMetrics", [
+        { label: "Total Income", value: formatCurrency(income), note: "Donations plus offering batches" },
+        { label: "Total Expenses", value: formatCurrency(expenses), note: "Recorded expenses" },
+        { label: "Net Balance", value: formatCurrency(balance), note: "Income minus expenses" },
+        { label: "Batches", value: state.offeringBatches.length, note: "Service offering batches" }
+      ]);
+      const body = $("#expensesBody");
+      if (body) body.innerHTML = state.expenses.length ? state.expenses.map(e => `<tr><td><strong>${escapeHtml(e.title)}</strong><br><span class="muted">${escapeHtml(e.notes || "")}</span></td><td>${escapeHtml(e.category || "Other")}</td><td>${formatDate(e.date)}</td><td><strong>${formatCurrency(e.amount)}</strong></td><td><button class="btn btn-danger btn-small" type="button" data-delete-expense="${e.id}">Delete</button></td></tr>`).join("") : `<tr><td colspan="5" class="muted">No expenses recorded.</td></tr>`;
+      enhanceMobileTableCells("expensesBody", ["Title", "Category", "Date", "Amount", "Actions"]);
+      renderBarChart("incomeExpenseChart", { Income: income, Expenses: expenses, Balance: Math.max(0, balance) }, v => formatCurrency(v));
+      renderStack("offeringBatchList", state.offeringBatches.slice(0, 8), b => `<div class="stack-item"><strong>${escapeHtml(b.service)}</strong><div class="inline-meta"><span>${formatDate(b.date)}</span><span>${escapeHtml(b.purpose || "Offering")}</span><span class="badge green">${formatCurrency(b.total)}</span></div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-offering-batch="${b.id}">Delete</button></div></div>`);
+    }
+
+    function renderCarePlus() {
+      const openFollowups = state.followups.filter(f => f.status !== "Closed").length;
+      renderMetricCards("carePlusMetrics", [
+        { label: "Scheduled Follow-ups", value: openFollowups, note: "Open pastoral assignments" },
+        { label: "Welfare Records", value: state.welfare.length, note: "Member support actions" },
+        { label: "Testimonies", value: state.testimonies.length, note: "Answered prayer records" },
+        { label: "Confidential Notes", value: state.followups.filter(f => f.confidential === "Yes").length, note: "Admin and pastor visibility" }
+      ]);
+      const canViewConfidential = ["admin", "pastor"].includes(state.currentUser?.role);
+      renderStack("followupList", state.followups.filter(f => f.confidential !== "Yes" || canViewConfidential).sort((a,b) => parseDate(a.date) - parseDate(b.date)), f => `<div class="stack-item"><strong>${escapeHtml(f.memberName)}</strong><div class="inline-meta"><span class="badge blue">${escapeHtml(f.careType)}</span><span>${formatDate(f.date)}</span><span>${escapeHtml(f.status)}</span><span class="muted">${escapeHtml(f.assignedTo || "")}</span>${f.confidential === "Yes" ? '<span class="badge red">Confidential</span>' : ''}</div><p>${escapeHtml(f.notes || "")}</p><div class="quick-actions"><button class="btn btn-secondary btn-small" type="button" data-close-followup="${f.id}">Close</button><button class="btn btn-danger btn-small" type="button" data-delete-followup="${f.id}">Delete</button></div></div>`);
+      renderStack("welfareList", state.welfare.slice(0, 8), w => `<div class="stack-item"><strong>${escapeHtml(w.memberName)}</strong><div class="inline-meta"><span>${escapeHtml(w.supportType || "Support")}</span><span>${formatDate(w.date)}</span><span>${formatCurrency(w.amount)}</span><span class="muted">Approved by ${escapeHtml(w.approvedBy || "")}</span></div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-welfare="${w.id}">Delete</button></div></div>`);
+    }
+
+    function renderCommunications() {
+      renderStack("announcementList", state.announcements, a => `<div class="stack-item"><strong>${escapeHtml(a.title)}</strong><div class="inline-meta"><span class="badge blue">${escapeHtml(a.group)}</span><span>${escapeHtml(a.channel)}</span><span>${formatDate(a.date)}</span></div><p>${escapeHtml(a.message)}</p><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-announcement="${a.id}">Delete</button></div></div>`);
+      renderContactExportPreview();
+    }
+
+    function renderContactExportPreview() {
+      const group = $("#contactGroupFilter")?.value || "All Members";
+      const type = $("#contactExportType")?.value || "phones";
+      let members = [...state.members];
+      if (group !== "All Members") members = members.filter(m => String(m.department || m.status || "").toLowerCase().includes(group.toLowerCase().replace(" ministry", "")));
+      const values = members.map(m => type === "emails" ? m.email : m.phone).filter(Boolean);
+      const formatted = type === "whatsapp" ? values.map(v => `https://wa.me/${String(v).replace(/\D/g, "")}`) : values;
+      renderStack("contactExportPreview", formatted.slice(0, 12).map((value, idx) => ({value, idx})), row => `<div class="stack-item"><strong>${escapeHtml(row.value)}</strong></div>`, "No contacts match this group yet.");
+    }
+
+    function renderResources() {
+      renderMetricCards("resourceMetrics", [
+        { label: "Departments", value: state.departments.length || new Set(state.members.map(m => m.department).filter(Boolean)).size, note: "Ministry units" },
+        { label: "Documents", value: state.documents.length, note: "Official document records" },
+        { label: "Inventory Items", value: state.inventory.length, note: "Assets tracked" },
+        { label: "Certificates", value: state.certificates.length, note: "Generated certificates" }
+      ]);
+      renderStack("departmentList", state.departments, d => `<div class="stack-item"><strong>${escapeHtml(d.name)}</strong><div class="muted">Leader: ${escapeHtml(d.leader || "Not set")} • Assistant: ${escapeHtml(d.assistant || "Not set")}</div><div>${escapeHtml(d.meetingSchedule || "No schedule")}</div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-department="${d.id}">Delete</button></div></div>`);
+      renderStack("documentList", state.documents, d => `<div class="stack-item"><strong>${escapeHtml(d.title)}</strong><div class="inline-meta"><span>${escapeHtml(d.type)}</span><span>${formatDate(d.date)}</span><span class="muted">${escapeHtml(d.owner || "")}</span></div><p>${escapeHtml(d.notes || "")}</p><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-document="${d.id}">Delete</button></div></div>`);
+      renderStack("inventoryList", state.inventory, item => `<div class="stack-item"><strong>${escapeHtml(item.item)}</strong><div class="inline-meta"><span>${escapeHtml(item.category)}</span><span>Qty: ${escapeHtml(item.quantity)}</span><span>${escapeHtml(item.condition)}</span><span>${escapeHtml(item.location || "No location")}</span><span>${formatCurrency(item.value)}</span></div><div class="quick-actions"><button class="btn btn-danger btn-small" type="button" data-delete-inventory="${item.id}">Delete</button></div></div>`);
+      renderStack("certificateList", state.certificates, c => `<div class="stack-item"><strong>${escapeHtml(c.type)} Certificate</strong><div class="inline-meta"><span>${escapeHtml(c.memberName)}</span><span>${formatDate(c.date)}</span><span class="muted">Authorized by ${escapeHtml(c.authorizedBy || "")}</span></div><div class="quick-actions"><button class="btn btn-secondary btn-small" type="button" data-print-certificate="${c.id}">Print</button><button class="btn btn-danger btn-small" type="button" data-delete-certificate="${c.id}">Delete</button></div></div>`);
+    }
+
+    function renderAnalytics() {
+      const income = sumBy(state.donations) + sumBy(state.offeringBatches, "total");
+      const expenses = sumBy(state.expenses);
+      renderMetricCards("analyticsMetrics", [
+        { label: "Member Growth", value: state.members.length, note: "Registered member records" },
+        { label: "Total Giving", value: formatCurrency(income), note: "Giving trend baseline" },
+        { label: "Attendance Records", value: state.attendance.length, note: "Service records captured" },
+        { label: "Event Participation", value: state.eventRegistrations.length, note: "Registration records" }
+      ]);
+      renderBarChart("givingPurposeChart", groupSum(state.donations, "purpose"), v => formatCurrency(v));
+      renderBarChart("departmentChart", groupCount(state.members, "department"), v => String(v));
+      const attendanceByDate = state.attendance.reduce((acc, a) => { acc[formatDate(a.date)] = totalAttendance(a); return acc; }, {});
+      renderBarChart("attendanceTrendChart", attendanceByDate, v => String(v));
+      const reportItems = [
+        ["Members by Department", `${Object.keys(groupCount(state.members, "department")).length} departments represented.`],
+        ["Members by Status", `${state.members.filter(m => m.status === "Active").length} active members and ${state.members.filter(m => m.status === "Visitor").length} visitors.`],
+        ["Attendance by Month", `${state.attendance.length} attendance records with latest total ${state.attendance[0] ? totalAttendance(state.attendance[0]) : 0}.`],
+        ["Donations by Purpose", `${Object.keys(groupSum(state.donations, "purpose")).length} giving purposes recorded.`],
+        ["Finance Summary", `${formatCurrency(income)} income, ${formatCurrency(expenses)} expenses, ${formatCurrency(income - expenses)} net balance.`]
+      ];
+      renderStack("advancedReportsList", reportItems.map(([title, body]) => ({title, body})), item => `<div class="stack-item"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.body)}</p></div>`);
+    }
+
+    function renderSecurity() {
+      const notices = buildNotifications();
+      renderMetricCards("securityMetrics", [
+        { label: "Sync Status", value: `<span class="sync-pill ${state.syncStatus}">${state.syncStatus}</span>`, note: state.lastSyncAt ? `Last sync: ${new Date(state.lastSyncAt).toLocaleString(state.settings.locale || "en-GH")}` : "No successful sync yet" },
+        { label: "Active Users", value: state.users.filter(u => u.isActive !== false).length, note: "Allowed to login" },
+        { label: "Notifications", value: notices.length, note: "Current operational alerts" },
+        { label: "Activity Logs", value: state.activityLogs.length, note: "Recent accountability records" }
+      ]);
+      const userBody = $("#securityUsersBody");
+      if (userBody) userBody.innerHTML = state.users.map(user => `<tr><td>${escapeHtml(user.displayName)}</td><td>${escapeHtml(user.username)}</td><td><span class="badge blue">${escapeHtml(user.role)}</span></td><td><span class="badge ${user.isActive === false ? "red" : "green"}">${user.isActive === false ? "Disabled" : "Active"}</span></td><td><div class="button-row"><button class="btn btn-secondary btn-small" type="button" data-toggle-user-status="${user.id}" ${user.id === state.currentUser?.id ? "disabled" : ""}>${user.isActive === false ? "Activate" : "Disable"}</button><button class="btn btn-secondary btn-small" type="button" data-reset-user-password="${user.id}">Reset Password</button></div></td></tr>`).join("");
+      enhanceMobileTableCells("securityUsersBody", ["User", "Username", "Role", "Status", "Actions"]);
+      const logBody = $("#activityLogsBody");
+      if (logBody) logBody.innerHTML = state.activityLogs.slice(0, 80).map(log => `<tr><td>${new Date(log.date).toLocaleString(state.settings.locale || "en-GH")}</td><td>${escapeHtml(log.user)}</td><td>${escapeHtml(log.action)}</td><td>${escapeHtml(log.details || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No activity logs yet.</td></tr>`;
+      enhanceMobileTableCells("activityLogsBody", ["Date", "User", "Action", "Details"]);
+      renderStack("notificationList", notices, n => `<div class="stack-item"><strong>${escapeHtml(n.type)}: ${escapeHtml(n.title)}</strong><div class="muted">${escapeHtml(n.message || "")}</div></div>`, "No current notifications.");
+    }
+
+    function renderAll() { applySettings(); applyRoleAccess(); renderDashboard(); renderMembers(); renderEvents(); renderAttendance(); renderDonations(); renderPrayers(); renderCare(); renderReports(); renderUsers(); renderMemberTools(); renderEventHub(); renderFinancePlus(); renderCarePlus(); renderCommunications(); renderResources(); renderAnalytics(); renderSecurity(); if ($("#donationDate") && !$("#donationDate").value) $("#donationDate").value = todayInput(); ["expenseDate","batchDate","reminderDate","registrationDate","testimonyDate","welfareDate","documentDate","certificateDate","announcementDate"].forEach(id => { const el = $("#" + id); if (el && !el.value) el.value = todayInput(); }); }
 
     function handleMemberSubmit(form) {
       if (!validateForm(form)) return;
@@ -2190,13 +2582,75 @@
       const record = { id, ...data };
       const index = state.members.findIndex(m => m.id === id);
       if (index >= 0) state.members[index] = record; else state.members.unshift(record);
-      save(STORAGE_KEYS.members, state.members); closeModal(); renderAll(); queueCloudSync(); showToast("Member saved.");
+      save(STORAGE_KEYS.members, state.members); closeModal(); renderAll(); queueCloudSync(); logActivity("Member saved", memberFullName(record)); showToast("Member saved.");
     }
-    function handleEventSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("evt"); const record = { id, ...data }; const index = state.events.findIndex(e => e.id === id); if (index >= 0) state.events[index] = record; else state.events.unshift(record); save(STORAGE_KEYS.events, state.events); closeModal(); renderAll(); queueCloudSync(); showToast("Event saved."); }
-    function handleAttendanceSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("att"); const record = { id, ...data, adults: Number(data.adults || 0), children: Number(data.children || 0), visitors: Number(data.visitors || 0) }; const index = state.attendance.findIndex(a => a.id === id); if (index >= 0) state.attendance[index] = record; else state.attendance.unshift(record); save(STORAGE_KEYS.attendance, state.attendance); closeModal(); renderAll(); queueCloudSync(); showToast("Attendance saved."); }
-    function handleDonationSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.donations.unshift({ id: uid("don"), receiptNo: nextReceiptNo(), ...data, amount: Number(data.amount || 0), recordedBy: state.currentUser?.displayName || "System" }); save(STORAGE_KEYS.donations, state.donations); form.reset(); $("#donationDate").value = todayInput(); renderAll(); queueCloudSync(); showToast("Donation recorded."); }
-    function handlePrayerSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.prayers.unshift({ id: uid("pray"), ...data, date: todayInput(), prayed: false, answered: false }); save(STORAGE_KEYS.prayers, state.prayers); form.reset(); $("#prayerFormCard").classList.add("hidden"); renderAll(); queueCloudSync(); showToast("Prayer request added."); }
-    function handleCareSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("care"); const record = { id, ...data }; const index = state.care.findIndex(c => c.id === id); if (index >= 0) state.care[index] = record; else state.care.unshift(record); save(STORAGE_KEYS.care, state.care); closeModal(); renderAll(); queueCloudSync(); showToast("Care record saved."); }
+    function handleEventSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("evt"); const record = { id, ...data }; const index = state.events.findIndex(e => e.id === id); if (index >= 0) state.events[index] = record; else state.events.unshift(record); save(STORAGE_KEYS.events, state.events); closeModal(); renderAll(); queueCloudSync(); logActivity("Event saved", data.title); showToast("Event saved."); }
+    function handleAttendanceSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("att"); const record = { id, ...data, adults: Number(data.adults || 0), children: Number(data.children || 0), visitors: Number(data.visitors || 0) }; const index = state.attendance.findIndex(a => a.id === id); if (index >= 0) state.attendance[index] = record; else state.attendance.unshift(record); save(STORAGE_KEYS.attendance, state.attendance); closeModal(); renderAll(); queueCloudSync(); logActivity("Attendance saved", data.serviceName); showToast("Attendance saved."); }
+    function handleDonationSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.donations.unshift({ id: uid("don"), receiptNo: nextReceiptNo(), ...data, amount: Number(data.amount || 0), recordedBy: state.currentUser?.displayName || "System" }); save(STORAGE_KEYS.donations, state.donations); form.reset(); $("#donationDate").value = todayInput(); renderAll(); queueCloudSync(); logActivity("Donation recorded", `${data.donorName} ${formatCurrency(data.amount)}`); showToast("Donation recorded."); }
+    function handlePrayerSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.prayers.unshift({ id: uid("pray"), ...data, date: todayInput(), prayed: false, answered: false }); save(STORAGE_KEYS.prayers, state.prayers); form.reset(); $("#prayerFormCard").classList.add("hidden"); renderAll(); queueCloudSync(); logActivity("Prayer request added", data.name || "Anonymous"); showToast("Prayer request added."); }
+    function handleCareSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const id = form.dataset.id || uid("care"); const record = { id, ...data }; const index = state.care.findIndex(c => c.id === id); if (index >= 0) state.care[index] = record; else state.care.unshift(record); save(STORAGE_KEYS.care, state.care); closeModal(); renderAll(); queueCloudSync(); logActivity("Care record saved", data.memberName); showToast("Care record saved."); }
+
+
+
+    function saveExtendedRecord(collection, data, options = {}) {
+      const id = options.id || data.id || uid(options.prefix || collection.slice(0, 4));
+      const record = normalizeRecord({ id, ...data });
+      state[collection].unshift(record);
+      save(STORAGE_KEYS[collection], state[collection]);
+      logActivity(options.action || `Save ${collection}`, options.details || `${collection} record saved`);
+      renderAll(); queueCloudSync();
+      return record;
+    }
+
+    function handleFamilySubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("families", formDataObject(form), { prefix: "fam", action: "Family saved" }); form.reset(); showToast("Household saved."); }
+    function handleReminderSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("reminders", formDataObject(form), { prefix: "rem", action: "Reminder saved" }); form.reset(); showToast("Reminder saved."); }
+    function handleEventRegistrationSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("eventRegistrations", formDataObject(form), { prefix: "reg", action: "Event registration saved" }); form.reset(); showToast("Event registration saved."); }
+    function handleEventBudgetSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const existing = state.eventBudgets.findIndex(b => b.eventId === data.eventId); const record = normalizeRecord({ id: existing >= 0 ? state.eventBudgets[existing].id : uid("bud"), ...data, estimatedCost: Number(data.estimatedCost || 0), actualCost: Number(data.actualCost || 0), income: Number(data.income || 0) }); if (existing >= 0) state.eventBudgets[existing] = record; else state.eventBudgets.unshift(record); save(STORAGE_KEYS.eventBudgets, state.eventBudgets); logActivity("Event budget saved", data.eventId); form.reset(); renderAll(); queueCloudSync(); showToast("Event budget saved."); }
+    function handleExpenseSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); saveExtendedRecord("expenses", { ...data, amount: Number(data.amount || 0) }, { prefix: "exp", action: "Expense saved", details: `${data.title} ${formatCurrency(data.amount)}` }); form.reset(); showToast("Expense saved."); }
+    function handleOfferingBatchSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); const total = Number(data.cash || 0) + Number(data.momo || 0) + Number(data.bank || 0); saveExtendedRecord("offeringBatches", { ...data, cash: Number(data.cash || 0), momo: Number(data.momo || 0), bank: Number(data.bank || 0), total }, { prefix: "bat", action: "Offering batch posted", details: `${data.service} ${formatCurrency(total)}` }); form.reset(); showToast("Offering batch posted."); }
+    function handleFollowupSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("followups", formDataObject(form), { prefix: "fol", action: "Pastoral follow-up scheduled" }); form.reset(); showToast("Follow-up saved."); }
+    function handleTestimonySubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("testimonies", formDataObject(form), { prefix: "tes", action: "Testimony saved" }); form.reset(); showToast("Testimony saved."); }
+    function handleWelfareSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); saveExtendedRecord("welfare", { ...data, amount: Number(data.amount || 0) }, { prefix: "wel", action: "Welfare support saved" }); form.reset(); showToast("Welfare record saved."); }
+    function handleAnnouncementSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("announcements", formDataObject(form), { prefix: "ann", action: "Announcement saved" }); form.reset(); showToast("Announcement saved."); }
+    function handleDepartmentSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("departments", formDataObject(form), { prefix: "dep", action: "Department saved" }); form.reset(); showToast("Department saved."); }
+    function handleDocumentSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("documents", formDataObject(form), { prefix: "doc", action: "Document record saved" }); form.reset(); showToast("Document record saved."); }
+    function handleInventorySubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); saveExtendedRecord("inventory", { ...data, quantity: Number(data.quantity || 1), value: Number(data.value || 0) }, { prefix: "inv", action: "Inventory saved" }); form.reset(); showToast("Inventory item saved."); }
+    function handleCertificateSubmit(form) { if (!validateForm(form)) return; saveExtendedRecord("certificates", formDataObject(form), { prefix: "cert", action: "Certificate created" }); form.reset(); showToast("Certificate created."); }
+
+    function handleChangePassword(form) {
+      if (!validateForm(form)) return;
+      const data = formDataObject(form);
+      const user = state.users.find(u => u.id === state.currentUser?.id || u.username === state.currentUser?.username);
+      if (!user || user.password !== data.currentPassword) { setFieldError($("#currentPassword"), "Current password is incorrect."); return; }
+      if (data.newPassword.length < 6) { setFieldError($("#newPassword"), "Use at least 6 characters."); return; }
+      if (data.newPassword !== data.confirmPassword) { setFieldError($("#confirmPassword"), "Passwords do not match."); return; }
+      user.password = data.newPassword; user.updatedAt = new Date().toISOString();
+      save(STORAGE_KEYS.users, state.users); logActivity("Password changed", user.username); form.reset(); renderAll(); queueCloudSync(); showToast("Password updated and queued for shared sync.");
+    }
+
+    function openMemberProfile(memberId) {
+      const member = state.members.find(m => m.id === memberId); if (!member) return;
+      const name = memberFullName(member);
+      const donations = state.donations.filter(d => d.donorName === name);
+      const care = state.care.filter(c => c.memberName === name).concat(state.followups.filter(f => f.memberName === name));
+      const prayers = state.prayers.filter(p => p.name === name);
+      const html = `<div class="profile-grid"><div class="profile-photo">${member.photoDataUrl ? `<img src="${escapeAttribute(member.photoDataUrl)}" alt="${escapeAttribute(name)}">` : "👤"}</div><div><h3>${escapeHtml(name)}</h3><p><strong>Member ID:</strong> ${escapeHtml(getMemberId(member))}</p><p><strong>Category:</strong> ${escapeHtml(member.memberCategory || member.status || "Member")}</p><p><strong>Department:</strong> ${escapeHtml(member.department || "Not assigned")}</p><p><strong>Phone:</strong> ${escapeHtml(member.phone || "")}</p><p><strong>Email:</strong> ${escapeHtml(member.email || "")}</p><p><strong>Household:</strong> ${escapeHtml(member.householdId || "Not linked")}</p></div></div><div class="grid three-column-grid" style="margin-top:18px;"><article class="card"><h3>Giving</h3><p>${donations.length} donations, total ${formatCurrency(sumBy(donations))}</p></article><article class="card"><h3>Care</h3><p>${care.length} pastoral care records.</p></article><article class="card"><h3>Prayer</h3><p>${prayers.length} prayer records.</p></article></div><div class="button-row" style="margin-top:18px;"><button class="btn btn-secondary" type="button" data-certificate-member="${escapeAttribute(name)}">Create Certificate</button><button class="btn btn-secondary" type="button" data-print-current>Print Profile</button></div>`;
+      openModal("Member Profile", html);
+    }
+
+    function printCertificate(id) {
+      const c = state.certificates.find(item => item.id === id); if (!c) return;
+      const s = state.settings;
+      const html = `<div style="font-family:Georgia,serif;max-width:900px;margin:24px auto;padding:56px;border:10px solid #c9a84c;text-align:center;"><div>${s.logoDataUrl ? `<img src="${escapeAttribute(s.logoDataUrl)}" style="width:90px;height:90px;object-fit:contain;">` : ""}</div><h1>${escapeHtml(s.churchName)}</h1><p>${escapeHtml(s.address)} • ${escapeHtml(s.phone)}</p><h2 style="font-size:38px;margin:34px 0;">Certificate of ${escapeHtml(c.type)}</h2><p style="font-size:20px;">This certifies that</p><h2 style="font-size:42px;">${escapeHtml(c.memberName)}</h2><p style="font-size:20px;">has received this certificate on ${formatDate(c.date)}.</p><p style="margin-top:60px;">Authorized By: ${escapeHtml(c.authorizedBy || "________________________")}</p></div>`;
+      const win = window.open("", "_blank"); win.document.write(`<!DOCTYPE html><title>Certificate</title>${html}`); win.document.close(); win.focus(); win.print();
+    }
+
+    function printAdvancedReport() {
+      const html = $("#analytics")?.innerHTML || "";
+      const win = window.open("", "_blank");
+      win.document.write(`<!DOCTYPE html><title>Advanced Report</title><style>body{font-family:Arial;padding:24px;} .btn,.button-row{display:none;} .card,.suite-card{border:1px solid #ccc;padding:14px;margin:10px 0;border-radius:10px;} .chart-track{background:#eee;height:10px;border-radius:20px}.chart-bar{background:#1e3a5f;height:10px;border-radius:20px}</style><h1>${escapeHtml(state.settings.churchName)} Advanced Report</h1><p>Printed ${new Date().toLocaleString(state.settings.locale || "en-GH")}</p>${html}`);
+      win.document.close(); win.focus(); win.print();
+    }
 
     function setupWizardHtml() {
       return `<form id="setupForm" class="form-grid" novalidate><div class="field"><label for="setupChurchName">Church Name</label><input id="setupChurchName" name="churchName" required value="${escapeAttribute(state.settings.churchName)}"><small class="field-error"></small></div><div class="field"><label for="setupAdminName">Admin Full Name</label><input id="setupAdminName" name="adminName" required value="System Administrator"><small class="field-error"></small></div><div class="field"><label for="setupPhone">Phone</label><input id="setupPhone" name="phone" required value="${escapeAttribute(state.settings.phone)}"><small class="field-error"></small></div><div class="field"><label for="setupEmail">Email</label><input id="setupEmail" name="email" type="email" required value="${escapeAttribute(state.settings.email)}"><small class="field-error"></small></div><div class="field full"><label for="setupAddress">Address</label><input id="setupAddress" name="address" required value="${escapeAttribute(state.settings.address)}"><small class="field-error"></small></div><div class="field"><label for="setupUsername">Admin Username</label><input id="setupUsername" name="username" required value="admin"><small class="field-error"></small></div><div class="field"><label for="setupPassword">Admin Password</label><input id="setupPassword" name="password" type="password" required value="admin12345"><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Complete Setup</button></div></form>`;
@@ -2210,7 +2664,7 @@
     }
 
     function exportCsv(type) {
-      const map = { members: state.members, events: state.events, donations: filteredDonations(), attendance: state.attendance, care: state.care };
+      const map = { members: state.members, events: state.events, donations: filteredDonations(), attendance: state.attendance, care: state.care, expenses: state.expenses, offeringBatches: state.offeringBatches, families: state.families, reminders: state.reminders, followups: state.followups, eventRegistrations: state.eventRegistrations, announcements: state.announcements, inventory: state.inventory, activityLogs: state.activityLogs };
       const rows = map[type] || [];
       if (!rows.length) { showToast("No records to export."); return; }
       const headers = Array.from(new Set(rows.flatMap(row => Object.keys(row))));
@@ -2218,7 +2672,7 @@
       downloadBlob(csv, `${type}_${todayInput()}.csv`, "text/csv");
     }
     function downloadBlob(content, filename, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
-    function backupData() { const data = { version: "2.0-single-template", exportedAt: new Date().toISOString(), settings: state.settings, users: state.users, members: state.members, events: state.events, donations: state.donations, prayers: state.prayers, attendance: state.attendance, care: state.care }; downloadBlob(JSON.stringify(data, null, 2), `church_system_backup_${todayInput()}.json`, "application/json"); }
+    function backupData() { const data = { version: "3.0-phase-1-11-suite", exportedAt: new Date().toISOString(), settings: state.settings, users: state.users, members: state.members, events: state.events, donations: state.donations, prayers: state.prayers, attendance: state.attendance, care: state.care }; EXTENDED_COLLECTIONS.forEach(collection => data[collection] = state[collection] || []); downloadBlob(JSON.stringify(data, null, 2), `church_system_backup_${todayInput()}.json`, "application/json"); }
 
     function bindFileToBase64(input, callback) {
       input.addEventListener("change", () => { const file = input.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => callback(String(reader.result || "")); reader.readAsDataURL(file); });
@@ -2249,7 +2703,21 @@
       $("#pullSupabaseBtn").addEventListener("click", pullFromSupabase);
       $("#seedDemoBtn").addEventListener("click", () => { if (!confirm("Load demo records into the current system?")) return; const demo = demoData(); Object.assign(state, demo); persistDataset(); renderAll(); showToast("Demo data loaded."); });
       $("#clearDataBtn").addEventListener("click", () => { if (!confirm("This will clear all local records. Continue?")) return; Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); loadState(); renderAll(); requireAuth(); showToast("Local data cleared."); });
-      $("#restoreInput").addEventListener("change", event => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(String(reader.result)); ["settings", "users", "members", "events", "donations", "prayers", "attendance", "care"].forEach(key => { if (data[key]) state[key] = data[key]; }); persistDataset(); renderAll(); showToast("Backup restored."); } catch { showToast("Invalid backup file."); } }; reader.readAsText(file); });
+      $("#restoreInput").addEventListener("change", event => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(String(reader.result)); ["settings", "users", "members", "events", "donations", "prayers", "attendance", "care", ...EXTENDED_COLLECTIONS].forEach(key => { if (data[key]) state[key] = data[key]; }); persistDataset(); renderAll(); showToast("Backup restored."); } catch { showToast("Invalid backup file."); } }; reader.readAsText(file); });
+
+      document.addEventListener("click", event => {
+        const tab = event.target.closest(".suite-tab");
+        if (!tab) return;
+        const group = tab.closest(".section-view");
+        if (!group) return;
+        $$(".suite-tab", group).forEach(btn => btn.classList.toggle("active", btn === tab));
+        $$(".suite-panel", group).forEach(panel => panel.classList.toggle("active", panel.id === tab.dataset.panel));
+      });
+      ["qrEventSelect", "contactGroupFilter", "contactExportType"].forEach(id => { const el = $("#" + id); if (el) el.addEventListener("change", () => { updateQrPreview(); renderContactExportPreview(); }); });
+      const exportContactsBtn = $("#exportContactsBtn"); if (exportContactsBtn) exportContactsBtn.addEventListener("click", () => { const group = $("#contactGroupFilter")?.value || "All Members"; const rows = state.members.map(m => ({ name: memberFullName(m), phone: m.phone || "", email: m.email || "", department: m.department || "" })); const csv = ["name,phone,email,department", ...rows.map(r => `"${r.name}","${r.phone}","${r.email}","${r.department}"`)].join("\n"); downloadBlob(csv, `contacts_${todayInput()}.csv`, "text/csv"); });
+      const syncNowBtn = $("#syncNowBtn"); if (syncNowBtn) syncNowBtn.addEventListener("click", () => syncAllToSupabase(true));
+      const printAdvancedReportBtn = $("#printAdvancedReportBtn"); if (printAdvancedReportBtn) printAdvancedReportBtn.addEventListener("click", printAdvancedReport);
+
       document.addEventListener("click", event => {
         const target = event.target.closest("button"); if (!target) return;
         if (target.id === "addMemberBtn") { openModal("Add Member", memberFormHtml()); bindModalMemberPhoto(); }
@@ -2274,6 +2742,26 @@
         if (target.hasAttribute("data-print-receipt")) printReceipt(target.dataset.printReceipt);
         if (target.hasAttribute("data-export")) exportCsv(target.dataset.export);
         if (target.hasAttribute("data-print-current")) window.print();
+        if (target.hasAttribute("data-view-member")) openMemberProfile(target.dataset.viewMember);
+        if (target.hasAttribute("data-certificate-member")) { setActiveSection("resources"); setTimeout(() => { $(`[data-panel="certificatesPanel"]`)?.click(); const input = $("#certificateMember"); if (input) input.value = target.dataset.certificateMember || ""; }, 120); }
+        if (target.hasAttribute("data-print-certificate")) printCertificate(target.dataset.printCertificate);
+        if (target.hasAttribute("data-mark-registration-attended")) { const rec = state.eventRegistrations.find(r => r.id === target.dataset.markRegistrationAttended); if (rec) { rec.status = "Attended"; save(STORAGE_KEYS.eventRegistrations, state.eventRegistrations); logActivity("Registration marked attended", rec.name); renderAll(); queueCloudSync(); } }
+        if (target.hasAttribute("data-close-followup")) { const rec = state.followups.find(r => r.id === target.dataset.closeFollowup); if (rec) { rec.status = "Closed"; save(STORAGE_KEYS.followups, state.followups); logActivity("Follow-up closed", rec.memberName); renderAll(); queueCloudSync(); } }
+        if (target.hasAttribute("data-toggle-user-status")) { const user = state.users.find(u => u.id === target.dataset.toggleUserStatus); if (user) { user.isActive = user.isActive === false; save(STORAGE_KEYS.users, state.users); logActivity("User status changed", user.username); renderAll(); queueCloudSync(); } }
+        if (target.hasAttribute("data-reset-user-password")) { const user = state.users.find(u => u.id === target.dataset.resetUserPassword); const password = user ? prompt("Enter new password for " + user.username) : ""; if (user && password) { user.password = password; save(STORAGE_KEYS.users, state.users); logActivity("User password reset", user.username); renderAll(); queueCloudSync(); showToast("Password reset and queued for sync."); } }
+        if (target.hasAttribute("data-delete-family")) deleteById("families", target.dataset.deleteFamily, "Household deleted.");
+        if (target.hasAttribute("data-delete-reminder")) deleteById("reminders", target.dataset.deleteReminder, "Reminder deleted.");
+        if (target.hasAttribute("data-delete-event-registration")) deleteById("eventRegistrations", target.dataset.deleteEventRegistration, "Registration deleted.");
+        if (target.hasAttribute("data-delete-event-budget")) deleteById("eventBudgets", target.dataset.deleteEventBudget, "Event budget deleted.");
+        if (target.hasAttribute("data-delete-expense")) deleteById("expenses", target.dataset.deleteExpense, "Expense deleted.");
+        if (target.hasAttribute("data-delete-offering-batch")) deleteById("offeringBatches", target.dataset.deleteOfferingBatch, "Offering batch deleted.");
+        if (target.hasAttribute("data-delete-followup")) deleteById("followups", target.dataset.deleteFollowup, "Follow-up deleted.");
+        if (target.hasAttribute("data-delete-welfare")) deleteById("welfare", target.dataset.deleteWelfare, "Welfare record deleted.");
+        if (target.hasAttribute("data-delete-announcement")) deleteById("announcements", target.dataset.deleteAnnouncement, "Announcement deleted.");
+        if (target.hasAttribute("data-delete-department")) deleteById("departments", target.dataset.deleteDepartment, "Department deleted.");
+        if (target.hasAttribute("data-delete-document")) deleteById("documents", target.dataset.deleteDocument, "Document deleted.");
+        if (target.hasAttribute("data-delete-inventory")) deleteById("inventory", target.dataset.deleteInventory, "Inventory item deleted.");
+        if (target.hasAttribute("data-delete-certificate")) deleteById("certificates", target.dataset.deleteCertificate, "Certificate deleted.");
       });
       document.addEventListener("submit", event => {
         event.preventDefault(); const form = event.target;
@@ -2288,16 +2776,31 @@
         if (form.id === "settingsForm") handleSettingsSubmit(form);
         if (form.id === "supabaseForm") handleSupabaseSubmit(form);
         if (form.id === "userForm") handleUserSubmit(form);
+        if (form.id === "familyForm") handleFamilySubmit(form);
+        if (form.id === "reminderForm") handleReminderSubmit(form);
+        if (form.id === "eventRegistrationForm") handleEventRegistrationSubmit(form);
+        if (form.id === "eventBudgetForm") handleEventBudgetSubmit(form);
+        if (form.id === "expenseForm") handleExpenseSubmit(form);
+        if (form.id === "offeringBatchForm") handleOfferingBatchSubmit(form);
+        if (form.id === "followupForm") handleFollowupSubmit(form);
+        if (form.id === "testimonyForm") handleTestimonySubmit(form);
+        if (form.id === "welfareForm") handleWelfareSubmit(form);
+        if (form.id === "announcementForm") handleAnnouncementSubmit(form);
+        if (form.id === "departmentForm") handleDepartmentSubmit(form);
+        if (form.id === "documentForm") handleDocumentSubmit(form);
+        if (form.id === "inventoryForm") handleInventorySubmit(form);
+        if (form.id === "certificateForm") handleCertificateSubmit(form);
+        if (form.id === "changePasswordForm") handleChangePassword(form);
       });
       window.addEventListener("hashchange", () => setActiveSection(location.hash.replace("#", "") || "dashboard", false));
       document.addEventListener("keydown", event => { if (event.key === "Escape") { closeModal(); closeSidebar(); } });
     }
 
     function bindModalMemberPhoto() { const input = $("#memberPhotoUpload"); if (!input) return; bindFileToBase64(input, dataUrl => { $("#memberPhotoDataUrl").value = dataUrl; showToast("Member photo attached."); }); }
-    function deleteById(collection, id, message) { if (!confirm("Delete this record?")) return; state[collection] = state[collection].filter(item => item.id !== id); save(STORAGE_KEYS[collection], state[collection]); if (collection === "users") deleteUserFromSupabase(id); renderAll(); queueCloudSync(); showToast(message); }
+    function deleteById(collection, id, message) { if (!safeDeleteConfirm(collection, id)) return; state[collection] = state[collection].filter(item => item.id !== id); save(STORAGE_KEYS[collection], state[collection]); if (collection === "users") deleteUserFromSupabase(id); logActivity("Delete record", `${collection}: ${id}`); renderAll(); queueCloudSync(); showToast(message); }
     function updatePrayer(id, updates) { state.prayers = state.prayers.map(p => p.id === id ? { ...p, ...updates } : p); save(STORAGE_KEYS.prayers, state.prayers); renderAll(); queueCloudSync(); showToast("Prayer request updated."); }
 
-    async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); showToast("Login successful."); }
+    async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); logActivity("User login", user.username); showToast("Login successful."); }
     function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
     function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
     function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
