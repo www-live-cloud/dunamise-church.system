@@ -1338,7 +1338,10 @@
             <div class="field"><label for="settingAccent">Accent Color</label><input id="settingAccent" name="accentColor" type="color"><small class="field-error"></small></div>
             <div class="field"><label for="settingHeaderTheme">Header Theme Color</label><input id="settingHeaderTheme" name="headerThemeColor" type="color"><small class="field-error"></small></div>
             <div class="field"><label for="settingFooterTheme">Footer Theme Color</label><input id="settingFooterTheme" name="footerThemeColor" type="color"><small class="field-error"></small></div>
-            <div class="field full"><label for="logoUpload">Church Logo</label><input id="logoUpload" type="file" accept="image/*"><small class="muted">The same logo is used in the system header, login screen, favicon, receipts, and printed letterhead.</small><small class="field-error"></small></div>
+            <div class="field full"><label for="logoUpload">Church Logo</label><input id="logoUpload" type="file" accept="image/*"><small class="muted">The same logo is used in the system header, login screen, favicon, receipts, printed letterhead, and certificate watermark.</small><small class="field-error"></small></div>
+            <div class="field"><label for="settingGeneralOverseerName">General Overseer Name</label><input id="settingGeneralOverseerName" name="generalOverseerName" placeholder="General Overseer"><small class="muted">This name appears below the signature on generated certificates.</small><small class="field-error"></small></div>
+            <div class="field"><label for="generalOverseerSignatureUpload">General Overseer Signature</label><input id="generalOverseerSignatureUpload" type="file" accept="image/*"><small class="muted">Upload a transparent PNG signature if available. It will reflect automatically on generated certificates.</small><small class="field-error"></small></div>
+            <div class="field full"><div class="login-background-panel" style="padding:12px;"><strong>Certificate Signature Status</strong><p class="muted small" id="generalOverseerSignatureStatus" style="margin:6px 0 0;">No General Overseer signature uploaded yet.</p></div></div>
             <div class="field full"><label for="backgroundUpload">Login Background Image</label><input id="backgroundUpload" type="file" accept="image/*"><small class="muted">The uploaded image is used only on the login page. It will not appear behind the dashboard or other system pages after login.</small><small class="field-error"></small></div>
             <div class="field full login-background-panel">
               <div class="login-background-panel-header"><strong>Login Background Preview and Zoom Control</strong><span class="range-value" id="loginBgZoomValue">100%</span></div>
@@ -1348,7 +1351,7 @@
               <small class="muted">Move left to zoom out and show more of the image. Move right to zoom in. Click Apply Login Background after adjusting.</small>
               <div class="button-row" style="margin-top:12px;"><button class="btn btn-primary" type="button" id="applyBackgroundBtn">Apply Login Background</button><button class="btn btn-secondary" type="button" id="resetBackgroundZoomBtn">Reset Zoom</button></div>
             </div>
-            <div class="field full button-row"><button class="btn btn-primary" type="submit">Save Settings</button><button class="btn btn-secondary" type="button" id="removeLogoBtn">Remove Logo</button><button class="btn btn-secondary" type="button" id="removeBackgroundBtn">Remove Login Background</button></div>
+            <div class="field full button-row"><button class="btn btn-primary" type="submit">Save Settings</button><button class="btn btn-secondary" type="button" id="removeLogoBtn">Remove Logo</button><button class="btn btn-secondary" type="button" id="removeGeneralOverseerSignatureBtn">Remove Signature</button><button class="btn btn-secondary" type="button" id="removeBackgroundBtn">Remove Login Background</button></div>
           </form></article>
           <article class="card"><h3>Users and Roles</h3><p class="muted small">User accounts are now shared through Supabase when the password sync table is installed. For production, connect Supabase Auth or a secure server login.</p><form id="userForm" class="form-grid" novalidate style="margin-top:12px;">
             <div class="field"><label for="userDisplayName">Display Name</label><input id="userDisplayName" name="displayName" required><small class="field-error"></small></div>
@@ -1391,6 +1394,8 @@
       currency: "GHS",
       locale: "en-GH",
       logoDataUrl: "",
+      generalOverseerName: "General Overseer",
+      generalOverseerSignatureDataUrl: "",
       backgroundImageDataUrl: "",
       loginBackgroundZoom: 100,
       logoFallbackIcon: "✝",
@@ -1699,6 +1704,8 @@
         currency: row.currency_code || state.settings.currency,
         locale: row.locale_code || state.settings.locale,
         logoDataUrl: row.logo_url || state.settings.logoDataUrl || "",
+        generalOverseerName: row.general_overseer_name || state.settings.generalOverseerName || "General Overseer",
+        generalOverseerSignatureDataUrl: row.general_overseer_signature_url || state.settings.generalOverseerSignatureDataUrl || "",
         backgroundImageDataUrl: row.system_background_url || state.settings.backgroundImageDataUrl || "",
         primaryColor: row.primary_color || state.settings.primaryColor,
         accentColor: row.accent_color || state.settings.accentColor,
@@ -1910,6 +1917,8 @@
         currency_code: s.currency,
         locale_code: s.locale,
         logo_url: nullIfEmpty(s.logoDataUrl),
+        general_overseer_name: nullIfEmpty(s.generalOverseerName),
+        general_overseer_signature_url: nullIfEmpty(s.generalOverseerSignatureDataUrl),
         system_background_url: nullIfEmpty(s.backgroundImageDataUrl),
         primary_color: s.primaryColor,
         accent_color: s.accentColor,
@@ -2125,8 +2134,10 @@
 
     function renderSettingsForms() {
       const s = state.settings;
-      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
+      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, settingGeneralOverseerName: s.generalOverseerName, supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
       Object.entries(mappings).forEach(([id, value]) => { const el = $("#" + id); if (el && document.activeElement !== el) el.value = value || ""; });
+      const signatureStatus = $("#generalOverseerSignatureStatus");
+      if (signatureStatus) signatureStatus.innerHTML = s.generalOverseerSignatureDataUrl ? `Signature uploaded for <strong>${escapeHtml(s.generalOverseerName || "General Overseer")}</strong>. It will appear on new and existing printed certificates.` : "No General Overseer signature uploaded yet.";
       updateLoginBackgroundPreview();
       const supabaseStatus = state.supabaseClient ? "Supabase client is configured. Use the included SQL schema before enabling cloud CRUD." : "Supabase is not configured. The system is using local browser storage.";
       $("#supabaseStatus").textContent = supabaseStatus;
@@ -2641,8 +2652,56 @@
     function printCertificate(id) {
       const c = state.certificates.find(item => item.id === id); if (!c) return;
       const s = state.settings;
-      const html = `<div style="font-family:Georgia,serif;max-width:900px;margin:24px auto;padding:56px;border:10px solid #c9a84c;text-align:center;"><div>${s.logoDataUrl ? `<img src="${escapeAttribute(s.logoDataUrl)}" style="width:90px;height:90px;object-fit:contain;">` : ""}</div><h1>${escapeHtml(s.churchName)}</h1><p>${escapeHtml(s.address)} • ${escapeHtml(s.phone)}</p><h2 style="font-size:38px;margin:34px 0;">Certificate of ${escapeHtml(c.type)}</h2><p style="font-size:20px;">This certifies that</p><h2 style="font-size:42px;">${escapeHtml(c.memberName)}</h2><p style="font-size:20px;">has received this certificate on ${formatDate(c.date)}.</p><p style="margin-top:60px;">Authorized By: ${escapeHtml(c.authorizedBy || "________________________")}</p></div>`;
-      const win = window.open("", "_blank"); win.document.write(`<!DOCTYPE html><title>Certificate</title>${html}`); win.document.close(); win.focus(); win.print();
+      const authorizedName = c.authorizedBy || s.generalOverseerName || "General Overseer";
+      const logo = s.logoDataUrl || "";
+      const signature = s.generalOverseerSignatureDataUrl || "";
+      const html = `<!DOCTYPE html><html><head><title>Certificate</title><style>
+        @page { size: landscape; margin: 12mm; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f7f2e7; font-family: Georgia, 'Times New Roman', serif; color: #152a45; }
+        .certificate-sheet { width: 100%; min-height: 94vh; display: grid; place-items: center; padding: 18px; }
+        .certificate { position: relative; width: min(1100px, 100%); min-height: 720px; overflow: hidden; background: #fffdf8; border: 12px solid ${escapeHtml(s.accentColor || "#c9a84c")}; outline: 3px solid #152a45; outline-offset: -26px; padding: 54px 76px; text-align: center; box-shadow: 0 22px 60px rgba(21,42,69,0.18); }
+        .watermark, .watermark-reflection { position: absolute; left: 50%; pointer-events: none; z-index: 0; }
+        .watermark { top: 49%; transform: translate(-50%, -50%); width: 520px; max-width: 58%; opacity: 0.075; }
+        .watermark-reflection { top: 63%; transform: translate(-50%, -50%) scaleY(-1); width: 520px; max-width: 58%; opacity: 0.035; filter: blur(0.5px); }
+        .certificate::before { content: ""; position: absolute; inset: 32px; border: 2px solid rgba(201,168,76,0.38); z-index: 0; }
+        .certificate-content { position: relative; z-index: 1; }
+        .top-logo { width: 96px; height: 96px; object-fit: contain; margin-bottom: 10px; }
+        .church-name { font-size: 34px; letter-spacing: 0.06em; text-transform: uppercase; margin: 0; }
+        .church-contact { margin: 8px 0 26px; font-size: 15px; color: #3f5875; }
+        .certificate-title { font-size: 48px; margin: 22px 0 10px; color: ${escapeHtml(s.primaryColor || "#1e3a5f")}; }
+        .certificate-subtitle { font-size: 20px; margin: 18px 0 8px; }
+        .recipient { font-size: 52px; margin: 12px 0; color: #111827; border-bottom: 2px solid rgba(21,42,69,0.28); display: inline-block; min-width: 520px; padding-bottom: 8px; }
+        .certificate-copy { font-size: 20px; max-width: 780px; margin: 16px auto 0; line-height: 1.75; color: #263238; }
+        .signature-row { display: flex; align-items: end; justify-content: center; gap: 80px; margin-top: 72px; }
+        .signature-block { min-width: 300px; text-align: center; }
+        .signature-image { height: 82px; max-width: 260px; object-fit: contain; display: block; margin: 0 auto -5px; }
+        .signature-line { border-top: 2px solid #152a45; padding-top: 10px; font-weight: 700; }
+        .signature-role { margin-top: 4px; color: #667085; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+        .date-block { min-width: 230px; text-align: center; }
+        .date-line { border-top: 2px solid #152a45; padding-top: 10px; font-weight: 700; }
+        @media print { body { background: #fff; } .certificate-sheet { min-height: auto; padding: 0; } .certificate { box-shadow: none; width: 100%; min-height: 680px; } }
+      </style></head><body><div class="certificate-sheet"><main class="certificate">
+        ${logo ? `<img class="watermark" src="${escapeAttribute(logo)}" alt=""><img class="watermark-reflection" src="${escapeAttribute(logo)}" alt="">` : ""}
+        <div class="certificate-content">
+          ${logo ? `<img class="top-logo" src="${escapeAttribute(logo)}" alt="${escapeAttribute(s.churchName)} logo">` : ""}
+          <h1 class="church-name">${escapeHtml(s.churchName)}</h1>
+          <p class="church-contact">${escapeHtml(s.address)} • ${escapeHtml(s.phone)} • ${escapeHtml(s.email)}</p>
+          <h2 class="certificate-title">Certificate of ${escapeHtml(c.type)}</h2>
+          <p class="certificate-subtitle">This is proudly presented to</p>
+          <h2 class="recipient">${escapeHtml(c.memberName)}</h2>
+          <p class="certificate-copy">In recognition of this important spiritual and ministry milestone, this certificate is issued by ${escapeHtml(s.churchName)} on ${formatDate(c.date)}.</p>
+          <div class="signature-row">
+            <div class="date-block"><div class="date-line">${formatDate(c.date)}</div><div class="signature-role">Date Issued</div></div>
+            <div class="signature-block">
+              ${signature ? `<img class="signature-image" src="${escapeAttribute(signature)}" alt="General Overseer signature">` : `<div style="height:82px;"></div>`}
+              <div class="signature-line">${escapeHtml(authorizedName)}</div>
+              <div class="signature-role">General Overseer</div>
+            </div>
+          </div>
+        </div>
+      </main></div></body></html>`;
+      const win = window.open("", "_blank"); win.document.write(html); win.document.close(); win.focus(); win.print();
     }
 
     function printAdvancedReport() {
@@ -2691,11 +2750,13 @@
       $("#dateFromFilter").addEventListener("input", renderDonations);
       $("#dateToFilter").addEventListener("input", renderDonations);
       bindFileToBase64($("#logoUpload"), dataUrl => { state.settings.logoDataUrl = dataUrl; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo saved."); });
+      bindFileToBase64($("#generalOverseerSignatureUpload"), dataUrl => { state.settings.generalOverseerSignatureDataUrl = dataUrl; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("General Overseer signature saved for certificates."); });
       bindFileToBase64($("#backgroundUpload"), dataUrl => { pendingLoginBackgroundDataUrl = dataUrl; pendingLoginBackgroundZoom = Number($("#loginBackgroundZoom")?.value || state.settings.loginBackgroundZoom || 100); updateLoginBackgroundPreview(); showToast("Login background preview ready. Adjust zoom, then apply."); });
       $("#loginBackgroundZoom").addEventListener("input", event => { pendingLoginBackgroundZoom = Number(event.target.value || 100); updateLoginBackgroundPreview(); });
       $("#applyBackgroundBtn").addEventListener("click", applyLoginBackgroundChange);
       $("#resetBackgroundZoomBtn").addEventListener("click", () => { pendingLoginBackgroundZoom = 100; $("#loginBackgroundZoom").value = "100"; updateLoginBackgroundPreview(); showToast("Login background zoom reset. Click Apply Login Background to save it."); });
       $("#removeLogoBtn").addEventListener("click", () => { state.settings.logoDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo removed."); });
+      $("#removeGeneralOverseerSignatureBtn").addEventListener("click", () => { state.settings.generalOverseerSignatureDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("General Overseer signature removed."); });
       $("#removeBackgroundBtn").addEventListener("click", () => { state.settings.backgroundImageDataUrl = ""; state.settings.loginBackgroundZoom = 100; pendingLoginBackgroundDataUrl = null; pendingLoginBackgroundZoom = null; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Login background removed."); });
       $("#backupBtn").addEventListener("click", backupData);
       $("#testSupabaseBtn").addEventListener("click", testSupabaseConnection);
@@ -2802,7 +2863,7 @@
 
     async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); logActivity("User login", user.username); showToast("Login successful."); }
     function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, phone: data.phone, email: data.email, address: data.address }; state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
-    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
+    function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = { ...state.settings, churchName: data.churchName, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, generalOverseerName: data.generalOverseerName || "General Overseer", autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }; markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
     function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
     function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); queueCloudSync(); showToast("User added and queued for shared password sync."); }
 
