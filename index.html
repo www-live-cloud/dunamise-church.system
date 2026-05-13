@@ -1508,14 +1508,14 @@
       </section>
 
       <section class="section-view" id="security" aria-labelledby="securityTitle">
-        <div class="section-heading"><div><h2 id="securityTitle">Security, Logs, and Sync</h2><p>Control passwords, user status, activity logs, deletion safeguards, cloud sync status, manual sync, and production security readiness.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" id="syncNowBtn">Sync Now</button><button class="btn btn-secondary" type="button" data-export="activityLogs">Export Logs</button></div></div>
+        <div class="section-heading"><div><h2 id="securityTitle">Security, Logs, and Sync</h2><p>Control passwords, user status, activity logs, deletion safeguards, automatic cloud sync status, and production security readiness.</p></div><div class="button-row no-print"><button class="btn btn-secondary" type="button" id="syncNowBtn">Sync Now</button><button class="btn btn-secondary" type="button" data-export="activityLogs">Export Logs</button></div></div>
         <div class="suite-grid" id="securityMetrics"></div>
-        <div class="grid two-column-grid"><article class="card"><h3>Change My Password</h3><form id="changePasswordForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field full"><label for="currentPassword">Current Password</label><input id="currentPassword" name="currentPassword" type="password" required><small class="field-error"></small></div><div class="field"><label for="newPassword">New Password</label><input id="newPassword" name="newPassword" type="password" minlength="6" required><small class="field-error"></small></div><div class="field"><label for="confirmPassword">Confirm Password</label><input id="confirmPassword" name="confirmPassword" type="password" required><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Update Password</button></div></form><p class="muted small">Password changes are saved locally and pushed to Supabase so other browsers use the same credentials.</p></article><article class="card"><h3>Notifications</h3><div class="stack-list" id="notificationList"></div></article></div><article class="card" style="margin-top:18px;"><h3>User Status and Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>User</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="securityUsersBody"></tbody></table></div><h3 style="margin-top:18px;">Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody id="activityLogsBody"></tbody></table></div></article>
+        <div class="grid two-column-grid"><article class="card"><h3>Change My Password</h3><form id="changePasswordForm" class="form-grid" novalidate style="margin-top:14px;"><div class="field full"><label for="currentPassword">Current Password</label><input id="currentPassword" name="currentPassword" type="password" required><small class="field-error"></small></div><div class="field"><label for="newPassword">New Password</label><input id="newPassword" name="newPassword" type="password" minlength="6" required><small class="field-error"></small></div><div class="field"><label for="confirmPassword">Confirm Password</label><input id="confirmPassword" name="confirmPassword" type="password" required><small class="field-error"></small></div><div class="field full"><button class="btn btn-primary" type="submit">Update Password</button></div></form><p class="muted small">Password changes are saved to the shared cloud so other approved browsers use the same credentials.</p></article><article class="card"><h3>Notifications</h3><div class="stack-list" id="notificationList"></div></article></div><article class="card" style="margin-top:18px;"><h3>User Status and Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>User</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="securityUsersBody"></tbody></table></div><h3 style="margin-top:18px;">Activity Logs</h3><div class="table-wrap mobile-table-cards" style="margin-top:14px;"><table><thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody id="activityLogsBody"></tbody></table></div></article>
       </section>
 
       <section class="section-view" id="settings" aria-labelledby="settingsTitle">
-        <div class="section-heading"><div><h2 id="settingsTitle">Settings</h2><p>Configure Land of Dunamis Chapel profile details, logo, theme, users, data backup, and optional Supabase connection.</p></div></div>
-        <div class="settings-tabs-shell"><strong>Settings Center</strong><p class="muted small">Church Profile, Branding, Users, Security, Backup, Supabase Sync, and Print Settings are now grouped across Settings and Security & Logs for cleaner administration.</p></div>
+        <div class="section-heading"><div><h2 id="settingsTitle">Settings</h2><p>Configure Land of Dunamis Chapel profile details, branding, users, print settings, and automatic shared cloud sync.</p></div></div>
+        <div class="settings-tabs-shell"><strong>Settings Center</strong><p class="muted small">Church Profile, Branding, Users, Security, automatic cloud sync, and Print Settings are grouped across Settings and Security & Logs for cleaner administration.</p></div>
         <div class="grid two-column-grid">
           <article class="card"><h3>Church Identity and Branding</h3><form id="settingsForm" class="form-grid" novalidate style="margin-top:16px;">
             <div class="field"><label for="settingChurchName">Church Name</label><input id="settingChurchName" name="churchName" required readonly aria-readonly="true"><small class="muted">Permanent deployment, locked to Land of Dunamis Chapel.</small><small class="field-error"></small></div>
@@ -1553,21 +1553,13 @@
             </div>
             <div class="field full button-row"><button class="btn btn-primary" type="submit">Save Settings</button><button class="btn btn-secondary" type="button" id="removeLogoBtn">Remove Logo</button><button class="btn btn-secondary" type="button" id="removeGeneralOverseerSignatureBtn">Remove Signature</button><button class="btn btn-secondary" type="button" id="removeBackgroundBtn">Remove Login Background</button></div>
           </form></article>
-          <article class="card"><h3>Users and Roles</h3><p class="muted small">User accounts are now shared through Supabase when the password sync table is installed. For production, connect Supabase Auth or a secure server login.</p><form id="userForm" class="form-grid" novalidate style="margin-top:12px;">
+          <article class="card"><h3>Users and Roles</h3><p class="muted small">User accounts are shared through the primary Supabase cloud database for consistent access across approved devices.</p><form id="userForm" class="form-grid" novalidate style="margin-top:12px;">
             <div class="field"><label for="userDisplayName">Display Name</label><input id="userDisplayName" name="displayName" required><small class="field-error"></small></div>
             <div class="field"><label for="userUsername">Username</label><input id="userUsername" name="username" required><small class="field-error"></small></div>
             <div class="field"><label for="userPassword">Password</label><input id="userPassword" name="password" type="password" required><small class="field-error"></small></div>
             <div class="field"><label for="userRole">Role</label><select id="userRole" name="role"><option>admin</option><option>pastor</option><option>finance</option><option>secretary</option><option>staff</option><option>viewer</option></select><small class="field-error"></small></div>
             <div class="field full"><button class="btn btn-primary" type="submit">Add User</button></div>
           </form><div class="table-wrap" style="margin-top:14px;box-shadow:none;"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></article>
-        </div>
-        <div class="grid two-column-grid hidden" id="technicalAdminTools" style="margin-top:18px;">
-          <article class="card"><h3>Supabase Connection</h3><p class="muted small">Optional cloud backend. Run the included no-RLS schema first, then save your Supabase URL and publishable key here.</p><form id="supabaseForm" class="form-grid" novalidate style="margin-top:12px;">
-            <div class="field full"><label for="supabaseUrl">Supabase URL</label><input id="supabaseUrl" name="supabaseUrl" placeholder="https://project.supabase.co"><small class="field-error"></small></div>
-            <div class="field full"><label for="supabaseAnonKey">Supabase Publishable Key</label><input id="supabaseAnonKey" name="supabaseAnonKey" placeholder="Paste publishable anon key"><small class="field-error"></small></div>
-            <div class="field full"><button class="btn btn-primary" type="submit">Save Supabase Settings</button></div>
-          </form><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="testSupabaseBtn">Test Connection</button><button class="btn btn-secondary" type="button" id="pushSupabaseBtn">Save This Browser to Shared Cloud</button><button class="btn btn-secondary" type="button" id="pullSupabaseBtn">Reload Latest Shared Cloud</button></div><p id="supabaseStatus" class="muted small"></p></article>
-          <article class="card"><h3>Backup, Restore, and Demo Data</h3><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="backupBtn">Download JSON Backup</button><label class="btn btn-secondary" for="restoreInput">Restore JSON<input id="restoreInput" type="file" accept="application/json" class="hidden"></label><button class="btn btn-secondary" type="button" id="seedDemoBtn">Load Demo Data</button><button class="btn btn-danger" type="button" id="clearDataBtn">Clear All Local Data</button></div><p class="muted small">Backup before clearing or restoring data. Restore replaces the current local dataset.</p></article>
         </div>
       </section>
     </main>
@@ -1693,13 +1685,11 @@
     }
 
     function enforcePermanentChurchIdentity(settings = {}) {
-      const savedSupabaseUrl = String(settings.supabaseUrl || "").trim();
-      const savedSupabaseAnonKey = String(settings.supabaseAnonKey || "").trim();
       return {
         ...settings,
         ...PERMANENT_LOCKED_SETTINGS,
-        supabaseUrl: savedSupabaseUrl || CHURCH_CONFIG.supabaseUrl,
-        supabaseAnonKey: savedSupabaseAnonKey || CHURCH_CONFIG.supabaseAnonKey
+        supabaseUrl: CHURCH_CONFIG.supabaseUrl,
+        supabaseAnonKey: CHURCH_CONFIG.supabaseAnonKey
       };
     }
 
@@ -1898,36 +1888,6 @@
 
     function defaultUsers() {
       return [{ id: uid("usr"), displayName: "Land of Dunamis Chapel Administrator", username: "admin", password: "admin12345", role: "admin", isActive: true, createdAt: new Date().toISOString() }];
-    }
-
-    function demoData() {
-      return {
-        members: [
-          { id: uid("mem"), firstName: "Grace", lastName: "Mensah", email: "grace.mensah@example.com", phone: "+233 24 111 2233", address: "East Legon, Accra", gender: "Female", dateOfBirth: "1994-06-14", maritalStatus: "Married", occupation: "Teacher", department: "Choir", baptismStatus: "Baptized", status: "Active", emergencyContact: "+233 24 900 1111", dateJoined: "2023-01-15", photoDataUrl: "", notes: "" },
-          { id: uid("mem"), firstName: "Daniel", lastName: "Owusu", email: "daniel.owusu@example.com", phone: "+233 20 456 7890", address: "Adenta, Accra", gender: "Male", dateOfBirth: "1989-09-02", maritalStatus: "Single", occupation: "Accountant", department: "Men Ministry", baptismStatus: "Baptized", status: "Active", emergencyContact: "+233 20 800 2222", dateJoined: "2022-08-22", photoDataUrl: "", notes: "" },
-          { id: uid("mem"), firstName: "Esi", lastName: "Boateng", email: "esi.boateng@example.com", phone: "+233 55 321 6547", address: "Tema Community 8", gender: "Female", dateOfBirth: "1998-03-27", maritalStatus: "Single", occupation: "Student", department: "Youth Ministry", baptismStatus: "Pending", status: "New Convert", emergencyContact: "+233 55 555 1111", dateJoined: "2024-03-05", photoDataUrl: "", notes: "Needs discipleship follow-up." }
-        ],
-        events: [
-          { id: uid("evt"), title: "Midweek Prayer Service", category: "Prayer", date: addDays(2), time: "18:30", location: "Main Auditorium", recurring: "Weekly", description: "A warm evening of prayer, worship, and encouragement for all members." },
-          { id: uid("evt"), title: "Community Outreach", category: "Outreach", date: addDays(7), time: "09:00", location: "Local Community", recurring: "None", description: "Evangelism and welfare outreach for families in the local community." },
-          { id: uid("evt"), title: "Youth Fellowship Night", category: "Youth", date: addDays(19), time: "17:00", location: "Youth Hall", recurring: "Monthly", description: "A fellowship evening for young adults." }
-        ],
-        donations: [
-          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Grace Mensah", amount: 250, date: addDays(-1), purpose: "Tithe", paymentMethod: "Mobile Money", notes: "", recordedBy: "System Administrator" },
-          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Daniel Owusu", amount: 120, date: addDays(-3), purpose: "Offering", paymentMethod: "Cash", notes: "", recordedBy: "System Administrator" },
-          { id: uid("don"), receiptNo: nextReceiptNo(), donorName: "Anonymous", amount: 300, date: addDays(-10), purpose: "Welfare", paymentMethod: "Cash", notes: "Anonymous giving", recordedBy: "System Administrator" }
-        ],
-        prayers: [
-          { id: uid("pray"), name: "Ama", request: "Please pray for strength and wisdom during my final exams.", privacy: "Prayer Team", assignedTo: "Prayer Leader", followUpStatus: "New", date: addDays(-1), prayed: false, answered: false },
-          { id: uid("pray"), name: "Kojo", request: "Thank God for healing in my family and pray for continued peace.", privacy: "Pastors Only", assignedTo: "Pastor", followUpStatus: "Followed Up", date: addDays(-5), prayed: true, answered: true }
-        ],
-        attendance: [
-          { id: uid("att"), serviceName: "Sunday Worship Service", date: addDays(-2), adults: 155, children: 42, visitors: 13, notes: "Normal service", recordedBy: "System Administrator" }
-        ],
-        care: [
-          { id: uid("care"), memberName: "Esi Boateng", careType: "Discipleship Follow Up", date: addDays(-1), status: "Open", assignedTo: "Youth Pastor", notes: "Schedule a follow-up call." }
-        ]
-      };
     }
 
     function loadState() {
@@ -2413,7 +2373,11 @@
       const mappings = cloudMappings();
       const config = mappings[collectionName];
       if (!config) return;
-      const rows = (state[collectionName] || []).map(config.map).filter(row => row.client_ref);
+      const rows = (state[collectionName] || []).map(record => {
+        const row = config.map(record) || {};
+        if (!row.payload) row.payload = record;
+        return row;
+      }).filter(row => row.client_ref);
       if (!rows.length) return;
       const { error } = await state.supabaseClient.from(config.table).upsert(rows, { onConflict: "church_id,client_ref" });
       if (error) throw error;
@@ -2429,7 +2393,7 @@
     }
 
     async function syncAllToSupabase(showMessage = true, reason = "sync") {
-      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return false; }
+      if (!hasCloudConnection()) { if (showMessage) showToast("Primary cloud connection is unavailable. Check the deployed Supabase project and schema."); return false; }
       if (state.cloudPullInProgress) return false;
       state.cloudSyncInProgress = true;
       state.syncStatus = "syncing";
@@ -2455,7 +2419,7 @@
 
     async function pullFromSupabase(options = {}) {
       const { confirmFirst = true, showMessage = true, force = false } = options;
-      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return false; }
+      if (!hasCloudConnection()) { if (showMessage) showToast("Primary cloud connection is unavailable. Check the deployed Supabase project and schema."); return false; }
       if (state.cloudSyncInProgress && !force) return false;
       if (confirmFirst && !confirm("Pull shared cloud data into this browser? This will replace this browser's local records with the latest shared records.")) return false;
       state.cloudPullInProgress = true;
@@ -2667,7 +2631,7 @@
 
     function renderSettingsForms() {
       const s = state.settings;
-      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, settingGeneralOverseerName: s.generalOverseerName, certificateSignatureScale: Math.min(220, Math.max(70, Number(s.generalOverseerSignatureScale || 135))), supabaseUrl: s.supabaseUrl, supabaseAnonKey: s.supabaseAnonKey };
+      const mappings = { settingChurchName: s.churchName, settingTagline: s.tagline, settingAddress: s.address, settingPhone: s.phone, settingEmail: s.email, settingVerse: s.verseOfDay, settingCurrency: s.currency, settingLocale: s.locale, settingPrimary: s.primaryColor, settingAccent: s.accentColor, settingHeaderTheme: s.headerThemeColor, settingFooterTheme: s.footerThemeColor, settingGeneralOverseerName: s.generalOverseerName, certificateSignatureScale: Math.min(220, Math.max(70, Number(s.generalOverseerSignatureScale || 135))) };
       Object.entries(mappings).forEach(([id, value]) => { const el = $("#" + id); if (el && document.activeElement !== el) el.value = value || ""; });
       const lockedChurchNameInput = $("#settingChurchName");
       if (lockedChurchNameInput) { lockedChurchNameInput.value = PERMANENT_CHURCH_NAME; lockedChurchNameInput.readOnly = true; lockedChurchNameInput.setAttribute("aria-readonly", "true"); }
@@ -2675,8 +2639,6 @@
       if (signatureStatus) signatureStatus.innerHTML = s.generalOverseerSignatureDataUrl ? `Signature uploaded for <strong>${escapeHtml(s.generalOverseerName || "General Overseer")}</strong>. Current certificate signature size is <strong>${currentCertificateSignatureScale()}%</strong>.` : "No General Overseer signature uploaded yet.";
       updateCertificateSignaturePreview();
       updateLoginBackgroundPreview();
-      const supabaseStatus = state.supabaseClient ? `Shared cloud snapshot sync is active. Last saved: ${state.lastSyncAt ? new Date(state.lastSyncAt).toLocaleString(state.settings.locale || "en-GH") : "waiting for next admin change"}. Last loaded: ${state.lastCloudPullAt ? new Date(state.lastCloudPullAt).toLocaleString(state.settings.locale || "en-GH") : "startup loading"}. Snapshot: ${state.cloudSnapshotUpdatedAt ? new Date(state.cloudSnapshotUpdatedAt).toLocaleString(state.settings.locale || "en-GH") : "not created yet"}.` : "Supabase is not configured. The system is using local browser storage.";
-      $("#supabaseStatus").textContent = supabaseStatus;
     }
 
 
@@ -3384,7 +3346,6 @@
       downloadBlob(csv, `${type}_${todayInput()}.csv`, "text/csv");
     }
     function downloadBlob(content, filename, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
-    function backupData() { const data = { version: "3.0-phase-1-11-suite", exportedAt: new Date().toISOString(), settings: state.settings, users: state.users, members: state.members, events: state.events, donations: state.donations, prayers: state.prayers, attendance: state.attendance, care: state.care }; EXTENDED_COLLECTIONS.forEach(collection => data[collection] = state[collection] || []); downloadBlob(JSON.stringify(data, null, 2), `church_system_backup_${todayInput()}.json`, "application/json"); }
 
     function bindFileToBase64(input, callback) {
       input.addEventListener("change", () => { const file = input.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => callback(String(reader.result || "")); reader.readAsDataURL(file); });
@@ -3414,13 +3375,6 @@
       $("#removeLogoBtn").addEventListener("click", () => { state.settings.logoDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Logo removed."); });
       $("#removeGeneralOverseerSignatureBtn").addEventListener("click", () => { state.settings.generalOverseerSignatureDataUrl = ""; save(STORAGE_KEYS.settings, state.settings); applySettings(); renderSettingsForms(); queueCloudSync(); showToast("General Overseer signature removed."); });
       $("#removeBackgroundBtn").addEventListener("click", () => { state.settings.backgroundImageDataUrl = ""; state.settings.loginBackgroundZoom = 100; pendingLoginBackgroundDataUrl = null; pendingLoginBackgroundZoom = null; save(STORAGE_KEYS.settings, state.settings); applySettings(); queueCloudSync(); showToast("Login background removed."); });
-      $("#backupBtn").addEventListener("click", backupData);
-      $("#testSupabaseBtn").addEventListener("click", testSupabaseConnection);
-      $("#pushSupabaseBtn").addEventListener("click", () => syncAllToSupabase(true, "manual-save-this-browser"));
-      $("#pullSupabaseBtn").addEventListener("click", pullFromSupabase);
-      $("#seedDemoBtn").addEventListener("click", () => { if (!confirm("Load demo records into the current system?")) return; const demo = demoData(); Object.assign(state, demo); persistDataset(); renderAll(); queueCloudSync(); showToast("Demo data loaded and queued for shared cloud sync."); });
-      $("#clearDataBtn").addEventListener("click", () => { if (!confirm("This will clear all local records. Continue?")) return; Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); loadState(); renderAll(); requireAuth(); showToast("Local data cleared."); });
-      $("#restoreInput").addEventListener("change", event => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(String(reader.result)); ["settings", "users", "members", "events", "donations", "prayers", "attendance", "care", ...EXTENDED_COLLECTIONS].forEach(key => { if (data[key]) state[key] = data[key]; }); persistDataset(); renderAll(); showToast("Backup restored."); } catch { showToast("Invalid backup file."); } }; reader.readAsText(file); });
 
       document.addEventListener("click", event => {
         const tab = event.target.closest(".suite-tab");
@@ -3491,7 +3445,6 @@
         if (form.id === "prayerForm") handlePrayerSubmit(form);
         if (form.id === "careForm") handleCareSubmit(form);
         if (form.id === "settingsForm") handleSettingsSubmit(form);
-        if (form.id === "supabaseForm") handleSupabaseSubmit(form);
         if (form.id === "userForm") handleUserSubmit(form);
         if (form.id === "familyForm") handleFamilySubmit(form);
         if (form.id === "reminderForm") handleReminderSubmit(form);
@@ -3537,7 +3490,6 @@
     async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); logActivity("User login", user.username); showToast("Login successful."); }
     function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = enforcePermanentChurchIdentity({ ...state.settings, churchName: PERMANENT_CHURCH_NAME, phone: data.phone, email: data.email, address: data.address }); state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
     function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = enforcePermanentChurchIdentity({ ...state.settings, churchName: PERMANENT_CHURCH_NAME, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, generalOverseerName: data.generalOverseerName || "General Overseer", generalOverseerSignatureScale: currentCertificateSignatureScale(), autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }); markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
-    function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); state.settings = enforcePermanentChurchIdentity(state.settings); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); bootstrapSharedDeploymentState().then(() => renderSettingsForms()); showToast("Supabase settings saved. Shared cloud sync is being checked."); }
     function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); queueCloudSync(); showToast("User added and queued for shared password sync."); }
 
     async function bootApp() {
