@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Land of Dunamis Chapel Church Management System</title>
+  <title>Land of Dunamis Chapel Shared Cloud Church Management System</title>
   <meta name="description" content="Land of Dunamis Chapel church management system for members, events, donations, prayers, attendance, reports, and church administration." />
   <link id="dynamicFavicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e3a5f'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='32' fill='%23c9a84c'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1566,7 +1566,7 @@
             <div class="field full"><label for="supabaseUrl">Supabase URL</label><input id="supabaseUrl" name="supabaseUrl" placeholder="https://project.supabase.co"><small class="field-error"></small></div>
             <div class="field full"><label for="supabaseAnonKey">Supabase Publishable Key</label><input id="supabaseAnonKey" name="supabaseAnonKey" placeholder="Paste publishable anon key"><small class="field-error"></small></div>
             <div class="field full"><button class="btn btn-primary" type="submit">Save Supabase Settings</button></div>
-          </form><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="testSupabaseBtn">Test Connection</button><button class="btn btn-secondary" type="button" id="pushSupabaseBtn">Push Local Data</button><button class="btn btn-secondary" type="button" id="pullSupabaseBtn">Pull Cloud Data</button></div><p id="supabaseStatus" class="muted small"></p></article>
+          </form><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="testSupabaseBtn">Test Connection</button><button class="btn btn-secondary" type="button" id="pushSupabaseBtn">Save This Browser to Shared Cloud</button><button class="btn btn-secondary" type="button" id="pullSupabaseBtn">Reload Latest Shared Cloud</button></div><p id="supabaseStatus" class="muted small"></p></article>
           <article class="card"><h3>Backup, Restore, and Demo Data</h3><div class="button-row" style="margin-top:12px;"><button class="btn btn-secondary" type="button" id="backupBtn">Download JSON Backup</button><label class="btn btn-secondary" for="restoreInput">Restore JSON<input id="restoreInput" type="file" accept="application/json" class="hidden"></label><button class="btn btn-secondary" type="button" id="seedDemoBtn">Load Demo Data</button><button class="btn btn-danger" type="button" id="clearDataBtn">Clear All Local Data</button></div><p class="muted small">Backup before clearing or restoring data. Restore replaces the current local dataset.</p></article>
         </div>
       </section>
@@ -1779,13 +1779,25 @@
     const state = {
       settings: { ...CHURCH_CONFIG }, users: [], members: [], events: [], donations: [], prayers: [], attendance: [], care: [],
       expenses: [], offeringBatches: [], families: [], reminders: [], followups: [], testimonies: [], eventRegistrations: [], eventBudgets: [], announcements: [], documents: [], certificates: [], departments: [], welfare: [], inventory: [], activityLogs: [], notifications: [],
-      currentUser: null, supabaseClient: null, syncStatus: "offline", lastSyncAt: ""
+      currentUser: null,
+      supabaseClient: null,
+      syncStatus: "offline",
+      lastSyncAt: "",
+      lastCloudPullAt: "",
+      cloudReady: false,
+      cloudPullInProgress: false,
+      cloudSyncInProgress: false
     };
 
     const CLOUD_USERS_TABLE = "church_system_users";
     const EXTENDED_COLLECTIONS = ["expenses", "offeringBatches", "families", "reminders", "followups", "testimonies", "eventRegistrations", "eventBudgets", "announcements", "documents", "certificates", "departments", "welfare", "inventory", "activityLogs", "notifications"];
+    const CLOUD_SYNC_COLLECTIONS = ["members", "events", "attendance", "donations", "prayers", "care", ...EXTENDED_COLLECTIONS.filter(name => name !== "notifications")];
+    const CLOUD_POLL_INTERVAL_MS = 15000;
 
     let cloudSyncTimer = null;
+    let cloudPullTimer = null;
+    let cloudRefreshTimer = null;
+    let realtimeChannel = null;
     let pendingLoginBackgroundDataUrl = null;
     let pendingLoginBackgroundZoom = null;
     let pendingCertificateSignatureScale = null;
@@ -2098,11 +2110,109 @@
       }
     }
 
+    function cloudChurchHasCustomSettings(row) {
+      if (!row) return false;
+      const defaults = CHURCH_CONFIG;
+      return Boolean(
+        row.logo_url || row.general_overseer_signature_url || row.system_background_url ||
+        String(row.tagline || "") !== String(defaults.tagline || "") ||
+        String(row.address || "") !== String(defaults.address || "") ||
+        String(row.phone || "") !== String(defaults.phone || "") ||
+        String(row.email || "") !== String(defaults.email || "") ||
+        String(row.primary_color || "") !== String(defaults.primaryColor || "") ||
+        String(row.accent_color || "") !== String(defaults.accentColor || "") ||
+        String(row.header_theme_color || "") !== String(defaults.headerThemeColor || "") ||
+        String(row.footer_theme_color || "") !== String(defaults.footerThemeColor || "") ||
+        String(row.general_overseer_name || "") !== String(defaults.generalOverseerName || "") ||
+        Number(row.general_overseer_signature_scale || defaults.generalOverseerSignatureScale) !== Number(defaults.generalOverseerSignatureScale)
+      );
+    }
+
+    function localSettingsHaveCustomChanges() {
+      const s = state.settings || {};
+      const defaults = CHURCH_CONFIG;
+      return Boolean(
+        s.logoDataUrl || s.generalOverseerSignatureDataUrl || s.backgroundImageDataUrl ||
+        String(s.tagline || "") !== String(defaults.tagline || "") ||
+        String(s.address || "") !== String(defaults.address || "") ||
+        String(s.phone || "") !== String(defaults.phone || "") ||
+        String(s.email || "") !== String(defaults.email || "") ||
+        String(s.primaryColor || "") !== String(defaults.primaryColor || "") ||
+        String(s.accentColor || "") !== String(defaults.accentColor || "") ||
+        String(s.headerThemeColor || "") !== String(defaults.headerThemeColor || "") ||
+        String(s.footerThemeColor || "") !== String(defaults.footerThemeColor || "") ||
+        String(s.generalOverseerName || "") !== String(defaults.generalOverseerName || "") ||
+        Number(s.generalOverseerSignatureScale || defaults.generalOverseerSignatureScale) !== Number(defaults.generalOverseerSignatureScale)
+      );
+    }
+
+    function localHasMeaningfulSharedData() {
+      const hasRecords = CLOUD_SYNC_COLLECTIONS.some(name => Array.isArray(state[name]) && state[name].length > 0);
+      const hasCustomUsers = (state.users || []).some(user => user.username !== "admin" || user.password !== "admin12345" || user.role !== "admin" || user.isActive === false);
+      return hasRecords || hasCustomUsers || localSettingsHaveCustomChanges();
+    }
+
+    async function countCloudRows(tableName) {
+      if (!hasCloudConnection()) return 0;
+      const { count, error } = await state.supabaseClient.from(tableName).select("id", { count: "exact", head: true });
+      if (error) { console.warn(`Cloud count skipped for ${tableName}`, error); return 0; }
+      return Number(count || 0);
+    }
+
+    async function getCloudSystemSnapshot() {
+      const snapshot = { church: null, dataRows: 0, customUsers: false, hasMeaningfulCloudData: false };
+      if (!hasCloudConnection()) return snapshot;
+      const churchResult = await state.supabaseClient.from("churches").select("*").eq("singleton_key", true).maybeSingle();
+      if (churchResult.error) throw churchResult.error;
+      snapshot.church = churchResult.data || null;
+      const mappings = cloudMappings();
+      for (const config of Object.values(mappings)) snapshot.dataRows += await countCloudRows(config.table);
+      const usersResult = await state.supabaseClient.from(CLOUD_USERS_TABLE).select("username, password_text, role, is_active");
+      if (!usersResult.error) {
+        snapshot.customUsers = (usersResult.data || []).some(user => user.username !== "admin" || user.password_text !== "admin12345" || user.role !== "admin" || user.is_active === false);
+      }
+      snapshot.hasMeaningfulCloudData = Boolean(cloudChurchHasCustomSettings(snapshot.church) || snapshot.dataRows > 0 || snapshot.customUsers);
+      return snapshot;
+    }
+
     function queueCloudSync() {
       state.syncStatus = hasCloudConnection() ? "pending" : "offline";
       if (!hasCloudConnection()) return;
+      if (!state.cloudReady && state.syncStatus !== "seeding") return;
       clearTimeout(cloudSyncTimer);
       cloudSyncTimer = setTimeout(() => { syncAllToSupabase(false); }, 900);
+    }
+
+    function scheduleSilentCloudPull(reason = "scheduled") {
+      if (!hasCloudConnection() || !state.cloudReady) return;
+      if (state.cloudPullInProgress || state.cloudSyncInProgress || state.syncStatus === "pending") return;
+      const modalOpen = $("#modalBackdrop")?.classList.contains("show");
+      if (modalOpen && reason !== "manual") return;
+      clearTimeout(cloudPullTimer);
+      cloudPullTimer = setTimeout(() => {
+        pullFromSupabase({ confirmFirst: false, showMessage: false, force: true, source: reason });
+      }, reason === "realtime" ? 1200 : 100);
+    }
+
+    function startSharedCloudRefresh() {
+      clearInterval(cloudRefreshTimer);
+      if (!hasCloudConnection()) return;
+      cloudRefreshTimer = setInterval(() => scheduleSilentCloudPull("poll"), CLOUD_POLL_INTERVAL_MS);
+    }
+
+    function startRealtimeCloudSync() {
+      if (!hasCloudConnection() || !state.supabaseClient.channel) return;
+      try {
+        if (realtimeChannel) state.supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = state.supabaseClient.channel("land-of-dunamis-shared-cloud-sync");
+        const tables = ["churches", CLOUD_USERS_TABLE, ...Object.values(cloudMappings()).map(config => config.table)];
+        [...new Set(tables)].forEach(table => {
+          realtimeChannel.on("postgres_changes", { event: "*", schema: "public", table }, () => scheduleSilentCloudPull("realtime"));
+        });
+        realtimeChannel.subscribe();
+      } catch (error) {
+        console.warn("Realtime cloud sync could not start. Polling will continue.", error);
+      }
     }
 
     function simpleCloudConfig(collectionName, tableName) {
@@ -2215,37 +2325,55 @@
       const mappings = cloudMappings();
       const config = mappings[collectionName];
       if (!config) return;
-      const rows = state[collectionName].map(config.map);
+      const rows = (state[collectionName] || []).map(config.map).filter(row => row.client_ref);
       if (!rows.length) return;
       const { error } = await state.supabaseClient.from(config.table).upsert(rows, { onConflict: "church_id,client_ref" });
       if (error) throw error;
     }
 
+    async function deleteCollectionRecordFromSupabase(collectionName, id) {
+      if (!hasCloudConnection() || !id) return;
+      const config = cloudMappings()[collectionName];
+      if (!config) return;
+      const { error } = await state.supabaseClient.from(config.table).delete().eq("client_ref", id);
+      if (error) console.warn(`Cloud delete skipped for ${collectionName}`, error);
+    }
+
     async function syncAllToSupabase(showMessage = true) {
-      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return; }
+      if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return false; }
+      if (state.cloudPullInProgress) return false;
+      state.cloudSyncInProgress = true;
+      state.syncStatus = "syncing";
       try {
         await syncSettingsToSupabase();
         await syncUsersToSupabase({ silentMissingTable: !showMessage });
-        for (const collectionName of ["members", "events", "attendance", "donations", "prayers", "care", ...EXTENDED_COLLECTIONS.filter(name => name !== "notifications")]) {
-          await syncCollectionToSupabase(collectionName);
-        }
-        state.syncStatus = "synced"; state.lastSyncAt = new Date().toISOString(); if (showMessage) showToast("Local data pushed to Supabase.");
+        for (const collectionName of CLOUD_SYNC_COLLECTIONS) await syncCollectionToSupabase(collectionName);
+        state.cloudReady = true;
+        state.syncStatus = "synced";
+        state.lastSyncAt = new Date().toISOString();
+        if (showMessage) showToast("Saved to shared cloud. Other laptops will update automatically.");
+        return true;
       } catch (error) {
         state.syncStatus = "failed"; console.warn("Supabase sync failed", error);
         if (showMessage) showToast("Supabase sync failed: " + (error.message || "Unknown error"));
+        return false;
+      } finally {
+        state.cloudSyncInProgress = false;
       }
     }
 
     async function pullFromSupabase(options = {}) {
-      const { confirmFirst = true, showMessage = true } = options;
+      const { confirmFirst = true, showMessage = true, force = false } = options;
       if (!hasCloudConnection()) { if (showMessage) showToast("Supabase is not configured."); return false; }
-      if (confirmFirst && !confirm("Pull cloud data into this browser? This will replace the current local records.")) return false;
+      if (state.cloudSyncInProgress && !force) return false;
+      if (confirmFirst && !confirm("Pull shared cloud data into this browser? This will replace this browser's local records with the latest shared records.")) return false;
+      state.cloudPullInProgress = true;
       try {
         const churchResult = await state.supabaseClient.from("churches").select("*").eq("singleton_key", true).maybeSingle();
         if (churchResult.error) throw churchResult.error;
         const c = churchResult.data;
         if (!c) {
-          if (showMessage) showToast("No cloud church setup was found yet.");
+          if (showMessage) showToast("No shared cloud church record was found yet.");
           return false;
         }
 
@@ -2258,46 +2386,67 @@
           if (error) { console.warn(`Supabase pull skipped ${collectionName}`, error); continue; }
           state[collectionName] = (data || []).map(config.from);
         }
+        state.settings = enforcePermanentChurchIdentity(state.settings);
         persistDataset();
         localStorage.setItem(STORAGE_KEYS.setupComplete, "true");
+        state.cloudReady = true;
+        state.syncStatus = "synced";
+        state.lastCloudPullAt = new Date().toISOString();
         renderAll();
-        if (showMessage) showToast("Cloud data pulled into this browser.");
+        if (showMessage) showToast("Latest shared cloud data loaded into this browser.");
         return true;
       } catch (error) {
         console.warn("Supabase pull failed", error);
         if (showMessage) showToast("Supabase pull failed: " + (error.message || "Unknown error"));
         return false;
+      } finally {
+        state.cloudPullInProgress = false;
       }
     }
 
     async function bootstrapSharedDeploymentState() {
       if (!hasCloudConnection()) {
+        state.cloudReady = false;
         if (isConfiguredDeployment()) markSetupComplete();
         return false;
       }
 
-      const localSetupDone = localStorage.getItem(STORAGE_KEYS.setupComplete) === "true";
-      if (localSetupDone) {
-        try {
-          await syncSettingsToSupabase();
-          await seedOrPullCloudUsers();
-          return true;
-        } catch (error) {
-          console.warn("Supabase startup settings push failed", error);
-          return false;
+      try {
+        state.syncStatus = "checking";
+        const snapshot = await getCloudSystemSnapshot();
+        const localHasData = localHasMeaningfulSharedData();
+
+        if (!snapshot.hasMeaningfulCloudData && localHasData) {
+          state.syncStatus = "seeding";
+          markSetupComplete();
+          const seeded = await syncAllToSupabase(false);
+          if (seeded) {
+            startSharedCloudRefresh();
+            startRealtimeCloudSync();
+            return true;
+          }
         }
-      }
 
-      const pulled = await pullFromSupabase({ confirmFirst: false, showMessage: false });
-      if (pulled) return true;
+        const pulled = await pullFromSupabase({ confirmFirst: false, showMessage: false, force: true, source: "startup" });
+        if (pulled) {
+          startSharedCloudRefresh();
+          startRealtimeCloudSync();
+          return true;
+        }
 
-      if (isConfiguredDeployment()) {
-        markSetupComplete();
-        try {
-          await syncSettingsToSupabase();
-          await seedOrPullCloudUsers();
-        } catch (error) { console.warn("Supabase startup settings seed failed", error); }
-        return true;
+        if (isConfiguredDeployment()) {
+          state.syncStatus = "seeding";
+          markSetupComplete();
+          const seeded = await syncAllToSupabase(false);
+          if (seeded) {
+            startSharedCloudRefresh();
+            startRealtimeCloudSync();
+          }
+          return seeded;
+        }
+      } catch (error) {
+        console.warn("Shared cloud startup sync failed", error);
+        state.syncStatus = "failed";
       }
 
       return false;
@@ -2410,7 +2559,7 @@
       if (signatureStatus) signatureStatus.innerHTML = s.generalOverseerSignatureDataUrl ? `Signature uploaded for <strong>${escapeHtml(s.generalOverseerName || "General Overseer")}</strong>. Current certificate signature size is <strong>${currentCertificateSignatureScale()}%</strong>.` : "No General Overseer signature uploaded yet.";
       updateCertificateSignaturePreview();
       updateLoginBackgroundPreview();
-      const supabaseStatus = state.supabaseClient ? "Supabase client is configured. Use the included SQL schema before enabling cloud CRUD." : "Supabase is not configured. The system is using local browser storage.";
+      const supabaseStatus = state.supabaseClient ? `Shared cloud sync is active. Last saved: ${state.lastSyncAt ? new Date(state.lastSyncAt).toLocaleString(state.settings.locale || "en-GH") : "waiting for next admin change"}. Last loaded: ${state.lastCloudPullAt ? new Date(state.lastCloudPullAt).toLocaleString(state.settings.locale || "en-GH") : "startup loading"}.` : "Supabase is not configured. The system is using local browser storage.";
       $("#supabaseStatus").textContent = supabaseStatus;
     }
 
@@ -3153,7 +3302,7 @@
       $("#testSupabaseBtn").addEventListener("click", testSupabaseConnection);
       $("#pushSupabaseBtn").addEventListener("click", () => syncAllToSupabase(true));
       $("#pullSupabaseBtn").addEventListener("click", pullFromSupabase);
-      $("#seedDemoBtn").addEventListener("click", () => { if (!confirm("Load demo records into the current system?")) return; const demo = demoData(); Object.assign(state, demo); persistDataset(); renderAll(); showToast("Demo data loaded."); });
+      $("#seedDemoBtn").addEventListener("click", () => { if (!confirm("Load demo records into the current system?")) return; const demo = demoData(); Object.assign(state, demo); persistDataset(); renderAll(); queueCloudSync(); showToast("Demo data loaded and queued for shared cloud sync."); });
       $("#clearDataBtn").addEventListener("click", () => { if (!confirm("This will clear all local records. Continue?")) return; Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); loadState(); renderAll(); requireAuth(); showToast("Local data cleared."); });
       $("#restoreInput").addEventListener("change", event => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(String(reader.result)); ["settings", "users", "members", "events", "donations", "prayers", "attendance", "care", ...EXTENDED_COLLECTIONS].forEach(key => { if (data[key]) state[key] = data[key]; }); persistDataset(); renderAll(); showToast("Backup restored."); } catch { showToast("Invalid backup file."); } }; reader.readAsText(file); });
 
@@ -3249,13 +3398,13 @@
     }
 
     function bindModalMemberPhoto() { const input = $("#memberPhotoUpload"); if (!input) return; bindFileToBase64(input, dataUrl => { $("#memberPhotoDataUrl").value = dataUrl; showToast("Member photo attached."); }); }
-    function deleteById(collection, id, message) { if (!safeDeleteConfirm(collection, id)) return; state[collection] = state[collection].filter(item => item.id !== id); save(STORAGE_KEYS[collection], state[collection]); if (collection === "users") deleteUserFromSupabase(id); logActivity("Delete record", `${collection}: ${id}`); renderAll(); queueCloudSync(); showToast(message); }
+    function deleteById(collection, id, message) { if (!safeDeleteConfirm(collection, id)) return; state[collection] = state[collection].filter(item => item.id !== id); save(STORAGE_KEYS[collection], state[collection]); if (collection === "users") deleteUserFromSupabase(id); else deleteCollectionRecordFromSupabase(collection, id); logActivity("Delete record", `${collection}: ${id}`); renderAll(); queueCloudSync(); showToast(message); }
     function updatePrayer(id, updates) { state.prayers = state.prayers.map(p => p.id === id ? { ...p, ...updates } : p); save(STORAGE_KEYS.prayers, state.prayers); renderAll(); queueCloudSync(); showToast("Prayer request updated."); }
 
     async function handleLogin(form) { if (!validateForm(form)) return; const data = formDataObject(form); try { await pullUsersFromSupabase({ showMessage: false, silentMissingTable: true }); } catch (error) { console.warn("Login user refresh failed", error); } const user = state.users.find(u => u.username === data.username && u.password === data.password && u.isActive !== false); if (!user) { setFieldError($("#loginPassword"), "Invalid username or password."); return; } state.currentUser = { id: user.id, displayName: user.displayName, username: user.username, role: user.role }; save(STORAGE_KEYS.currentUser, state.currentUser); requireAuth(); renderAll(); logActivity("User login", user.username); showToast("Login successful."); }
     function handleSetup(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = enforcePermanentChurchIdentity({ ...state.settings, churchName: PERMANENT_CHURCH_NAME, phone: data.phone, email: data.email, address: data.address }); state.users = [{ id: uid("usr"), displayName: data.adminName, username: data.username, password: data.password, role: "admin", isActive: true, createdAt: new Date().toISOString() }]; state.currentUser = { id: state.users[0].id, displayName: data.adminName, username: data.username, role: "admin" }; persistDataset(); save(STORAGE_KEYS.currentUser, state.currentUser); markSetupComplete(); closeModal(); requireAuth(); renderAll(); queueCloudSync(); showToast("Setup completed."); }
     function handleSettingsSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); state.settings = enforcePermanentChurchIdentity({ ...state.settings, churchName: PERMANENT_CHURCH_NAME, tagline: data.tagline, phone: data.phone, email: data.email, address: data.address, currency: data.currency, locale: data.locale || "en-GH", primaryColor: data.primaryColor, accentColor: data.accentColor, headerThemeColor: data.headerThemeColor, footerThemeColor: data.footerThemeColor, generalOverseerName: data.generalOverseerName || "General Overseer", generalOverseerSignatureScale: currentCertificateSignatureScale(), autoDailyVerse: true, dailyVerseDate: localDateKey(), verseOfDay: getAutoVerseOfTheDay() }); markSetupComplete(); renderAll(); queueCloudSync(); showToast("Settings saved. The verse of the day will continue changing automatically each day."); }
-    function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); state.settings = enforcePermanentChurchIdentity(state.settings); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); renderSettingsForms(); showToast("Supabase settings saved."); }
+    function handleSupabaseSubmit(form) { const data = formDataObject(form); state.settings.supabaseUrl = data.supabaseUrl.trim(); state.settings.supabaseAnonKey = data.supabaseAnonKey.trim(); state.settings = enforcePermanentChurchIdentity(state.settings); save(STORAGE_KEYS.settings, state.settings); initSupabaseClient(); bootstrapSharedDeploymentState().then(() => renderSettingsForms()); showToast("Supabase settings saved. Shared cloud sync is being checked."); }
     function handleUserSubmit(form) { if (!validateForm(form)) return; const data = formDataObject(form); if (state.users.some(u => u.username === data.username)) { setFieldError($("#userUsername"), "Username already exists."); return; } state.users.push({ id: uid("usr"), displayName: data.displayName, username: data.username, password: data.password, role: data.role, isActive: true, createdAt: new Date().toISOString() }); save(STORAGE_KEYS.users, state.users); form.reset(); renderUsers(); queueCloudSync(); showToast("User added and queued for shared password sync."); }
 
     async function bootApp() {
